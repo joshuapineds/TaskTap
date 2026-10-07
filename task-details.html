@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskTap — Task Details</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="task-details.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html"><span class="brand-mark"><span></span><i></i></span><span>Task<span>Tap</span></span></a>
+  <nav class="topnav"><a href="browse.html">Browse Tasks</a><a href="how-it-works.html">How It Works</a><a href="about.html">About</a></nav>
+  <div class="top-actions"><a class="btn ghost" href="auth.html?mode=login">Login</a><a class="btn primary" href="register.html">Sign Up</a></div>
+  <button class="hamburger" id="menuBtn">☰</button>
+</header>
+
+<main>
+  <div class="crumbs"><a href="browse.html">← Back to Tasks</a><span>/</span><span>Task Details</span></div>
+
+  <div class="page-grid">
+    <section>
+      <article class="hero-card">
+        <div class="task-photo" id="taskPhoto">🔧</div>
+        <div class="hero-info">
+          <div class="topline"><span class="badge">Available</span><button class="save" id="save">♡ Save task</button></div>
+          <h1 id="title">Fix a leaking faucet</h1>
+          <div class="compensation" id="price">₱600</div>
+          <div class="quick-meta"><span>⌖ Brgy. 176</span><span>◷ Deadline: October 8, 2026</span><span>▣ Repairs</span></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="section-title"><h2>Description</h2></div>
+        <p id="description">The kitchen faucet is leaking and needs to be fixed. Looking for someone with basic plumbing experience.</p>
+      </article>
+
+      <article class="card">
+        <div class="section-title"><h2>Requirements</h2></div>
+        <ul class="requirements">
+          <li>Basic plumbing experience</li>
+          <li>Bring basic tools</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <div class="section-title"><h2>Approximate Location</h2><span class="privacy">Exact address hidden for privacy</span></div>
+        <div class="map">
+          <div class="road a"></div><div class="road b"></div><div class="road c"></div>
+          <div class="area-label one">Brgy. 176</div><div class="area-label two">Nearby area</div>
+          <span class="pin">●</span>
+          <div class="map-caption"><strong>Approximate task area</strong><small>Location is shown broadly and does not reveal the poster's exact address.</small></div>
+        </div>
+      </article>
+    </section>
+
+    <aside>
+      <article class="card poster-card">
+        <div class="section-title"><h2>Posted by</h2></div>
+        <div class="poster">
+          <div class="avatar">MS</div>
+          <div><strong>Maria Santos</strong><span>12 completed tasks posted</span><span class="stars">★★★★★ <em>4.9</em></span></div>
+        </div>
+        <div class="review-box">“Very reliable and did a great job!”<small>Recent community review</small></div>
+      </article>
+
+      <article class="card action-card">
+        <div class="action-summary"><span>Agreed compensation</span><strong>₱600</strong></div>
+        <button class="btn primary full" id="request">Request to Perform</button>
+        <button class="btn outline full" id="report">Report Task</button>
+        <p>You'll need to sign in before submitting a request. Never share sensitive information in a public task description.</p>
+      </article>
+
+      <article class="card safety-card">
+        <div class="shield">✓</div>
+        <div><strong>Keep interactions on TaskTap</strong><p>Use TaskTap messages and task records to keep requests, agreements, and status changes organized.</p></div>
+      </article>
+    </aside>
+  </div>
+</main>
+
+<footer class="footer"><div><strong>Task<span>Tap</span></strong><p>Local tasks. Real people. Stronger communities.</p></div><span>© 2026 TaskTap</span></footer>
+
+<div class="modal-backdrop" id="auth" hidden>
+  <div class="modal auth-modal">
+    <button class="close" id="authClose">×</button>
+    <div class="auth-logo"><span class="brand-mark"><span></span><i></i></span><strong>Task<span>Tap</span></strong></div>
+    <div class="tabs"><button class="tab active" data-tab="login">Login</button><button class="tab" data-tab="register">Register</button></div>
+    <div id="login"><h2>Welcome back!</h2><p>Sign in to request this task.</p><form id="loginForm"><label>Email or Phone<input required></label><label>Password<input required type="password"></label><button class="btn primary full">Login</button></form></div>
+    <div id="register" hidden><h2>Create your account</h2><p>Join your local TaskTap community.</p><form id="registerForm"><label>Full Name<input required></label><label>Email or Phone<input required></label><label>Password<input required type="password"></label><label>Barangay<select required><option value="">Select</option><option>176</option><option>178</option><option>179</option></select></label><button class="btn primary full">Create Account</button></form></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="task-details.js"></script>
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="TaskTap connects people in the same community for small local tasks and short-term work." />
+  <title>TaskTap — Find a task. Get help. Earn locally.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="site-shell">
+    <header class="navbar" id="top">
+      <a class="brand" aria-label="TaskTap home" href="#top">
+        <span class="brand-mark" aria-hidden="true"><span></span><i></i></span>
+        <span>Task<span>Tap</span></span>
+      </a>
+
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <a href="browse.html">Browse Tasks</a>
+        <a href="how-it-works.html">How It Works</a>
+        <a href="about.html">About</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="btn btn-ghost"  href="auth.html?mode=login">Login</a>
+        <a class="btn btn-primary"  href="register.html">Sign Up</a>
+      </div>
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </header>
+
+    <div class="mobile-nav" id="mobileNav">
+      <a href="browse.html">Browse Tasks</a>
+      <a href="how-it-works.html">How It Works</a>
+      <a href="about.html">About</a>
+      <a class="btn btn-ghost"  href="auth.html?mode=login">Login</a>
+      <a class="btn btn-primary"  href="register.html">Sign Up</a>
+    </div>
+
+    <main>
+      <section class="hero section-pad">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="pulse"></span> Local help, right in your community</div>
+          <h1>Find a task.<br>Get help.<br><em>Earn locally.</em></h1>
+          <p class="hero-lead">
+            TaskTap connects people in your community for small tasks like cleaning,
+            tutoring, shopping, repairs, and pet care.
+          </p>
+
+          <form class="task-search" id="heroSearch">
+            <label class="sr-only" for="searchInput">Search tasks</label>
+            <input id="searchInput" type="search" placeholder="Search tasks..." autocomplete="off" />
+            <div class="search-location">
+              <span class="pin-icon">⌖</span>
+              <label class="sr-only" for="barangaySelect">Barangay</label>
+              <select id="barangaySelect">
+                <option>Barangay</option>
+                <option>176</option>
+                <option>178</option>
+                <option>179</option>
+                <option>180</option>
+              </select>
+            </div>
+            <button type="submit" aria-label="Search tasks">⌕</button>
+          </form>
+
+          <div class="hero-trust">
+            <span><b>✓</b> Community-based</span>
+            <span><b>✓</b> Local opportunities</span>
+            <span><b>✓</b> Built for short-term tasks</span>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="blob blob-one"></div>
+          <div class="blob blob-two"></div>
+          <div class="map-dots" aria-hidden="true">
+            <span class="map-dot d1"></span>
+            <span class="map-dot d2"></span>
+            <span class="map-dot d3"></span>
+            <span class="map-dot d4"></span>
+          </div>
+          <div class="hero-card hero-image-card">
+            <img src="assets/hero-people.png" alt="Two community members using TaskTap" />
+          </div>
+          <div class="floating-card location-card">
+            <span class="floating-icon">⌖</span>
+            <div><strong>Your area</strong><small>Local tasks nearby</small></div>
+          </div>
+          <div class="floating-card task-count-card">
+            <span class="floating-icon green">✓</span>
+            <div><strong>24 tasks</strong><small>available today</small></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="categories section-pad" id="browse">
+        <div class="section-heading compact">
+          <div>
+            <span class="section-kicker">DISCOVER OPPORTUNITIES</span>
+            <h2>Popular categories</h2>
+          </div>
+          <button class="text-btn" id="clearCategory">View all <span>→</span></button>
+        </div>
+
+        <div class="category-grid" id="categoryGrid">
+          <button class="category-card active" data-category="Cleaning">
+            <span class="category-icon blue">✦</span><span>Cleaning</span>
+          </button>
+          <button class="category-card" data-category="Tutoring">
+            <span class="category-icon green">▣</span><span>Tutoring</span>
+          </button>
+          <button class="category-card" data-category="Repairs">
+            <span class="category-icon orange">⌁</span><span>Repairs</span>
+          </button>
+          <button class="category-card" data-category="Shopping">
+            <span class="category-icon cyan">▤</span><span>Shopping</span>
+          </button>
+          <button class="category-card" data-category="Pet Care">
+            <span class="category-icon gold">♟</span><span>Pet Care</span>
+          </button>
+          <button class="category-card" data-category="Others">
+            <span class="category-icon purple">•••</span><span>Others</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="nearby section-pad" id="available">
+        <div class="section-heading">
+          <div>
+            <span class="section-kicker">LOCAL TASKS</span>
+            <h2>Available Near You</h2>
+            <p>Explore small jobs posted by people in your selected area.</p>
+          </div>
+          <button class="text-btn" id="viewAllTasks">View all <span>→</span></button>
+        </div>
+
+        <div class="task-grid" id="taskGrid">
+          <article class="task-card" data-category="Cleaning" data-title="House Cleaning">
+            <div class="task-thumb thumb-cleaning">
+              <span>🧹</span>
+              <small>Cleaning</small>
+            </div>
+            <div class="task-content">
+              <div class="task-topline"><span class="availability">Available</span><button class="heart" aria-label="Save task">♡</button></div>
+              <h3>House Cleaning</h3>
+              <div class="task-meta"><strong>₱500</strong><span>•</span><span>Brgy. 176</span></div>
+              <div class="task-meta muted"><span>◷ Tomorrow</span></div>
+              <button class="btn btn-primary full" data-task="House Cleaning">View Task</button>
+            </div>
+          </article>
+
+          <article class="task-card" data-category="Tutoring" data-title="Math Tutor">
+            <div class="task-thumb thumb-tutoring">
+              <span>📚</span>
+              <small>Tutoring</small>
+            </div>
+            <div class="task-content">
+              <div class="task-topline"><span class="availability">Available</span><button class="heart" aria-label="Save task">♡</button></div>
+              <h3>Math Tutor</h3>
+              <div class="task-meta"><strong>₱300</strong><span>•</span><span>Brgy. 178</span></div>
+              <div class="task-meta muted"><span>◷ Oct 10</span></div>
+              <button class="btn btn-primary full" data-task="Math Tutor">View Task</button>
+            </div>
+          </article>
+
+          <article class="task-card" data-category="Pet Care" data-title="Pet Care">
+            <div class="task-thumb thumb-pet">
+              <span>🐶</span>
+              <small>Pet Care</small>
+            </div>
+            <div class="task-content">
+              <div class="task-topline"><span class="availability">Available</span><button class="heart" aria-label="Save task">♡</button></div>
+              <h3>Pet Care</h3>
+              <div class="task-meta"><strong>₱400</strong><span>•</span><span>Brgy. 176</span></div>
+              <div class="task-meta muted"><span>◷ Oct 12</span></div>
+              <button class="btn btn-primary full" data-task="Pet Care">View Task</button>
+            </div>
+          </article>
+
+          <article class="task-card extra-task hidden-task" data-category="Repairs" data-title="Fix leaking faucet">
+            <div class="task-thumb thumb-repair"><span>🔧</span><small>Repairs</small></div>
+            <div class="task-content">
+              <div class="task-topline"><span class="availability">Available</span><button class="heart" aria-label="Save task">♡</button></div>
+              <h3>Fix leaking faucet</h3>
+              <div class="task-meta"><strong>₱600</strong><span>•</span><span>Brgy. 176</span></div>
+              <div class="task-meta muted"><span>◷ Oct 8</span></div>
+              <button class="btn btn-primary full" data-task="Fix leaking faucet">View Task</button>
+            </div>
+          </article>
+        </div>
+
+        <div class="no-results" id="noResults" hidden>
+          <div>⌕</div>
+          <h3>No tasks found</h3>
+          <p>Try another search or choose a different category.</p>
+          <button class="btn btn-outline" id="resetTasks">Reset filters</button>
+        </div>
+      </section>
+<section class="safety section-pad">
+        <div class="safety-inner">
+          <div>
+            <span class="section-kicker">COMMUNITY & TRUST</span>
+            <h2>Designed for local, organized interactions.</h2>
+          </div>
+          <div class="safety-points">
+            <div><span>✓</span><p><strong>Profiles & ratings</strong><br>Build accountability through task history and reviews.</p></div>
+            <div><span>✓</span><p><strong>In-app messaging</strong><br>Keep task conversations inside the platform.</p></div>
+            <div><span>✓</span><p><strong>Approximate locations</strong><br>Use area-based task discovery without live GPS sharing.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta section-pad">
+        <div class="cta-inner">
+          <span class="section-kicker">READY TO TAP INTO YOUR COMMUNITY?</span>
+          <h2>Find help. Find work. Start local.</h2>
+          <p>Join TaskTap and make small tasks easier to discover, request, and manage.</p>
+          <div class="cta-actions">
+            <a class="btn btn-primary btn-large"  href="register.html">Create an Account</a>
+            <a class="btn btn-light btn-large" href="browse.html">Browse Tasks</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a class="brand light-brand" href="#top"><span class="brand-mark" aria-hidden="true"><span></span><i></i></span><span>Task<span>Tap</span></span></a>
+          <p>Local tasks. Real people.<br>Stronger communities.</p>
+        </div>
+        <div class="footer-links">
+          <div><h4>Explore</h4><a href="browse.html">Browse Tasks</a><a href="how-it-works.html">How It Works</a><a href="about.html">About</a></div>
+          <div><h4>Account</h4><a  href="auth.html?mode=login">Login</a><a  href="register.html">Sign Up</a></div>
+          <div><h4>Support</h4><a href="how-it-works.html">Help / FAQ</a><a href="how-it-works.html">Community Guidelines</a></div>
+        </div>
+      </div>
+      <div class="footer-bottom"><span>© 2026 TaskTap</span><span>Local Task and Short-Term Job Management System</span></div>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <div class="modal-backdrop" id="authModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <button class="modal-close" id="closeAuth" aria-label="Close">×</button>
+      <div class="modal-brand"><span class="brand-mark"><span></span><i></i></span><strong>Task<span>Tap</span></strong></div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-auth-tab="login">Login</button>
+        <button class="auth-tab" data-auth-tab="register">Register</button>
+      </div>
+      <div id="loginPanel">
+        <h2 id="authTitle">Welcome back!</h2>
+        <p class="modal-subtitle">Sign in to continue to your account.</p>
+        <form class="auth-form" id="loginForm">
+          <label>Email or Phone Number<input required type="text" placeholder="you@example.com"></label>
+          <label>Password<div class="password-wrap"><input required id="loginPassword" type="password" placeholder="••••••••"><button type="button" data-toggle-password="loginPassword">◉</button></div></label>
+          <div class="auth-row"><label class="check"><input type="checkbox"> Remember me</label><button type="button" class="link-btn" data-toast="Password recovery will be implemented in the next page.">Forgot password?</button></div>
+          <button class="btn btn-primary full" type="submit">Login</button>
+        </form>
+        <div class="divider"><span>or</span></div>
+        <button class="social-btn" data-toast="Google sign-in is a frontend placeholder.">G Continue with Google</button>
+        <button class="social-btn" data-toast="Facebook sign-in is a frontend placeholder.">f Continue with Facebook</button>
+      </div>
+      <div id="registerPanel" hidden>
+        <h2>Create your TaskTap account</h2>
+        <p class="modal-subtitle">Register as a Standard User to post and request tasks.</p>
+        <form class="auth-form" id="registerForm">
+          <label>Full name<input required type="text" placeholder="Your name"></label>
+          <label>Email or Phone Number<input required type="text" placeholder="you@example.com"></label>
+          <label>Password<input required type="password" placeholder="Create a password"></label>
+          <label>Barangay<select required><option value="">Select your barangay</option><option>Barangay 176</option><option>Barangay 178</option><option>Barangay 179</option></select></label>
+          <button class="btn btn-primary full" type="submit">Create Account</button>
+        </form>
+      </div>
+      <p class="modal-footnote">By continuing, you agree to use TaskTap responsibly and follow community guidelines.</p>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="taskModal" hidden>
+    <div class="modal task-modal" role="dialog" aria-modal="true" aria-labelledby="taskModalTitle">
+      <button class="modal-close" id="closeTask" aria-label="Close">×</button>
+      <span class="section-kicker">TASK PREVIEW</span>
+      <h2 id="taskModalTitle">Task</h2>
+      <div class="task-preview">
+        <div><span>Compensation</span><strong id="taskPrice">₱500</strong></div>
+        <div><span>Location</span><strong id="taskLocation">Brgy. 176</strong></div>
+        <div><span>Deadline</span><strong id="taskDeadline">Tomorrow</strong></div>
+      </div>
+      <p id="taskDescription">This is a frontend preview. Guests can browse public task information, while actions that require an authenticated account can prompt the user to log in.</p>
+      <a class="btn btn-primary full"  href="auth.html?mode=login">Login to Request</a>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

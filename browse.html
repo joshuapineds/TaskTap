@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskTap — Browse Tasks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="browse.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" aria-label="TaskTap home" href="index.html">
+      <span class="brand-mark"><span></span><i></i></span>
+      <span>Task<span>Tap</span></span>
+    </a>
+    <nav class="topnav">
+      <a class="active" href="browse.html">Browse Tasks</a>
+      <a href="how-it-works.html">How It Works</a>
+      <a href="about.html">About</a>
+    </nav>
+    <div class="top-actions">
+      <a class="btn ghost" href="auth.html?mode=login">Login</a>
+      <a class="btn primary" href="register.html">Sign Up</a>
+    </div>
+    <button class="hamburger" id="menuBtn" aria-label="Open navigation">☰</button>
+  </header>
+
+  <main>
+    <section class="browse-head">
+      <div>
+        <span class="kicker">LOCAL TASKS</span>
+        <h1>Find a task near you.</h1>
+        <p>Search available short-term jobs by category, barangay, price, and deadline.</p>
+      </div>
+      <a class="btn primary" href="register.html">Post a Task <b>+</b></a>
+    </section>
+
+    <section class="search-panel">
+      <div class="search-box">
+        <span>⌕</span>
+        <input id="search" type="search" placeholder="Search tasks, e.g. cleaning, tutor, repairs">
+      </div>
+      <div class="select-wrap">
+        <label>Barangay</label>
+        <select id="barangay">
+          <option value="all">All Barangays</option>
+          <option value="176">Brgy. 176</option>
+          <option value="178">Brgy. 178</option>
+          <option value="179">Brgy. 179</option>
+        </select>
+      </div>
+      <button class="btn primary search-btn" id="applySearch">Search</button>
+    </section>
+
+    <div class="layout">
+      <aside class="filters">
+        <div class="filter-title"><strong>Filters</strong><button id="reset">Reset</button></div>
+
+        <div class="filter-group">
+          <h3>Category</h3>
+          <label class="check-row"><input type="checkbox" value="Cleaning"> <span>Cleaning</span><small>12</small></label>
+          <label class="check-row"><input type="checkbox" value="Tutoring"> <span>Tutoring</span><small>8</small></label>
+          <label class="check-row"><input type="checkbox" value="Repairs"> <span>Repairs</span><small>6</small></label>
+          <label class="check-row"><input type="checkbox" value="Shopping"> <span>Shopping</span><small>9</small></label>
+          <label class="check-row"><input type="checkbox" value="Pet Care"> <span>Pet Care</span><small>5</small></label>
+          <label class="check-row"><input type="checkbox" value="Others"> <span>Others</span><small>4</small></label>
+        </div>
+
+        <div class="filter-group">
+          <h3>Price Range</h3>
+          <div class="price-row"><input id="minPrice" type="number" min="0" placeholder="₱0"><span>to</span><input id="maxPrice" type="number" min="0" placeholder="₱1,000+"></div>
+        </div>
+
+        <div class="filter-group">
+          <h3>Deadline</h3>
+          <select id="deadline">
+            <option value="all">Any deadline</option>
+            <option value="soon">Within 3 days</option>
+            <option value="week">Within 7 days</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <h3>Barangay</h3>
+          <select id="filterBarangay">
+            <option value="all">All Barangays</option>
+            <option value="176">Brgy. 176</option>
+            <option value="178">Brgy. 178</option>
+            <option value="179">Brgy. 179</option>
+          </select>
+        </div>
+
+        <button class="btn primary full" id="applyFilters">Apply Filters</button>
+      </aside>
+
+      <section class="results">
+        <div class="results-head">
+          <div><strong id="resultCount">6</strong> tasks available</div>
+          <div class="result-controls">
+            <select id="sort">
+              <option value="recommended">Recommended</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="deadline">Deadline Soonest</option>
+            </select>
+            <button class="view-toggle active" aria-label="List view">☷</button>
+            <button class="view-toggle" aria-label="Grid view">▦</button>
+          </div>
+        </div>
+
+        <div class="content-split">
+          <div class="task-list" id="taskList">
+            <article class="task-item" data-category="Cleaning" data-price="500" data-barangay="176" data-days="1" data-title="House Cleaning">
+              <div class="task-image cleaning">🧹</div>
+              <div class="task-body">
+                <div class="item-line"><span class="badge">Available</span><button class="save">♡</button></div>
+                <h2>House Cleaning</h2>
+                <div class="price">₱500 <span>• Cleaning</span></div>
+                <p>Help with general house cleaning for a local resident.</p>
+                <div class="meta"><span>⌖ Brgy. 176</span><span>◷ Oct 7, 2026</span></div>
+              </div>
+              <button class="view-task" data-task="House Cleaning">View Details</button>
+            </article>
+
+            <article class="task-item" data-category="Tutoring" data-price="300" data-barangay="178" data-days="4" data-title="Math Tutor">
+              <div class="task-image tutoring">📚</div>
+              <div class="task-body">
+                <div class="item-line"><span class="badge">Available</span><button class="save">♡</button></div>
+                <h2>Math Tutor</h2>
+                <div class="price">₱300 <span>• Tutoring</span></div>
+                <p>Grade 10 math tutoring for a student in the community.</p>
+                <div class="meta"><span>⌖ Brgy. 178</span><span>◷ Oct 10, 2026</span></div>
+              </div>
+              <button class="view-task" data-task="Math Tutor">View Details</button>
+            </article>
+
+            <article class="task-item" data-category="Pet Care" data-price="400" data-barangay="176" data-days="6" data-title="Pet Care">
+              <div class="task-image pet">🐶</div>
+              <div class="task-body">
+                <div class="item-line"><span class="badge">Available</span><button class="save">♡</button></div>
+                <h2>Pet Care</h2>
+                <div class="price">₱400 <span>• Pet Care</span></div>
+                <p>Looking for help caring for a pet while the owner is away.</p>
+                <div class="meta"><span>⌖ Brgy. 176</span><span>◷ Oct 12, 2026</span></div>
+              </div>
+              <button class="view-task" data-task="Pet Care">View Details</button>
+            </article>
+
+            <article class="task-item" data-category="Repairs" data-price="600" data-barangay="176" data-days="2" data-title="Fix leaking faucet">
+              <div class="task-image repair">🔧</div>
+              <div class="task-body">
+                <div class="item-line"><span class="badge">Available</span><button class="save">♡</button></div>
+                <h2>Fix leaking faucet</h2>
+                <div class="price">₱600 <span>• Repairs</span></div>
+                <p>Basic plumbing assistance needed for a leaking kitchen faucet.</p>
+                <div class="meta"><span>⌖ Brgy. 176</span><span>◷ Oct 8, 2026</span></div>
+              </div>
+              <button class="view-task" data-task="Fix leaking faucet">View Details</button>
+            </article>
+
+            <article class="task-item" data-category="Shopping" data-price="450" data-barangay="179" data-days="3" data-title="Grocery Shopping">
+              <div class="task-image shopping">🛒</div>
+              <div class="task-body">
+                <div class="item-line"><span class="badge">Available</span><button class="save">♡</button></div>
+                <h2>Grocery Shopping</h2>
+                <div class="price">₱450 <span>• Shopping</span></div>
+                <p>Pick up a short grocery list and deliver it locally.</p>
+                <div class="meta"><span>⌖ Brgy. 179</span><span>◷ Oct 9, 2026</span></div>
+              </div>
+              <button class="view-task" data-task="Grocery Shopping">View Details</button>
+            </article>
+
+            <article class="task-item" data-category="Cleaning" data-price="550" data-barangay="178" data-days="5" data-title="Apartment Cleaning">
+              <div class="task-image cleaning">🧽</div>
+              <div class="task-body">
+                <div class="item-line"><span class="badge">Available</span><button class="save">♡</button></div>
+                <h2>Apartment Cleaning</h2>
+                <div class="price">₱550 <span>• Cleaning</span></div>
+                <p>One-time apartment cleaning before the weekend.</p>
+                <div class="meta"><span>⌖ Brgy. 178</span><span>◷ Oct 11, 2026</span></div>
+              </div>
+              <button class="view-task" data-task="Apartment Cleaning">View Details</button>
+            </article>
+          </div>
+
+          <div class="map">
+            <div class="map-toolbar"><button>＋</button><button>−</button></div>
+            <div class="map-label l1">Brgy. 176</div>
+            <div class="map-label l2">Brgy. 178</div>
+            <div class="map-label l3">Brgy. 179</div>
+            <div class="road r1"></div><div class="road r2"></div><div class="road r3"></div>
+            <span class="map-pin p1">●</span><span class="map-pin p2">●</span><span class="map-pin p3">●</span><span class="map-pin p4">●</span>
+            <div class="map-note"><strong>Approximate locations</strong><span>Exact user locations are not displayed.</span></div>
+          </div>
+        </div>
+
+        <div class="empty" id="empty" hidden>
+          <div>⌕</div><h2>No matching tasks</h2><p>Try changing your search or filters.</p><button class="btn outline" id="emptyReset">Reset filters</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div><strong>Task<span>Tap</span></strong><p>Local tasks. Real people. Stronger communities.</p></div>
+    <span>© 2026 TaskTap</span>
+  </footer>
+
+  <div class="modal-backdrop" id="modal" hidden>
+    <div class="modal">
+      <button class="close" id="close">×</button>
+      <span class="kicker">TASK DETAILS</span>
+      <h2 id="modalTitle">House Cleaning</h2>
+      <div class="detail-grid"><div><small>Compensation</small><strong id="modalPrice">₱500</strong></div><div><small>Location</small><strong id="modalLocation">Brgy. 176</strong></div><div><small>Deadline</small><strong id="modalDeadline">Oct 7, 2026</strong></div></div>
+      <p id="modalText">Task information will appear here.</p>
+      <div class="modal-actions"><button class="btn outline" id="modalReport">Report Task</button><a class="btn primary" href="auth.html?mode=login">Request to Perform</a></div>
+      <small class="privacy-note">Guests can browse public task information. Login is required before requesting a task.</small>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="auth" hidden>
+    <div class="modal auth-modal">
+      <button class="close" id="authClose">×</button>
+      <div class="auth-logo"><span class="brand-mark"><span></span><i></i></span><strong>Task<span>Tap</span></strong></div>
+      <div class="tabs"><button class="tab active" data-tab="login">Login</button><button class="tab" data-tab="register">Register</button></div>
+      <div id="login"><h2>Welcome back!</h2><p>Sign in to continue.</p><form id="loginForm"><label>Email or Phone<input required></label><label>Password<input required type="password"></label><button class="btn primary full">Login</button></form></div>
+      <div id="register" hidden><h2>Create your account</h2><p>Join your local TaskTap community.</p><form id="registerForm"><label>Full Name<input required></label><label>Email or Phone<input required></label><label>Password<input required type="password"></label><label>Barangay<select required><option value="">Select</option><option>176</option><option>178</option><option>179</option></select></label><button class="btn primary full">Create Account</button></form></div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script src="browse.js"></script>
+</body>
+</html>

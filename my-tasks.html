@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manage posted and performed tasks on TaskTap.">
+  <title>TaskTap — My Tasks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="my-tasks.css">
+</head>
+<body class="my-tasks-page">
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <a class="side-brand" aria-label="TaskTap dashboard" href="dashboard.html"><span class="brand-mark"><span></span><i></i></span><span>Task<span>Tap</span></span></a>
+    <nav>
+      <a href="dashboard.html"><span class="nav-icon">⌂</span><span>Dashboard</span></a>
+      <a href="find-tasks.html"><span class="nav-icon">⌕</span><span>Find Tasks</span></a>
+      <a href="post-task.html"><span class="nav-icon">＋</span><span>Post Task</span></a>
+      <a class="active" href="my-tasks.html"><span class="nav-icon">▤</span><span>My Tasks</span><b>4</b></a>
+      <a href="messages.html"><span class="nav-icon">▱</span><span>Messages</span><b>3</b></a>
+      <a href="notifications.html"><span class="nav-icon">♧</span><span>Notifications</span><b>5</b></a>
+      <a href="profile.html"><span class="nav-icon">◉</span><span>Profile</span></a>
+    </nav>
+    <div class="sidebar-label">Account</div>
+    <a class="logout" href="auth.html?mode=login"><span class="nav-icon">↪</span><span>Log out</span></a>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="icon-btn mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button>
+      <div class="top-search"><span>⌕</span><input id="topSearch" type="search" placeholder="Search tasks..." aria-label="Search tasks"></div>
+      <div class="profile-menu">
+        <button class="profile-trigger" id="notificationTrigger" aria-label="Notifications"><span class="icon-btn"><span class="dot"></span>♧</span></button>
+        <div class="dropdown" id="notificationDropdown">
+          <div class="dropdown-head"><strong>Notifications</strong><span>5 new updates</span></div>
+          <a href="notifications.html">✓ <span>Maria accepted your task request.</span></a>
+          <a href="notifications.html">● <span>Juan sent you a new message.</span></a>
+          <a href="payment-history.html">₱ <span>Payment of ₱600 was recorded.</span></a>
+          <a href="#" id="markRead">○ <span>Mark all as read</span></a>
+        </div>
+      </div>
+      <div class="profile-menu">
+        <button class="profile-trigger" id="profileTrigger"><span class="avatar">JD</span><span class="profile-copy"><strong>Joshua D. Pineda</strong><small>Standard User</small></span><span class="chevron">⌄</span></button>
+        <div class="dropdown" id="profileDropdown">
+          <div class="dropdown-head"><strong>Joshua D. Pineda</strong><span>Standard User</span></div>
+          <a href="profile.html">◉ <span>My Profile</span></a>
+          <a href="account-settings.html">⚙ <span>Account Settings</span></a>
+          <a href="auth.html?mode=login">↪ <span>Log out</span></a>
+        </div>
+      </div>
+    </header>
+
+    <div class="page">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Task management</p>
+          <h1>My Tasks</h1>
+          <p>Keep track of tasks you posted and tasks you’re helping with.</p>
+        </div>
+        <div class="head-actions"><a class="btn ghost" href="payment-history.html">₱ Payment History</a><a class="btn ghost" href="find-tasks.html">Find Tasks</a><a class="btn primary" href="post-task.html">＋ Post a Task</a></div>
+      </div>
+
+      <section class="task-stats" aria-label="Task summary">
+        <div class="task-stat card"><span class="task-stat-icon blue">▤</span><div><strong>6</strong><span>Posted tasks</span></div><small>2 active</small></div>
+        <div class="task-stat card"><span class="task-stat-icon orange">◷</span><div><strong>3</strong><span>Requests</span></div><small>1 needs action</small></div>
+        <div class="task-stat card"><span class="task-stat-icon green">✓</span><div><strong>8</strong><span>Completed</span></div><small>₱4,250 earned</small></div>
+        <div class="task-stat card"><span class="task-stat-icon purple">★</span><div><strong>4.9</strong><span>Average rating</span></div><small>16 reviews</small></div>
+      </section>
+
+      <section class="toolbar-card card">
+        <div class="my-requests-shortcut"><a class="btn ghost" href="my-requests.html">View My Requests →</a></div><div class="tabs" role="tablist" aria-label="My task status">
+          <button class="tab active" role="tab" aria-selected="true" data-tab="posted">Posted <b>6</b></button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="requested">Requested <b>2</b></button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="accepted">Accepted <b>1</b></button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="progress">In Progress <b>1</b></button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="completed">Completed <b>8</b></button>
+        </div>
+        <div class="toolbar-row">
+          <label class="task-search"><span>⌕</span><input id="taskSearch" type="search" placeholder="Search your tasks..." aria-label="Search your tasks"></label>
+          <select id="categoryFilter" aria-label="Filter by category"><option value="all">All categories</option><option value="Cleaning">Cleaning</option><option value="Tutoring">Tutoring</option><option value="Repairs">Repairs</option><option value="Shopping">Shopping</option><option value="Pet Care">Pet Care</option></select>
+          <select id="sortTasks" aria-label="Sort tasks"><option value="recent">Most recent</option><option value="deadline">Deadline soonest</option><option value="amount-high">Highest amount</option><option value="amount-low">Lowest amount</option></select>
+          <button class="view-toggle active" id="listView" aria-label="List view">☷</button><button class="view-toggle" id="compactView" aria-label="Compact view">▦</button>
+        </div>
+      </section>
+
+      <section class="notice card" id="tabNotice"><span>i</span><div><strong>Posted tasks</strong><p>These are tasks you created. Manage requests, edit details, or archive tasks when they are no longer active.</p></div><a href="post-task.html">Create another task →</a></section>
+
+      <section class="tasks-panel" aria-live="polite">
+        <div class="results-head"><div><strong id="resultCount">6 tasks</strong><span id="resultLabel">in Posted</span></div><a class="archive-link" href="archived-tasks.html">View archived tasks →</a><span class="updated">Updated just now</span></div>
+        <div class="my-task-list" id="taskList">
+          <article class="my-task card" data-status="posted" data-category="Repairs" data-amount="600" data-date="2026-10-08" data-search="fix a leaking faucet repairs brgy 176">
+            <div class="task-image repairs"><span>🔧</span></div>
+            <div class="my-task-main"><div class="task-title-row"><div><span class="status-pill active">Active</span><h2>Fix a leaking faucet</h2></div><strong class="amount">₱600</strong></div><p>Need help fixing a leaking kitchen faucet. Please bring basic plumbing tools and check the connection under the sink.</p><div class="task-meta"><span>⚒ Repairs</span><span>⌖ Brgy. 176</span><span>◷ Due Oct 8, 2026</span><span>♟ 3 requests</span></div><div class="task-actions"><a class="btn small primary" href="edit-task.html?task=fix-leaking-faucet">Edit Task</a><a class="btn small ghost" href="task-details-user.html?task=fix-leaking-faucet">View Details</a><button class="text-action requests" data-href="manage-requests.html?task=fix-leaking-faucet">View requests <b>3</b></button></div></div>
+            <button class="save-task" aria-label="Save task" data-message="Task saved to your favorites.">♡</button>
+          </article>
+
+          <article class="my-task card" data-status="posted" data-category="Cleaning" data-amount="500" data-date="2026-10-07" data-search="house cleaning cleaning brgy 176">
+            <div class="task-image cleaning"><span>🧹</span></div>
+            <div class="my-task-main"><div class="task-title-row"><div><span class="status-pill active">Active</span><h2>House Cleaning</h2></div><strong class="amount">₱500</strong></div><p>Two-bedroom apartment cleaning before the weekend. Basic supplies are available on site.</p><div class="task-meta"><span>⚒ Cleaning</span><span>⌖ Brgy. 176</span><span>◷ Due Oct 7, 2026</span><span>♟ 1 request</span></div><div class="task-actions"><a class="btn small primary" href="edit-task.html?task=house-cleaning">Edit Task</a><a class="btn small ghost" href="task-details-user.html?task=house-cleaning">View Details</a><button class="text-action requests" data-href="manage-requests.html?task=house-cleaning">View request <b>1</b></button></div></div>
+            <button class="save-task" aria-label="Save task" data-message="Task saved to your favorites.">♡</button>
+          </article>
+
+          <article class="my-task card" data-status="posted" data-category="Tutoring" data-amount="300" data-date="2026-10-10" data-search="math tutor grade 10 tutoring brgy 178">
+            <div class="task-image tutoring"><span>∑</span></div>
+            <div class="my-task-main"><div class="task-title-row"><div><span class="status-pill paused">Paused</span><h2>Math Tutor (Grade 10)</h2></div><strong class="amount">₱300</strong></div><p>Looking for a patient tutor for a Grade 10 math review session focused on algebra and problem solving.</p><div class="task-meta"><span>⚒ Tutoring</span><span>⌖ Brgy. 178</span><span>◷ Due Oct 10, 2026</span><span>♟ Requests paused</span></div><div class="task-actions"><a class="btn small primary" href="edit-task.html?task=math-tutor">Edit Task</a><a class="btn small ghost" href="task-details-user.html?task=math-tutor">View Details</a><button class="text-action" data-message="This task is paused. Resume requests from Edit Task.">Resume requests</button></div></div>
+            <button class="save-task" aria-label="Save task" data-message="Task saved to your favorites.">♡</button>
+          </article>
+
+          <article class="my-task card" data-status="requested" data-category="Pet Care" data-amount="400" data-date="2026-10-12" data-search="pet care pet care brgy 176">
+            <div class="task-image pet"><span>🐾</span></div>
+            <div class="my-task-main"><div class="task-title-row"><div><span class="status-pill pending">Pending request</span><h2>Pet Care</h2></div><strong class="amount">₱400</strong></div><p>Requested to help look after a small dog for an afternoon while the owner is away.</p><div class="task-meta"><span>⚒ Pet Care</span><span>⌖ Brgy. 176</span><span>◷ Oct 12, 2026</span><span>♟ Requested Oct 5</span></div><div class="task-actions"><a class="btn small ghost" href="task-details-user.html?task=pet-care">View Task</a><button class="btn small primary" data-message="Your request is already pending with the task poster.">View Request</button></div></div>
+            <button class="save-task" aria-label="Save task" data-message="Task saved to your favorites.">♡</button>
+          </article>
+
+          <article class="my-task card" data-status="accepted" data-category="Shopping" data-amount="450" data-date="2026-10-09" data-search="grocery shopping shopping brgy 179">
+            <div class="task-image shopping"><span>🛍</span></div>
+            <div class="my-task-main"><div class="task-title-row"><div><span class="status-pill accepted">Accepted</span><h2>Grocery Shopping</h2></div><strong class="amount">₱450</strong></div><p>Pick up the provided grocery list and deliver the items to the task poster after shopping.</p><div class="task-meta"><span>⚒ Shopping</span><span>⌖ Brgy. 179</span><span>◷ Due Oct 9, 2026</span><span>✓ Request accepted</span></div><div class="task-actions"><a class="btn small primary" href="task-details-user.html?task=grocery-shopping">Open Task</a><button class="text-action" data-message="Opening the task conversation…">Message poster</button></div></div>
+            <button class="save-task saved" aria-label="Unsave task">♥</button>
+          </article>
+
+          <article class="my-task card" data-status="progress" data-category="Cleaning" data-amount="550" data-date="2026-10-11" data-search="apartment cleaning cleaning brgy 178">
+            <div class="task-image cleaning"><span>🧽</span></div>
+            <div class="my-task-main"><div class="task-title-row"><div><span class="status-pill progress">In progress</span><h2>Apartment Cleaning</h2></div><strong class="amount">₱550</strong></div><p>Cleaning support for a small apartment. The task was accepted and is scheduled for this weekend.</p><div class="task-meta"><span>⚒ Cleaning</span><span>⌖ Brgy. 178</span><span>◷ Due Oct 11, 2026</span><span>✓ Accepted by you</span></div><div class="task-actions"><a class="btn small primary" href="task-details-user.html?task=apartment-cleaning">Open Task</a><button class="text-action" data-message="Opening the task conversation…">Message poster</button></div></div>
+            <button class="save-task" aria-label="Save task" data-message="Task saved to your favorites.">♡</button>
+          </article>
+
+          <article class="my-task card" data-status="completed" data-category="Delivery" data-amount="350" data-date="2026-09-29" data-search="document delivery delivery brgy 176">
+            <div class="task-image delivery"><span>⌂</span></div>
+            <div class="my-task-main"><div class="task-title-row"><div><span class="status-pill completed">Completed</span><h2>Document Delivery</h2></div><strong class="amount">₱350</strong></div><p>Delivered documents to the requested address and confirmed receipt with the task poster.</p><div class="task-meta"><span>⚒ Delivery</span><span>⌖ Brgy. 176</span><span>✓ Completed Sep 29, 2026</span><span>★ 5.0 rating</span></div><div class="task-actions"><a class="btn small ghost" href="task-details-user.html?task=document-delivery">View Details</a><a class="text-action" href="payment-record.html?task=document-delivery">View payment</a><a class="text-action" href="archived-tasks.html">Archive</a></div></div>
+            <button class="save-task" aria-label="Save task" data-message="Task saved to your favorites.">♡</button>
+          </article>
+
+          <article class="my-task card" data-status="completed" data-category="Shopping" data-amount="400" data-date="2026-09-22" data-search="market shopping shopping brgy 179">
+            <div class="task-image shopping"><span>🛒</span></div>
+            <div class="my-task-main"><div class="task-title-row"><div><span class="status-pill completed">Completed</span><h2>Weekly Market Run</h2></div><strong class="amount">₱400</strong></div><p>Completed a weekly market shopping run and handed over all items with the receipt.</p><div class="task-meta"><span>⚒ Shopping</span><span>⌖ Brgy. 179</span><span>✓ Completed Sep 22, 2026</span><span>★ 4.9 rating</span></div><div class="task-actions"><a class="btn small ghost" href="task-details-user.html?task=grocery-shopping">View Details</a><button class="text-action" data-message="Opening review details…">View review</button><a class="text-action" href="archived-tasks.html">Archive</a></div></div>
+            <button class="save-task" aria-label="Save task" data-message="Task saved to your favorites.">♡</button>
+          </article>
+
+          <div class="empty-state card" id="emptyState" hidden><div class="empty-icon">⌕</div><h2>No tasks found</h2><p>Try another search, category, or task status.</p><button class="btn ghost" id="clearFilters">Clear filters</button></div>
+        </div>
+      </section>
+    </div>
+  <!-- U-17 review flow connected -->
+</main>
+  <div class="backdrop" id="backdrop"></div>
+  <nav class="mobile-bottom" aria-label="Mobile navigation"><a href="dashboard.html"><span>⌂</span>Home</a><a href="find-tasks.html"><span>⌕</span>Tasks</a><a class="active" href="my-tasks.html"><span>▤</span>My Tasks</a><a href="post-task.html"><span>＋</span>Post</a></nav>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+<script src="dashboard.js"></script>
+<script src="my-tasks.js"></script>
+</body>
+</html>

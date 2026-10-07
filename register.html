@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TaskTap — Create Account</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="register.css"></head>
+<body>
+<header class="topbar"><a class="brand" href="index.html"><span class="brand-mark"><span></span><i></i></span>Task<span>Tap</span></a><a class="back" href="auth.html?mode=login">Already have an account? <strong>Login</strong></a></header>
+<main class="register-shell"><section class="register-copy"><span class="eyebrow">JOIN TASKTAP</span><h1>Create your local community account.</h1><p>Find tasks, offer your skills, and build a reputation through completed work.</p><div class="perks"><div><b>1</b><span><strong>Discover opportunities</strong> Browse tasks that fit your skills.</span></div><div><b>2</b><span><strong>Choose how you participate</strong> Request tasks or post something you need done.</span></div><div><b>3</b><span><strong>Build trust over time</strong> Keep your task history and community reputation in one place.</span></div></div></section>
+<section class="register-card"><div class="form-head"><h2>Create your account</h2><p>It only takes a minute to get started.</p></div><div class="progress"><span class="active"></span><span></span><span></span></div>
+<form id="registerForm">
+<div class="form-grid"><label>First Name<input required name="firstName" placeholder="Juan"></label><label>Last Name<input required name="lastName" placeholder="Dela Cruz"></label></div>
+<label>Email Address<input required type="email" name="email" placeholder="you@example.com"></label>
+<label>Phone Number<input required type="tel" name="phone" placeholder="+63 9XX XXX XXXX"></label>
+<label>Barangay<select required name="barangay"><option value="">Select your barangay</option><option>Barangay 176</option><option>Barangay 178</option><option>Barangay 179</option><option>Other</option></select></label>
+<div class="form-grid"><label>Password<div class="password-wrap"><input id="password" required minlength="8" type="password" placeholder="At least 8 characters"><button type="button" class="eye" data-target="password">◉</button></div></label><label>Confirm Password<div class="password-wrap"><input id="confirm" required type="password" placeholder="Re-enter password"><button type="button" class="eye" data-target="confirm">◉</button></div></label></div>
+<div class="password-meter"><div><i></i><i></i><i></i><i></i></div><small id="meterText">Use 8+ characters with a number or special character.</small></div>
+<label class="check"><input type="checkbox" required><span>I agree to the <a href="about.html">Terms of Service</a> and <a href="how-it-works.html">Community Guidelines</a>.</span></label>
+<label class="check"><input type="checkbox"><span>Send me occasional TaskTap updates and helpful community tips.</span></label>
+<button class="btn primary full">Create My Account</button></form>
+<p class="privacy">By creating an account, you agree that TaskTap may use your information to provide account and task-management features.</p>
+</section></main>
+<div class="success" id="success" hidden><div class="success-card"><div class="success-icon">✓</div><h2>Welcome to TaskTap!</h2><p>Your account has been created in demo mode.</p><a class="btn primary" href="dashboard.html">Go to Dashboard</a></div></div>
+<script src="register.js"></script></body></html>

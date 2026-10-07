@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskTap — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="brand-mark"><span></span><i></i></span><span>Task<span>Tap</span></span></a>
+    <a class="back" href="index.html">← Back to TaskTap</a>
+  </header>
+
+  <main class="auth-shell">
+    <section class="brand-panel">
+      <div class="brand-copy">
+        <div class="mini-mark"><span class="pin blue">●</span><span class="pin orange">●</span></div>
+        <h1>Local Tasks.<br>Real People.<br><span>Stronger Communities.</span></h1>
+        <p>Connect with people nearby for small tasks and services — whether you're getting help or earning from your skills.</p>
+      </div>
+      <div class="illustration">
+        <div class="sun"></div>
+        <div class="cloud c1"></div><div class="cloud c2"></div>
+        <div class="hill h1"></div><div class="hill h2"></div>
+        <div class="house house1"><i></i></div><div class="house house2"><i></i></div><div class="house house3"><i></i></div>
+        <div class="tree t1"></div><div class="tree t2"></div>
+        <div class="location-pin">●</div>
+      </div>
+      <div class="benefits">
+        <div><b>✓</b><span><strong>Local-first</strong> Find tasks in your community.</span></div>
+        <div><b>✓</b><span><strong>Simple & transparent</strong> See compensation and deadlines upfront.</span></div>
+        <div><b>✓</b><span><strong>Community trust</strong> Build reputation through completed tasks.</span></div>
+      </div>
+    </section>
+
+    <section class="form-panel">
+      <div class="auth-box">
+        <div class="tabs">
+          <button class="tab active" data-mode="login">Login</button>
+          <a class="tab" href="register.html">Register</a>
+        </div>
+
+        <div id="loginView">
+          <div class="heading"><h2>Welcome back!</h2><p>Sign in to your account.</p></div>
+          <form id="loginForm">
+            <label>Email or Phone Number<input id="loginIdentity" required placeholder="you@example.com"></label>
+            <label>Password<div class="password-wrap"><input id="loginPassword" required type="password" placeholder="Enter your password"><button type="button" class="eye" data-target="loginPassword">◉</button></div></label>
+            <div class="row"><label class="check"><input type="checkbox"> <span>Remember me</span></label><button type="button" class="link" id="forgot">Forgot password?</button></div>
+            <button class="btn primary full">Login</button>
+          </form>
+          <div class="divider"><span>or</span></div>
+          <button class="social google"><b>G</b> Continue with Google</button>
+          <button class="social facebook"><b>f</b> Continue with Facebook</button>
+          <p class="switch">Don't have an account? <a class="link" href="register.html">Sign up</a></p>
+        </div>
+
+        <div id="registerView" hidden>
+          <div class="heading"><h2>Create your account</h2><p>Join TaskTap and connect with your local community.</p></div>
+          <form id="registerForm">
+            <label>Full Name<input required placeholder="Juan Dela Cruz"></label>
+            <label>Email or Phone Number<input required placeholder="you@example.com"></label>
+            <label>Password<div class="password-wrap"><input id="registerPassword" required minlength="8" type="password" placeholder="At least 8 characters"><button type="button" class="eye" data-target="registerPassword">◉</button></div></label>
+            <label>Barangay<select required><option value="">Select your barangay</option><option>Barangay 176</option><option>Barangay 178</option><option>Barangay 179</option><option>Other</option></select></label>
+            <label class="check terms"><input type="checkbox" required> <span>I agree to the TaskTap terms and community guidelines.</span></label>
+            <button class="btn primary full">Create Account</button>
+          </form>
+          <p class="switch">Already have an account? <a class="link" href="auth.html?mode=login">Login</a></p>
+        </div>
+
+        <div class="secure-note"><span>🔒</span>Your account information is used to manage your TaskTap profile and tasks.</div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="forgotModal" hidden>
+    <div class="modal">
+      <button class="close" id="forgotClose">×</button>
+      <h2>Reset your password</h2>
+      <p>Enter your email or phone number and we'll show the next step.</p>
+      <form id="resetForm"><label>Email or Phone Number<input required placeholder="you@example.com"></label><button class="btn primary full">Continue</button></form>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script src="auth.js"></script>
+</body>
+</html>

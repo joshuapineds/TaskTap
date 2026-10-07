@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Manage requests from people who want to perform your TaskTap task.">
+<title>TaskTap — Manage Requests</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="dashboard.css"><link rel="stylesheet" href="manage-requests.css">
+</head>
+<body class="manage-requests-page">
+<div class="app-shell">
+<aside class="sidebar" id="sidebar" aria-label="Main navigation">
+<a class="side-brand" aria-label="TaskTap dashboard" href="dashboard.html"><span class="brand-mark"><span></span><i></i></span><span>Task<span>Tap</span></span></a>
+<nav>
+<a href="dashboard.html"><span class="nav-icon">⌂</span><span>Dashboard</span></a>
+<a href="find-tasks.html"><span class="nav-icon">⌕</span><span>Find Tasks</span></a>
+<a href="post-task.html"><span class="nav-icon">＋</span><span>Post Task</span></a>
+<a class="active" href="my-tasks.html"><span class="nav-icon">▤</span><span>My Tasks</span><b>4</b></a>
+<a href="messages.html"><span class="nav-icon">▱</span><span>Messages</span><b>3</b></a>
+<a href="notifications.html"><span class="nav-icon">♧</span><span>Notifications</span><b>5</b></a>
+<a href="profile.html"><span class="nav-icon">◉</span><span>Profile</span></a>
+</nav>
+<div class="sidebar-label">Account</div><a class="logout" href="auth.html?mode=login"><span class="nav-icon">↪</span><span>Log out</span></a>
+</aside>
+<main class="main">
+<header class="topbar">
+<button class="icon-btn mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button>
+<div class="top-search"><span>⌕</span><input id="topSearch" type="search" placeholder="Search tasks..." aria-label="Search tasks"></div>
+<div class="profile-menu"><button class="profile-trigger" id="notificationTrigger" aria-label="Notifications"><span class="icon-btn"><span class="dot"></span>♧</span></button><div class="dropdown" id="notificationDropdown"><div class="dropdown-head"><strong>Notifications</strong><span>5 new updates</span></div><a href="notifications.html">✓ <span>Maria requested your faucet task.</span></a><a href="notifications.html">● <span>Juan sent you a new message.</span></a><a href="payment-history.html">₱ <span>Payment of ₱600 was recorded.</span></a><a href="#" id="markRead">○ <span>Mark all as read</span></a></div></div>
+<div class="profile-menu"><button class="profile-trigger" id="profileTrigger"><span class="avatar">JD</span><span class="profile-copy"><strong>Joshua D. Pineda</strong><small>Standard User</small></span><span class="chevron">⌄</span></button><div class="dropdown" id="profileDropdown"><div class="dropdown-head"><strong>Joshua D. Pineda</strong><span>Standard User</span></div><a href="profile.html">◉ <span>My Profile</span></a><a href="account-settings.html">⚙ <span>Account Settings</span></a><a href="auth.html?mode=login">↪ <span>Log out</span></a></div></div>
+</header>
+<div class="page">
+<div class="crumb"><a href="my-tasks.html">← My Tasks</a><span>/</span><span>Manage Requests</span></div>
+<div class="page-head">
+<div><p class="eyebrow">Task management</p><h1>Manage Requests</h1><p>Review people who want to perform your task and choose the best fit.</p></div>
+<div class="head-actions"><a class="btn ghost" href="task-details-user.html?task=fix-leaking-faucet">View Task</a><a class="btn primary" href="edit-task.html?task=fix-leaking-faucet">Edit Task</a></div>
+</div>
+<section class="task-context card">
+<div class="context-icon">🔧</div><div class="context-main"><span class="status-pill active">Active · 3 requests</span><h2>Fix a leaking faucet</h2><p>Need help fixing a leaking kitchen faucet. Please bring basic plumbing tools and check the connection under the sink.</p><div class="context-meta"><span>⚒ Repairs</span><span>⌖ Brgy. 176</span><span>◷ Due Oct 8, 2026</span><strong>₱600</strong></div></div>
+<div class="request-progress"><strong>3</strong><span>requests received</span><div class="mini-bar"><i style="width:66%"></i></div><small>Choose one performer</small></div>
+</section>
+<section class="manage-layout">
+<div class="requests-column">
+<div class="toolbar-card card"><div class="toolbar-top"><div><strong id="requestCount">3 requests</strong><span> · newest first</span></div><select id="requestSort" aria-label="Sort requests"><option value="recommended">Recommended</option><option value="rating">Highest rating</option><option value="recent">Most recent</option></select></div><div class="filter-row"><label class="request-search"><span>⌕</span><input id="requestSearch" type="search" placeholder="Search applicants..." aria-label="Search applicants"></label><button class="filter-chip active" data-filter="all">All <b>3</b></button><button class="filter-chip" data-filter="new">New <b>2</b></button><button class="filter-chip" data-filter="shortlisted">Shortlisted <b>1</b></button></div></div>
+<div class="request-list" id="requestList">
+<article class="request-card card" data-state="new" data-rating="4.9" data-date="2026-10-06" data-search="Maria Santos cleaning repairs plumbing faucet 4.9"><div class="applicant-avatar maria">MS</div><div class="request-main"><div class="request-title"><div><span class="request-badge new">New request</span><h2>Maria Santos</h2><div class="rating"><strong>4.9</strong><span>★</span><small>18 reviews · 24 completed</small></div></div><span class="requested-time">Today, 7:18 PM</span></div><p class="request-message">“I can fix the faucet and check the connection underneath the sink. I have basic plumbing tools and can come tomorrow morning.”</p><div class="skill-tags"><span>Basic plumbing</span><span>Home repairs</span><span>Reliable</span></div><div class="request-meta"><span>✓ Verified phone</span><span>⌖ Brgy. 176</span><span>Member since 2025</span></div><div class="request-actions"><button class="btn small primary shortlist-btn">Shortlist</button><button class="btn small ghost message-btn">Message</button><button class="text-action view-profile">View profile</button><button class="text-action decline-btn">Decline</button></div></div></article>
+<article class="request-card card shortlisted" data-state="shortlisted" data-rating="4.8" data-date="2026-10-05" data-search="Juan Dela Cruz repairs maintenance faucet 4.8"><div class="applicant-avatar juan">JD</div><div class="request-main"><div class="request-title"><div><span class="request-badge shortlisted">Shortlisted</span><h2>Juan Dela Cruz</h2><div class="rating"><strong>4.8</strong><span>★</span><small>12 reviews · 19 completed</small></div></div><span class="requested-time">Yesterday, 9:42 PM</span></div><p class="request-message">“I’ve handled small plumbing and maintenance jobs before. Happy to inspect the leak first and explain what needs to be fixed.”</p><div class="skill-tags"><span>Maintenance</span><span>Plumbing</span><span>Home service</span></div><div class="request-meta"><span>✓ Verified phone</span><span>⌖ Brgy. 179</span><span>Member since 2025</span></div><div class="request-actions"><button class="btn small primary shortlist-btn">Shortlisted</button><button class="btn small ghost message-btn">Message</button><button class="text-action view-profile">View profile</button><button class="text-action decline-btn">Decline</button></div></div></article>
+<article class="request-card card" data-state="new" data-rating="4.7" data-date="2026-10-05" data-search="Angela Reyes repairs home improvement 4.7"><div class="applicant-avatar angela">AR</div><div class="request-main"><div class="request-title"><div><span class="request-badge new">New request</span><h2>Angela Reyes</h2><div class="rating"><strong>4.7</strong><span>★</span><small>9 reviews · 15 completed</small></div></div><span class="requested-time">Oct 5, 6:31 PM</span></div><p class="request-message">“I can help with the repair and am available on Oct 8. I’ve done several home improvement tasks through TaskTap.”</p><div class="skill-tags"><span>Home improvement</span><span>Repairs</span><span>On time</span></div><div class="request-meta"><span>✓ Verified phone</span><span>⌖ Brgy. 178</span><span>Member since 2026</span></div><div class="request-actions"><button class="btn small primary shortlist-btn">Shortlist</button><button class="btn small ghost message-btn">Message</button><button class="text-action view-profile">View profile</button><button class="text-action decline-btn">Decline</button></div></div></article>
+<div class="empty-state card" id="emptyState" hidden><div class="empty-icon">⌕</div><h2>No matching requests</h2><p>Try another name, filter, or sort option.</p><button class="btn ghost" id="clearFilters">Clear filters</button></div>
+</div></div>
+<aside class="decision-panel card"><div class="panel-title"><div><span class="eyebrow">Selection</span><h2>Choose a performer</h2></div><span class="count-dot">1</span></div><p class="panel-copy">Review profiles and messages before accepting a request. Once accepted, the other requests will remain visible but cannot be selected for this task.</p><div class="selected-box" id="selectedBox"><div class="selected-empty"><span>◎</span><strong>No one selected yet</strong><small>Shortlist applicants or accept a request below.</small></div></div><div class="decision-note"><span>i</span><div><strong>Keep communication on TaskTap</strong><p>Use messages to confirm scope and timing. Exact addresses should only be shared when necessary.</p></div></div><button class="btn primary wide" id="acceptSelected" disabled>Accept selected request</button><button class="btn ghost wide" id="compareBtn">Compare shortlisted</button></aside>
+</section>
+<section class="safety-strip card"><span>✓</span><div><strong>Community safety</strong><p>Review ratings, completed-task history, and the applicant's message before choosing. You can report inappropriate behavior at any time.</p></div><a href="messages.html">Safety guidelines →</a></section>
+</div></main>
+<div class="backdrop" id="backdrop"></div><nav class="mobile-bottom" aria-label="Mobile navigation"><a href="dashboard.html"><span>⌂</span>Home</a><a href="find-tasks.html"><span>⌕</span>Tasks</a><a class="active" href="my-tasks.html"><span>▤</span>My Tasks</a><a href="post-task.html"><span>＋</span>Post</a></nav><div class="toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+<div class="modal-backdrop" id="decisionModal" hidden><div class="modal card" role="dialog" aria-modal="true" aria-labelledby="decisionTitle"><button class="modal-close" id="closeDecision" aria-label="Close">×</button><div class="modal-icon">✓</div><h2 id="decisionTitle">Accept this request?</h2><p id="decisionCopy">You'll select this person as the performer for “Fix a leaking faucet”.</p><div class="modal-summary" id="decisionSummary"></div><div class="modal-actions"><button class="btn ghost" id="cancelDecision">Go back</button><button class="btn primary" id="confirmDecision">Confirm selection</button></div></div></div>
+<script src="dashboard.js"></script><script src="manage-requests.js"></script>
+</body></html>

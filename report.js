@@ -1,0 +1,15 @@
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const params=new URLSearchParams(location.search); const type=params.get('type')==='user'?'user':'task';
+const subjects={task:{title:'Fix a leaking faucet',meta:'Posted by Maria Santos · Brgy. 176',icon:'🔧',link:'task-details-user.html?task=fix-faucet'},user:{title:'Maria Santos',meta:'Task poster · 4.9 rating · 16 reviews',icon:'👤',link:'public-profile.html?user=maria'}};
+const subject=subjects[type];
+$('#subjectTitle').textContent=subject.title; $('#subjectMeta').textContent=subject.meta; $('#subjectIcon').textContent=subject.icon; $('#subjectLink').href=subject.link; $('#subjectType').textContent=type==='task'?'Task':'Member';
+if(type==='user') document.title='TaskTap — Report Member';
+$$('.target').forEach(btn=>btn.addEventListener('click',()=>{ $$('.target').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); const next=btn.dataset.target; location.search='?type='+next; }));
+const details=$('#details'); details.addEventListener('input',()=>$('#detailsCount').textContent=`${details.value.length} / 1000`);
+const form=$('#reportForm'), modal=$('#successModal');
+form.addEventListener('submit',e=>{e.preventDefault(); let ok=true; const reason=$('#reason').value.trim(); const text=details.value.trim();
+$('#reasonError').textContent=''; $('#detailsError').textContent=''; $('#confirmError').textContent='';
+if(!reason){$('#reasonError').textContent='Please select a report reason.';ok=false} if(text.length<20){$('#detailsError').textContent='Please provide at least 20 characters so the concern can be reviewed.';ok=false} if(!$('#confirmReport').checked){$('#confirmError').textContent='Please confirm the report is made in good faith.';ok=false} if(!ok)return;
+const ref='RPT-'+Math.floor(10000+Math.random()*89999); $('#reportRef').textContent=ref; modal.classList.add('open'); document.body.classList.add('modal-open');
+});
+$('#successClose').addEventListener('click',()=>{modal.classList.remove('open');document.body.classList.remove('modal-open')}); modal.addEventListener('click',e=>{if(e.target===modal){modal.classList.remove('open');document.body.classList.remove('modal-open')}});
