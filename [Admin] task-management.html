@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TaskTap administrator task management demo.">
+  <title>TaskTap Admin — Task Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin-dashboard.css"><link rel="stylesheet" href="task-management.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="[Admin] admin-dashboard.html" aria-label="TaskTap Admin dashboard"><span class="brand-mark"><i></i><b></b></span><span>Task<span class="brand-accent">Tap</span><small>ADMIN CONSOLE</small></span></a>
+      <div class="workspace"><span class="workspace-icon">⌂</span><span><strong>TaskTap PH</strong><small>Community workspace</small></span><span class="workspace-chevron">⌄</span></div>
+      <p class="nav-label">OVERVIEW</p>
+      <nav class="admin-nav" aria-label="Admin navigation">
+        <a class="nav-link" href="[Admin] admin-dashboard.html"><span class="nav-icon">▦</span><span>Dashboard</span></a>
+        <p class="nav-label manage-label">MANAGE</p>
+        <a class="nav-link" href="[Admin] user-management.html"><span class="nav-icon">♙</span><span>User Management</span></a>
+        <a class="nav-link" href="[Admin] user-detail.html"><span class="nav-icon">◉</span><span>User Detail</span></a>
+        <a class="nav-link active" href="[Admin] task-management.html" aria-current="page"><span class="nav-icon">▤</span><span>Task Management</span></a>
+        <a class="nav-link" href="[Admin] category-management.html"><span class="nav-icon">◈</span><span>Category Management</span></a>
+        <a class="nav-link" href="[Admin] report-management.html"><span class="nav-icon">⚑</span><span>Report Management</span><b class="nav-count">8</b></a>
+        <a class="nav-link" href="[Admin] payment-records-admin.html"><span class="nav-icon">₱</span><span>Payment Records</span></a>
+        <a class="nav-link" href="[Admin] archives-admin.html"><span class="nav-icon">▣</span><span>Archives</span></a>
+        <a class="nav-link" href="[Admin] barangay-management.html"><span class="nav-icon">⌖</span><span>Barangay Management</span></a>
+        <p class="nav-label tools-label">SYSTEM</p>
+        <a class="nav-link" href="[Admin] activity-log.html"><span class="nav-icon">◷</span><span>Activity Log</span></a>
+        <a class="nav-link" href="[Admin] admin-settings.html"><span class="nav-icon">⚙</span><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-bottom"><div class="help-card"><span class="help-icon">?</span><strong>Need a hand?</strong><p>Visit the admin guide for tips on managing your community.</p><a class="demo-link" href="[Admin] admin-guide.html#tasks">Open admin guide <span>→</span></a></div><button class="admin-user" id="adminProfile"><span class="avatar">AD</span><span><strong>Admin Demo</strong><small>Administrator</small></span><span class="user-more">···</span></button></div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar"><button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button><div class="breadcrumbs"><a href="[Admin] admin-dashboard.html">Workspace</a><b>/</b><strong>Task Management</strong></div><div class="top-actions"><span class="demo-pill"><i></i> DEMO DATA</span><a class="icon-button" id="helpButton" href="[Admin] admin-guide.html#tasks" aria-label="Open Admin Guide">?</a><button class="icon-button notification-button" id="notificationButton" aria-label="Notifications">♧<i></i></button><span class="top-divider"></span><button class="top-profile" id="profileButton"><span class="avatar small-avatar">AD</span><span><strong>Admin Demo</strong><small>Administrator</small></span><b>⌄</b></button></div></header>
+      <div class="page-content task-page">
+        <section class="welcome-row"><div><p class="eyebrow">ADMINISTRATION <span class="eyebrow-dot">•</span> TASKS</p><h1>Task management</h1><p class="welcome-copy">Monitor task listings and review content that may need attention.</p></div><div class="welcome-actions"><button class="button secondary" id="exportButton"><span>↓</span> Export tasks</button></div></section>
+        <section class="task-stats" aria-label="Task activity summary">
+          <article class="task-stat"><span class="task-stat-icon active-stat-icon">▤</span><div><span>Active tasks</span><strong>384</strong><small>Across the community</small></div><span class="stat-trend">↗ 8.2%</span></article>
+          <article class="task-stat"><span class="task-stat-icon progress-stat-icon">◷</span><div><span>In progress</span><strong>142</strong><small>Members are working</small></div><span class="neutral-trend">● Live</span></article>
+          <article class="task-stat"><span class="task-stat-icon review-stat-icon">⚑</span><div><span>Flagged for review</span><strong>18</strong><small>Reported task listings</small></div><span class="attention-trend">Needs review</span></article>
+          <article class="task-stat"><span class="task-stat-icon complete-stat-icon">✓</span><div><span>Completed this month</span><strong>962</strong><small>Task status records</small></div><span class="stat-trend">↗ 10.4%</span></article>
+        </section>
+
+        <section class="task-panel panel">
+          <div class="task-tabs" role="tablist" aria-label="Filter tasks by status">
+            <button class="task-tab active" role="tab" aria-selected="true" data-status="all">All tasks <span id="tab-all">12</span></button>
+            <button class="task-tab" role="tab" aria-selected="false" data-status="Active">Active <span id="tab-active">0</span></button>
+            <button class="task-tab" role="tab" aria-selected="false" data-status="In Progress">In progress <span id="tab-progress">0</span></button>
+            <button class="task-tab" role="tab" aria-selected="false" data-status="Completed">Completed <span id="tab-completed">0</span></button>
+            <button class="task-tab" role="tab" aria-selected="false" data-status="reported">Needs review <span id="tab-reported">0</span></button>
+            <button class="task-tab" role="tab" aria-selected="false" data-status="Archived">Archived <span id="tab-archived">0</span></button>
+          </div>
+          <div class="task-toolbar"><label class="task-search"><span>⌕</span><input id="taskSearch" type="search" placeholder="Search task title, ID, or member" aria-label="Search tasks"><kbd>⌘ K</kbd></label><div class="task-filters"><label><span class="sr-only">Filter task category</span><select id="categoryFilter"><option value="all">All categories</option><option>Cleaning</option><option>Tutoring</option><option>Repairs</option><option>Shopping</option><option>Pet Care</option><option>Delivery</option><option>Others</option></select></label><label><span class="sr-only">Filter barangay</span><select id="barangayFilter"><option value="all">All barangays</option><option>Brgy. 176</option><option>Brgy. 178</option><option>Brgy. 179</option></select></label><label><span class="sr-only">Sort tasks</span><select id="sortTasks"><option value="recent">Most recent</option><option value="oldest">Oldest</option><option value="budget-high">Highest budget</option><option value="budget-low">Lowest budget</option></select></label></div></div>
+          <div class="task-result-line"><span id="taskResultSummary">Showing 12 sample tasks</span><button id="clearTaskFilters" class="clear-task-filters" hidden>Clear filters</button><span class="sample-note">Example task records · Demo only</span></div>
+          <div class="task-table-wrap"><table class="task-table"><thead><tr><th class="task-check"><input type="checkbox" id="selectAllTasks" aria-label="Select all visible tasks"></th><th>TASK</th><th>POSTED BY</th><th>CATEGORY</th><th>BARANGAY</th><th>BUDGET</th><th>POSTED</th><th>STATUS</th><th></th></tr></thead><tbody id="taskRows"></tbody></table><div class="task-empty" id="taskEmpty" hidden><span>⌕</span><strong>No tasks match</strong><p>Try changing your search or filters.</p></div></div>
+          <div class="task-table-footer"><div class="task-selected-info" id="selectedTaskInfo">Select rows to export selected tasks.</div><button class="button secondary export-selected-tasks" id="exportSelectedTasks" hidden>↓ Export selected</button><div class="task-pagination"><span id="taskPageLabel">Page 1 of 1</span><button class="task-page-button" id="prevTaskPage" aria-label="Previous page">‹</button><button class="task-page-button current-task-page" id="currentTaskPage">1</button><button class="task-page-button" id="nextTaskPage" aria-label="Next page">›</button></div></div>
+        </section>
+        <section class="task-note"><span>ⓘ</span><p><strong>Task privacy</strong> — Location is shown at barangay level. Task amounts represent member-posted budgets; they are not payments processed by TaskTap.</p></section>
+        <footer class="page-footer"><span>TaskTap Admin Console <b>·</b> A-04 Task Management <b>·</b> Frontend demo</span><span>Status and moderation changes are not saved to a server.</span></footer>
+      </div>
+    </main>
+  </div>
+  <div class="sidebar-scrim" id="sidebarScrim"></div><div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="modal-backdrop" id="taskModal" hidden><section class="task-modal" role="dialog" aria-modal="true" aria-labelledby="taskModalTitle"><button class="modal-close" data-close-modal aria-label="Close">×</button><div id="taskModalContent"></div></section></div>
+  <div class="modal-backdrop" id="confirmModal" hidden><section class="task-modal confirm-task-modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle"><button class="modal-close" data-close-modal aria-label="Close">×</button><div class="confirm-icon">!</div><h2 id="confirmTitle">Update task status?</h2><p id="confirmCopy"></p><div class="modal-actions"><button class="button secondary" data-close-modal>Cancel</button><button class="button danger-button" id="confirmTaskAction">Confirm</button></div></section></div>
+  <script src="task-management.js"></script>
+</body>
+</html>

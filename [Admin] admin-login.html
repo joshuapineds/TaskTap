@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TaskTap Admin demo sign-in page.">
+  <title>TaskTap Admin — Sign In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin-login.css">
+</head>
+<body>
+  <div class="login-shell">
+    <header class="login-header"><a class="login-brand" href="[Admin] admin-dashboard.html" aria-label="TaskTap Admin"><span class="login-brand-mark"><i></i><b></b></span><span>Task<span>Tap</span><small>ADMIN CONSOLE</small></span></a><a class="public-link" href="[Guest] index.html">Back to TaskTap <span>↗</span></a></header>
+    <main class="login-main">
+      <section class="login-story"><div class="story-content"><span class="story-eyebrow"><i></i> COMMUNITY OPERATIONS</span><h1>Good work<br>starts <em>together.</em></h1><p>Manage your local TaskTap community from one thoughtful workspace.</p><div class="story-benefits"><div><span class="benefit-icon blue-benefit">♙</span><span><strong>Support your members</strong><small>Review profiles and community activity.</small></span></div><div><span class="benefit-icon green-benefit">▤</span><span><strong>Keep tasks moving</strong><small>Monitor listings, reports, and service areas.</small></span></div><div><span class="benefit-icon amber-benefit">◈</span><span><strong>Make informed decisions</strong><small>See the context behind each admin action.</small></span></div></div></div><div class="story-graphic" aria-hidden="true"><div class="graphic-orbit orbit-one"></div><div class="graphic-orbit orbit-two"></div><div class="graphic-pin">⌖</div><span class="graphic-dot dot-one"></span><span class="graphic-dot dot-two"></span><span class="graphic-dot dot-three"></span><div class="graphic-caption"><strong>Local first</strong><small>Stronger communities</small></div></div><div class="story-footer"><span>TaskTap Admin</span><span>Community workspace · Philippines</span></div></section>
+      <section class="login-panel"><div class="login-card"><div class="demo-label"><i></i> FRONTEND DEMO</div><div class="login-heading"><span class="login-icon">⌑</span><p class="login-kicker">ADMINISTRATOR ACCESS</p><h2>Welcome back</h2><p>Sign in to preview the admin console.</p></div>
+        <form id="adminLoginForm" novalidate>
+          <label class="login-field"><span>Email address</span><div class="input-wrap"><span>✉</span><input id="adminEmail" type="email" autocomplete="username" placeholder="admin@example.com" required><small class="field-valid" id="emailValid" aria-hidden="true">✓</small></div><small class="field-error" id="emailError"></small></label>
+          <label class="login-field"><span>Password</span><div class="input-wrap"><span>●</span><input id="adminPassword" type="password" autocomplete="current-password" placeholder="Enter your password" required><button class="password-toggle" type="button" id="togglePassword" aria-label="Show password">◉</button></div><small class="field-error" id="passwordError"></small></label>
+          <div class="login-options"><span class="demo-session-label">Demo session preview</span><button type="button" class="text-button" id="fillDemo">Use demo access</button></div>
+          <button type="submit" class="sign-in-button" id="signInButton"><span>Continue to admin demo</span><b>→</b></button>
+        </form>
+        <div class="login-divider"><span></span><small>DEMO ACCESS</small><span></span></div>
+        <div class="demo-access-note"><span class="demo-lock">ⓘ</span><p><strong>No real sign-in is performed.</strong> Submitting this form opens the admin dashboard preview. Email and password are not sent or verified.</p></div>
+        <p class="login-help">Having trouble? <a href="[Admin] admin-guide.html#overview">Read the Admin Guide <span>→</span></a></p>
+      </div><div class="login-panel-footer"><span>🔒</span> Prototype only · No authentication service is connected</div></section>
+    </main>
+    <footer class="login-footer"><span>© TaskTap Admin Demo</span><span>Built for frontend preview</span><a href="[Admin] admin-guide.html">Admin Guide</a></footer>
+  </div>
+  <div class="login-toast" id="loginToast" role="status" aria-live="polite"></div>
+  <script src="admin-login.js"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TaskTap administrator member detail demo.">
+  <title>TaskTap Admin — User Detail</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin-dashboard.css"><link rel="stylesheet" href="user-detail.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="[Admin] admin-dashboard.html" aria-label="TaskTap Admin dashboard"><span class="brand-mark"><i></i><b></b></span><span>Task<span class="brand-accent">Tap</span><small>ADMIN CONSOLE</small></span></a>
+      <div class="workspace"><span class="workspace-icon">⌂</span><span><strong>TaskTap PH</strong><small>Community workspace</small></span><span class="workspace-chevron">⌄</span></div>
+      <p class="nav-label">OVERVIEW</p>
+      <nav class="admin-nav" aria-label="Admin navigation">
+        <a class="nav-link" href="[Admin] admin-dashboard.html"><span class="nav-icon">▦</span><span>Dashboard</span></a>
+        <p class="nav-label manage-label">MANAGE</p>
+        <a class="nav-link" href="[Admin] user-management.html"><span class="nav-icon">♙</span><span>User Management</span></a>
+        <a class="nav-link active" href="[Admin] user-detail.html" aria-current="page"><span class="nav-icon">◉</span><span>User Detail</span></a>
+        <a class="nav-link" href="[Admin] task-management.html"><span class="nav-icon">▤</span><span>Task Management</span></a>
+        <a class="nav-link" href="[Admin] category-management.html"><span class="nav-icon">◈</span><span>Category Management</span></a>
+        <a class="nav-link" href="[Admin] report-management.html"><span class="nav-icon">⚑</span><span>Report Management</span><b class="nav-count">8</b></a>
+        <a class="nav-link" href="[Admin] payment-records-admin.html"><span class="nav-icon">₱</span><span>Payment Records</span></a>
+        <a class="nav-link" href="[Admin] archives-admin.html"><span class="nav-icon">▣</span><span>Archives</span></a>
+        <a class="nav-link" href="[Admin] barangay-management.html"><span class="nav-icon">⌖</span><span>Barangay Management</span></a>
+        <p class="nav-label tools-label">SYSTEM</p>
+        <a class="nav-link" href="[Admin] activity-log.html"><span class="nav-icon">◷</span><span>Activity Log</span></a>
+        <a class="nav-link" href="[Admin] admin-settings.html"><span class="nav-icon">⚙</span><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-bottom"><div class="help-card"><span class="help-icon">?</span><strong>Need a hand?</strong><p>Visit the admin guide for tips on managing your community.</p><a class="demo-link" href="[Admin] admin-guide.html#users">Open admin guide <span>→</span></a></div><button class="admin-user" id="adminProfile"><span class="avatar">AD</span><span><strong>Admin Demo</strong><small>Administrator</small></span><span class="user-more">···</span></button></div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar"><button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button><div class="breadcrumbs"><a href="[Admin] admin-dashboard.html">Workspace</a><b>/</b><a href="[Admin] user-management.html">User Management</a><b>/</b><strong>User Detail</strong></div><div class="top-actions"><span class="demo-pill"><i></i> DEMO DATA</span><a class="icon-button" id="helpButton" href="[Admin] admin-guide.html#users" aria-label="Open Admin Guide">?</a><button class="icon-button notification-button" id="notificationButton" aria-label="Notifications">♧<i></i></button><span class="top-divider"></span><button class="top-profile" id="profileButton"><span class="avatar small-avatar">AD</span><span><strong>Admin Demo</strong><small>Administrator</small></span><b>⌄</b></button></div></header>
+      <div class="page-content detail-page">
+        <div class="detail-back"><a href="[Admin] user-management.html">← Back to User Management</a><span class="detail-demo-tag"><i></i> SAMPLE MEMBER RECORD</span></div>
+        <section class="profile-hero panel">
+          <div class="hero-identity"><span class="hero-avatar" id="heroAvatar">CS</span><div><p class="eyebrow">MEMBER PROFILE <span class="eyebrow-dot">•</span> <span id="memberIdTop">USR-2486</span></p><h1 id="memberName">Camille Santos</h1><p class="hero-meta"><span id="memberEmailTop">camille.santos@example.com</span><i>·</i><span>Joined <span id="memberJoinedTop">Oct 11, 2026</span></span></p><div class="hero-badges"><span class="role-pill both-role" id="memberRole">Both</span><span class="verification-pill verified" id="memberVerification">Verified</span><span class="status-pill active-status" id="memberStatus">Active</span></div></div></div>
+          <div class="hero-actions"><button class="button secondary" id="moreActions">··· More</button><button class="button danger-button" id="statusAction">Suspend account</button></div>
+        </section>
+
+        <section class="detail-metrics" aria-label="Member activity summary">
+          <article class="detail-metric"><span class="detail-metric-icon task-metric-icon">▤</span><div><span>Tasks posted</span><strong id="tasksPosted">2</strong><small>1 currently active</small></div></article>
+          <article class="detail-metric"><span class="detail-metric-icon done-metric-icon">✓</span><div><span>Tasks completed</span><strong id="tasksCompleted">2</strong><small>Community activity</small></div></article>
+          <article class="detail-metric"><span class="detail-metric-icon rating-metric-icon">★</span><div><span>Average rating</span><strong id="memberRating">4.9 <small>/ 5</small></strong><small id="ratingCount">Based on 12 reviews</small></div></article>
+          <article class="detail-metric"><span class="detail-metric-icon report-metric-icon">⚑</span><div><span>Reports received</span><strong id="reportsReceived">0</strong><small id="reportFootnote">No open concerns</small></div></article>
+        </section>
+
+        <section class="detail-tabs" role="tablist" aria-label="Member detail sections">
+          <button class="detail-tab active" data-tab="overview" role="tab" aria-selected="true">Overview</button><button class="detail-tab" data-tab="tasks" role="tab" aria-selected="false">Tasks <span id="taskTabCount">2</span></button><button class="detail-tab" data-tab="reviews" role="tab" aria-selected="false">Reviews <span id="reviewTabCount">12</span></button><button class="detail-tab" data-tab="reports" role="tab" aria-selected="false">Reports <span id="reportTabCount">0</span></button><button class="detail-tab" data-tab="activity" role="tab" aria-selected="false">Activity</button>
+        </section>
+
+        <div class="tab-content" id="overviewPanel" role="tabpanel">
+          <div class="detail-columns">
+            <div class="detail-main-column">
+              <article class="panel info-panel"><div class="section-heading"><div><h2>Member information</h2><p>Profile and contact details</p></div><span class="panel-lock">ⓘ Admin view</span></div><div class="info-grid"><div class="info-item"><span>Full name</span><strong id="infoName">Camille Santos</strong></div><div class="info-item"><span>Email address</span><strong id="infoEmail">camille.santos@example.com</strong><small class="inline-verified" id="emailVerified">✓ Verified</small></div><div class="info-item"><span>Phone number</span><strong id="infoPhone">+63 917 ••• 0184</strong></div><div class="info-item"><span>Barangay</span><strong id="infoBarangay">Brgy. 176, Caloocan City</strong></div><div class="info-item"><span>Member ID</span><strong id="infoId">USR-2486</strong></div><div class="info-item"><span>Account created</span><strong id="infoJoined">October 11, 2026</strong></div><div class="info-item"><span>Member role</span><strong id="infoRole">Task poster and performer</strong></div><div class="info-item"><span>Last active</span><strong id="lastActive">Today, 6:42 PM</strong></div></div><p class="privacy-hint"><span>⌑</span> Contact information is shown only in this administrator demo view. Avoid sharing member details outside authorized support work.</p></article>
+              <article class="panel timeline-panel"><div class="section-heading"><div><h2>Recent activity</h2><p>Latest events on this member account</p></div><button class="subtle-link" data-switch-tab="activity">View activity <span>→</span></button></div><div class="timeline" id="overviewTimeline"></div></article>
+            </div>
+            <aside class="detail-side-column">
+              <article class="panel verification-panel"><div class="section-heading"><div><h2>Verification</h2><p>Member trust checks</p></div><span class="check-shield">✓</span></div><div class="verification-row"><span class="verification-check">✓</span><span><strong>Email address</strong><small id="emailVerificationText">Verified</small></span><span class="verified-label">Verified</span></div><div class="verification-row"><span class="verification-check" id="phoneCheck">✓</span><span><strong>Mobile number</strong><small id="phoneVerificationText">Confirmed</small></span><span class="verified-label" id="phoneVerifiedLabel">Verified</span></div><div class="verification-row"><span class="verification-pending" id="identityCheck">○</span><span><strong>Identity document</strong><small id="identityVerificationText">Not requested</small></span><span class="muted-label" id="identityVerifiedLabel">Optional</span></div><div class="verification-footer">Verification states are sample data for this prototype.</div></article>
+              <article class="panel safety-panel"><div class="section-heading"><div><h2>Community signals</h2><p>Helpful context for administrators</p></div><span class="signal-icon">✦</span></div><div class="signal-stat"><span>Positive review rate</span><strong id="positiveRate">98%</strong></div><div class="signal-stat"><span>Reports submitted by member</span><strong id="memberReportsFiled">0</strong></div><div class="signal-stat"><span>Account standing</span><strong class="standing-good" id="standingLabel">Good standing</strong></div><div class="safety-footnote">Use report details and member history together when reviewing concerns.</div></article>
+              <article class="admin-note"><span>ⓘ</span><div><strong>Admin actions are demo-only</strong><p>Status changes on this page do not affect a real account and are not saved.</p></div></article>
+            </aside>
+          </div>
+        </div>
+        <section class="tab-content panel list-panel" id="tasksPanel" role="tabpanel" hidden><div class="section-heading"><div><h2>Task history</h2><p>Tasks posted or performed by this member</p></div><span class="sample-label">SAMPLE TASKS</span></div><div class="task-history" id="taskHistory"></div></section>
+        <section class="tab-content panel list-panel" id="reviewsPanel" role="tabpanel" hidden><div class="section-heading"><div><h2>Reviews</h2><p>Feedback received from other members</p></div><span class="rating-total" id="reviewRatingSummary">★ 4.9 average</span></div><div class="review-history" id="reviewHistory"></div></section>
+        <section class="tab-content panel list-panel" id="reportsPanel" role="tabpanel" hidden><div class="section-heading"><div><h2>Reports</h2><p>Reports associated with this member</p></div><span class="sample-label">PRIVATE ADMIN CONTEXT</span></div><div class="reports-history" id="reportsHistory"></div></section>
+        <section class="tab-content panel list-panel" id="activityPanel" role="tabpanel" hidden><div class="section-heading"><div><h2>Account activity</h2><p>Chronological sample events</p></div><span class="sample-label">RECENT EVENTS</span></div><div class="timeline full-timeline" id="fullTimeline"></div></section>
+        <footer class="page-footer"><span>TaskTap Admin Console <b>·</b> A-03 User Detail <b>·</b> Frontend demo</span><span>Only sample member data is shown. No backend records are accessed.</span></footer>
+      </div>
+    </main>
+  </div>
+  <div class="sidebar-scrim" id="sidebarScrim"></div><div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="modal-backdrop" id="statusModal" hidden><section class="status-modal" role="dialog" aria-modal="true" aria-labelledby="statusModalTitle"><button class="modal-close" id="closeStatusModal" aria-label="Close">×</button><div class="confirm-icon">!</div><h2 id="statusModalTitle">Suspend this account?</h2><p class="status-modal-copy" id="statusModalCopy">This changes the sample account status on this page only.</p><div class="modal-actions"><button class="button secondary" id="cancelStatus">Cancel</button><button class="button danger-button" id="confirmStatus">Suspend account</button></div></section></div>
+  <script src="user-detail.js"></script>
+</body>
+</html>

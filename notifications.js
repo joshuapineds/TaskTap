@@ -1,0 +1,12 @@
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const toast=(m)=>{const t=$('#toast');if(!t)return;t.textContent=m;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),2200)};
+const notices=$$('.notification'), filters=$$('.filter'), unreadCount=$('#unreadCount'), sideUnread=$('#sideUnread'), empty=$('#noticeEmpty');
+function updateCounts(){const n=notices.filter(x=>x.classList.contains('unread')).length;unreadCount.textContent=n;sideUnread.textContent=n;sideUnread.hidden=n===0;filters.find?.(()=>false)}
+function apply(){const f=$('.filter.active')?.dataset.filter||'all',p=$('#periodFilter').value;let shown=0;notices.forEach(n=>{const type=f==='all'||f==='unread' ? true : n.dataset.type===f;const unread=f!=='unread'||n.classList.contains('unread');const period=p==='all'||n.dataset.day===p;const ok=type&&unread&&period;n.hidden=!ok;if(ok)shown++});empty.hidden=shown!==0}
+filters.forEach(b=>b.addEventListener('click',()=>{filters.forEach(x=>x.classList.remove('active'));b.classList.add('active');apply()}));$('#periodFilter').addEventListener('change',apply);
+notices.forEach(n=>n.querySelector('.read-btn').addEventListener('click',()=>{n.classList.toggle('unread');const b=n.querySelector('.read-btn');b.textContent=n.classList.contains('unread')?'●':'○';b.title=n.classList.contains('unread')?'Mark as read':'Mark as unread';updateCounts();apply();toast(n.classList.contains('unread')?'Marked as unread':'Marked as read')}));
+$('#markAll').addEventListener('click',()=>{notices.forEach(n=>{n.classList.remove('unread');const b=n.querySelector('.read-btn');b.textContent='○';b.title='Mark as unread'});updateCounts();apply();toast('All notifications marked as read')});
+$$('.switch-row input').forEach(i=>i.addEventListener('change',()=>toast(`${i.parentElement.querySelector('strong').textContent} notifications ${i.checked?'enabled':'disabled'}`)));
+$('#mobileMenu')?.addEventListener('click',()=>{$('.sidebar')?.classList.toggle('open');$('#backdrop')?.classList.toggle('show')});$('#backdrop')?.addEventListener('click',()=>{$('.sidebar')?.classList.remove('open');$('#backdrop')?.classList.remove('show')});
+$('#profileTrigger')?.addEventListener('click',()=>$('#profileDropdown')?.classList.toggle('open'));document.addEventListener('click',e=>{if(!e.target.closest('.profile-menu'))$('#profileDropdown')?.classList.remove('open')});
+updateCounts();apply();
