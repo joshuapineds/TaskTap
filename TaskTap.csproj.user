@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Compile Update="AboutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="BrowseTasksForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="EditTaskForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="FindTasksForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Form2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="HowItWorksForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ManageRequestsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="MyTasksForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PasswordRecoveryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PostTaskForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PublicInfoFormBase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="TaskDetailsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UserDashboardForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UserTaskDetailsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+</Project>
