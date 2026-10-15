@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TaskTap administrator payment records demo.">
+  <title>TaskTap Admin — Payment Records</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin-dashboard.css"><link rel="stylesheet" href="payment-records-admin.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="[Admin] admin-dashboard.html" aria-label="TaskTap Admin dashboard"><span class="brand-mark"><i></i><b></b></span><span>Task<span class="brand-accent">Tap</span><small>ADMIN CONSOLE</small></span></a>
+      <div class="workspace"><span class="workspace-icon">⌂</span><span><strong>TaskTap PH</strong><small>Community workspace</small></span><span class="workspace-chevron">⌄</span></div>
+      <p class="nav-label">OVERVIEW</p>
+      <nav class="admin-nav" aria-label="Admin navigation">
+        <a class="nav-link" href="[Admin] admin-dashboard.html"><span class="nav-icon">▦</span><span>Dashboard</span></a>
+        <p class="nav-label manage-label">MANAGE</p>
+        <a class="nav-link" href="[Admin] user-management.html"><span class="nav-icon">♙</span><span>User Management</span></a>
+        <a class="nav-link" href="[Admin] user-detail.html"><span class="nav-icon">◉</span><span>User Detail</span></a>
+        <a class="nav-link" href="[Admin] task-management.html"><span class="nav-icon">▤</span><span>Task Management</span></a>
+        <a class="nav-link" href="[Admin] category-management.html"><span class="nav-icon">◈</span><span>Category Management</span></a>
+        <a class="nav-link" href="[Admin] report-management.html"><span class="nav-icon">⚑</span><span>Report Management</span><b class="nav-count">8</b></a>
+        <a class="nav-link active" href="[Admin] payment-records-admin.html" aria-current="page"><span class="nav-icon">₱</span><span>Payment Records</span></a>
+        <a class="nav-link" href="[Admin] archives-admin.html"><span class="nav-icon">▣</span><span>Archives</span></a>
+        <a class="nav-link" href="[Admin] barangay-management.html"><span class="nav-icon">⌖</span><span>Barangay Management</span></a>
+        <p class="nav-label tools-label">SYSTEM</p>
+        <a class="nav-link" href="[Admin] activity-log.html"><span class="nav-icon">◷</span><span>Activity Log</span></a>
+        <a class="nav-link" href="[Admin] admin-settings.html"><span class="nav-icon">⚙</span><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-bottom"><div class="help-card"><span class="help-icon">?</span><strong>Payment records</strong><p>Amounts here are member-entered records. TaskTap does not process transactions.</p><a class="demo-link" href="[Admin] admin-guide.html#payments">Payment safety <span>→</span></a></div><button class="admin-user" id="adminProfile"><span class="avatar">AD</span><span><strong>Admin Demo</strong><small>Administrator</small></span><span class="user-more">···</span></button></div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar"><button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button><div class="breadcrumbs"><a href="[Admin] admin-dashboard.html">Workspace</a><b>/</b><strong>Payment Records</strong></div><div class="top-actions"><span class="demo-pill"><i></i> DEMO DATA</span><a class="icon-button" id="helpButton" href="[Admin] admin-guide.html#payments" aria-label="Open Admin Guide">?</a><button class="icon-button notification-button" id="notificationButton" aria-label="Notifications">♧<i></i></button><span class="top-divider"></span><button class="top-profile" id="profileButton"><span class="avatar small-avatar">AD</span><span><strong>Admin Demo</strong><small>Administrator</small></span><b>⌄</b></button></div></header>
+      <div class="page-content payment-admin-page">
+        <section class="welcome-row"><div><p class="eyebrow">ADMINISTRATION <span class="eyebrow-dot">•</span> RECORDS</p><h1>Payment records</h1><p class="welcome-copy">Review payment information members have recorded for completed tasks.</p></div><div class="welcome-actions"><button class="button secondary" id="exportPayments"><span>↓</span> Export records</button></div></section>
+        <div class="record-only-banner"><span>ⓘ</span><p><strong>Recordkeeping only</strong> — Amounts and statuses are entered by members. TaskTap does not process, hold, or transfer money.</p></div>
+        <section class="payment-stats" aria-label="Payment record summary">
+          <article class="payment-stat"><span class="payment-stat-icon records-icon">▤</span><div><span>Total records</span><strong id="totalRecords">6</strong></div><small>Member-entered entries</small></article>
+          <article class="payment-stat"><span class="payment-stat-icon amount-icon">₱</span><div><span>Recorded amounts</span><strong id="totalAmount">₱3,250</strong></div><small>For listed records</small></article>
+          <article class="payment-stat"><span class="payment-stat-icon paid-icon">✓</span><div><span>Marked paid</span><strong id="paidCount">5</strong></div><small>Reported as complete</small></article>
+          <article class="payment-stat"><span class="payment-stat-icon pending-icon">◷</span><div><span>Pending records</span><strong id="pendingCount">1</strong></div><small>Not marked complete</small></article>
+        </section>
+        <section class="payment-panel panel">
+          <div class="payment-panel-heading"><div><h2>Payment ledger</h2><p>Sample payment records linked to completed or ongoing tasks.</p></div><span class="ledger-tag"><i></i> MEMBER-RECORDED</span></div>
+          <div class="payment-tabs" role="tablist" aria-label="Filter payment records"><button class="payment-tab active" data-status="all" role="tab" aria-selected="true">All records <span id="paymentTabAll">6</span></button><button class="payment-tab" data-status="paid" role="tab" aria-selected="false">Marked paid <span id="paymentTabPaid">5</span></button><button class="payment-tab" data-status="pending" role="tab" aria-selected="false">Pending <span id="paymentTabPending">1</span></button><button class="payment-tab" data-status="partially-paid" role="tab" aria-selected="false">Partially paid <span id="paymentTabPartial">0</span></button><button class="payment-tab" data-status="flagged" role="tab" aria-selected="false">Flagged <span id="paymentTabFlagged">0</span></button></div>
+          <div class="payment-controls"><label class="payment-search"><span>⌕</span><input id="paymentSearch" type="search" placeholder="Search task, reference, or member" aria-label="Search payment records"><kbd>⌘ K</kbd></label><div class="payment-filters"><label><span class="sr-only">Filter by method</span><select id="methodFilter"><option value="all">All methods</option><option>Cash</option><option>GCash</option><option>Maya</option><option>Bank transfer</option><option>Other</option></select></label><label><span class="sr-only">Filter by record status</span><select id="statusFilter"><option value="all">Any record status</option><option value="paid">Marked paid</option><option value="pending">Pending</option><option value="partially-paid">Partially paid</option></select></label><label><span class="sr-only">Sort records</span><select id="paymentSort"><option value="recent">Most recent</option><option value="oldest">Oldest</option><option value="amount-high">Highest amount</option><option value="amount-low">Lowest amount</option></select></label></div></div>
+          <div class="payment-result-row"><span id="paymentResult">Showing 6 sample records</span><button id="clearPaymentFilters" hidden>Clear filters</button><span class="payment-demo-caption">References are example values · Demo only</span></div>
+          <div class="payment-table-wrap"><table class="admin-payment-table"><thead><tr><th>PAYMENT RECORD</th><th>TASK</th><th>METHOD</th><th>AMOUNT</th><th>PAYMENT DATE</th><th>STATUS</th><th>REVIEW</th><th></th></tr></thead><tbody id="paymentRows"></tbody></table><div class="payment-empty" id="paymentEmpty" hidden><span>₱</span><strong>No records match</strong><p>Try changing your search or filters.</p></div></div>
+          <div class="payment-table-footer"><span id="paymentFooterNote">Member-entered records only. No transactions are processed.</span><span id="paymentFooterCount">6 sample records</span></div>
+        </section>
+        <section class="payment-safety"><span>✓</span><p><strong>Protect sensitive financial information</strong> — This page shows no bank credentials or account numbers. Never request passwords, PINs, or OTPs when reviewing a payment record.</p></section>
+        <footer class="page-footer"><span>TaskTap Admin Console <b>·</b> A-07 Payment Records <b>·</b> Frontend demo</span><span>Displayed amounts are records, not processed transactions.</span></footer>
+      </div>
+    </main>
+  </div>
+  <div class="sidebar-scrim" id="sidebarScrim"></div><div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="modal-backdrop" id="paymentModal" hidden><section class="payment-modal" role="dialog" aria-modal="true" aria-labelledby="paymentModalTitle"><button class="modal-close" data-close-modal aria-label="Close">×</button><div id="paymentModalContent"></div></section></div>
+  <div class="modal-backdrop" id="flagModal" hidden><section class="payment-modal flag-modal" role="dialog" aria-modal="true" aria-labelledby="flagModalTitle"><button class="modal-close" data-close-modal aria-label="Close">×</button><div class="flag-modal-icon">⚑</div><h2 id="flagModalTitle">Flag this record for review?</h2><p id="flagModalCopy">This adds a demo review flag. It does not change the payment record or move money.</p><label class="admin-note-field"><span>Internal note (optional)</span><textarea id="flagNote" rows="3" placeholder="Add a short note for this demo review"></textarea></label><div class="modal-actions"><button class="button secondary" data-close-modal>Cancel</button><button class="button primary" id="confirmFlag">Flag record</button></div></section></div>
+  <script src="payment-records-admin.js"></script>
+</body>
+</html>

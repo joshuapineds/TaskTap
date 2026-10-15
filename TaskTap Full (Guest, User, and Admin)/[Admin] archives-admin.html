@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TaskTap administrator archives demo.">
+  <title>TaskTap Admin — Archives</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin-dashboard.css"><link rel="stylesheet" href="archives-admin.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="[Admin] admin-dashboard.html" aria-label="TaskTap Admin dashboard"><span class="brand-mark"><i></i><b></b></span><span>Task<span class="brand-accent">Tap</span><small>ADMIN CONSOLE</small></span></a>
+      <div class="workspace"><span class="workspace-icon">⌂</span><span><strong>TaskTap PH</strong><small>Community workspace</small></span><span class="workspace-chevron">⌄</span></div>
+      <p class="nav-label">OVERVIEW</p>
+      <nav class="admin-nav" aria-label="Admin navigation">
+        <a class="nav-link" href="[Admin] admin-dashboard.html"><span class="nav-icon">▦</span><span>Dashboard</span></a>
+        <p class="nav-label manage-label">MANAGE</p>
+        <a class="nav-link" href="[Admin] user-management.html"><span class="nav-icon">♙</span><span>User Management</span></a>
+        <a class="nav-link" href="[Admin] user-detail.html"><span class="nav-icon">◉</span><span>User Detail</span></a>
+        <a class="nav-link" href="[Admin] task-management.html"><span class="nav-icon">▤</span><span>Task Management</span></a>
+        <a class="nav-link" href="[Admin] category-management.html"><span class="nav-icon">◈</span><span>Category Management</span></a>
+        <a class="nav-link" href="[Admin] report-management.html"><span class="nav-icon">⚑</span><span>Report Management</span><b class="nav-count">8</b></a>
+        <a class="nav-link" href="[Admin] payment-records-admin.html"><span class="nav-icon">₱</span><span>Payment Records</span></a>
+        <a class="nav-link active" href="[Admin] archives-admin.html" aria-current="page"><span class="nav-icon">▣</span><span>Archives</span></a>
+        <a class="nav-link" href="[Admin] barangay-management.html"><span class="nav-icon">⌖</span><span>Barangay Management</span></a>
+        <p class="nav-label tools-label">SYSTEM</p>
+        <a class="nav-link" href="[Admin] activity-log.html"><span class="nav-icon">◷</span><span>Activity Log</span></a>
+        <a class="nav-link" href="[Admin] admin-settings.html"><span class="nav-icon">⚙</span><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-bottom"><div class="help-card"><span class="help-icon">?</span><strong>Archive guidance</strong><p>Keep archived records for reference and restore only when appropriate.</p><a class="demo-link" href="[Admin] admin-guide.html#archives">View archive guidance <span>→</span></a></div><button class="admin-user" id="adminProfile"><span class="avatar">AD</span><span><strong>Admin Demo</strong><small>Administrator</small></span><span class="user-more">···</span></button></div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar"><button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button><div class="breadcrumbs"><a href="[Admin] admin-dashboard.html">Workspace</a><b>/</b><strong>Archives</strong></div><div class="top-actions"><span class="demo-pill"><i></i> DEMO DATA</span><a class="icon-button" id="helpButton" href="[Admin] admin-guide.html#archives" aria-label="Open Admin Guide">?</a><button class="icon-button notification-button" id="notificationButton" aria-label="Notifications">♧<i></i></button><span class="top-divider"></span><button class="top-profile" id="profileButton"><span class="avatar small-avatar">AD</span><span><strong>Admin Demo</strong><small>Administrator</small></span><b>⌄</b></button></div></header>
+      <div class="page-content archives-page">
+        <section class="welcome-row"><div><p class="eyebrow">ADMINISTRATION <span class="eyebrow-dot">•</span> RECORDS</p><h1>Archives</h1><p class="welcome-copy">Review archived tasks, member accounts, and reports in one place.</p></div><div class="welcome-actions"><button class="button secondary" id="exportArchives"><span>↓</span> Export archive</button></div></section>
+        <section class="archive-stats" aria-label="Archive summary">
+          <article class="archive-stat"><span class="archive-stat-icon total-archive-icon">▣</span><div><span>Archived records</span><strong id="archivedTotal">10</strong></div><small>Across record types</small></article>
+          <article class="archive-stat"><span class="archive-stat-icon task-archive-icon">▤</span><div><span>Task records</span><strong id="archivedTasks">5</strong></div><small>Closed or expired listings</small></article>
+          <article class="archive-stat"><span class="archive-stat-icon user-archive-icon">♙</span><div><span>Member records</span><strong id="archivedMembers">3</strong></div><small>Deactivated accounts</small></article>
+          <article class="archive-stat"><span class="archive-stat-icon report-archive-icon">⚑</span><div><span>Report records</span><strong id="archivedReports">2</strong></div><small>Closed moderation cases</small></article>
+        </section>
+        <section class="archive-panel panel">
+          <div class="archive-panel-heading"><div><h2>Archive register</h2><p>Archived records remain available here for reference.</p></div><span class="archive-demo-tag"><i></i> SAMPLE ARCHIVE</span></div>
+          <div class="archive-tabs" role="tablist" aria-label="Filter archive by type"><button class="archive-tab active" data-type="all" role="tab" aria-selected="true">All records <span id="archiveTabAll">10</span></button><button class="archive-tab" data-type="Task" role="tab" aria-selected="false">Tasks <span id="archiveTabTask">5</span></button><button class="archive-tab" data-type="User" role="tab" aria-selected="false">Members <span id="archiveTabUser">3</span></button><button class="archive-tab" data-type="Report" role="tab" aria-selected="false">Reports <span id="archiveTabReport">2</span></button><span class="tab-spacer"></span><label class="include-restored"><input type="checkbox" id="includeRestored"> Include restored</label></div>
+          <div class="archive-controls"><label class="archive-search"><span>⌕</span><input id="archiveSearch" type="search" placeholder="Search title, ID, member, or archive reason" aria-label="Search archive"><kbd>⌘ K</kbd></label><div class="archive-filters"><label><span class="sr-only">Filter archive status</span><select id="archiveStatus"><option value="Archived">Archived only</option><option value="all">All archive states</option><option value="Restored">Restored</option></select></label><label><span class="sr-only">Sort archive</span><select id="archiveSort"><option value="recent">Recently archived</option><option value="oldest">Oldest archived</option><option value="type">Record type</option><option value="review-date">Review date</option></select></label></div></div>
+          <div class="archive-result-row"><span id="archiveResult">Showing 10 sample records</span><button id="clearArchiveFilters" hidden>Clear filters</button><span class="archive-caption">Retention dates are illustrative · Demo only</span></div>
+          <div class="archive-table-wrap"><table class="archive-table"><thead><tr><th>ARCHIVED RECORD</th><th>TYPE</th><th>ARCHIVE REASON</th><th>ARCHIVED BY</th><th>ARCHIVED DATE</th><th>REVIEW BY</th><th>STATUS</th><th></th></tr></thead><tbody id="archiveRows"></tbody></table><div class="archive-empty" id="archiveEmpty" hidden><span>▣</span><strong>No archived records found</strong><p>Try changing your search or filters.</p></div></div>
+          <div class="archive-table-footer"><span id="archiveFooterNote">Records shown are sample data. Restoring here does not update other demo pages.</span><span id="archiveFooterCount">10 sample records</span></div>
+        </section>
+        <section class="archive-note"><span>ⓘ</span><p><strong>Restore carefully</strong> — Restoring a record changes its status only in this archive demo. It does not republish a task, reactivate a member account, or reopen a report.</p></section>
+        <footer class="page-footer"><span>TaskTap Admin Console <b>·</b> A-08 Archives <b>·</b> Frontend demo</span><span>Archive actions are not saved to a server.</span></footer>
+      </div>
+    </main>
+  </div>
+  <div class="sidebar-scrim" id="sidebarScrim"></div><div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="modal-backdrop" id="archiveModal" hidden><section class="archive-modal" role="dialog" aria-modal="true" aria-labelledby="archiveModalTitle"><button class="modal-close" data-close-modal aria-label="Close">×</button><div id="archiveModalContent"></div></section></div>
+  <div class="modal-backdrop" id="restoreModal" hidden><section class="archive-modal confirm-archive-modal" role="dialog" aria-modal="true" aria-labelledby="restoreTitle"><button class="modal-close" data-close-modal aria-label="Close">×</button><div class="confirm-icon">↻</div><h2 id="restoreTitle">Restore this record?</h2><p id="restoreCopy"></p><div class="modal-actions"><button class="button secondary" data-close-modal>Cancel</button><button class="button primary" id="confirmRestore">Restore record</button></div></section></div>
+  <script src="archives-admin.js"></script>
+</body>
+</html>

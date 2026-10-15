@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TaskTap administrator settings demo.">
+  <title>TaskTap Admin — Settings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin-dashboard.css"><link rel="stylesheet" href="admin-settings.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="[Admin] admin-dashboard.html" aria-label="TaskTap Admin dashboard"><span class="brand-mark"><i></i><b></b></span><span>Task<span class="brand-accent">Tap</span><small>ADMIN CONSOLE</small></span></a>
+      <div class="workspace"><span class="workspace-icon">⌂</span><span><strong>TaskTap PH</strong><small>Community workspace</small></span><span class="workspace-chevron">⌄</span></div>
+      <p class="nav-label">OVERVIEW</p>
+      <nav class="admin-nav" aria-label="Admin navigation">
+        <a class="nav-link" href="[Admin] admin-dashboard.html"><span class="nav-icon">▦</span><span>Dashboard</span></a>
+        <p class="nav-label manage-label">MANAGE</p>
+        <a class="nav-link" href="[Admin] user-management.html"><span class="nav-icon">♙</span><span>User Management</span></a>
+        <a class="nav-link" href="[Admin] user-detail.html"><span class="nav-icon">◉</span><span>User Detail</span></a>
+        <a class="nav-link" href="[Admin] task-management.html"><span class="nav-icon">▤</span><span>Task Management</span></a>
+        <a class="nav-link" href="[Admin] category-management.html"><span class="nav-icon">◈</span><span>Category Management</span></a>
+        <a class="nav-link" href="[Admin] report-management.html"><span class="nav-icon">⚑</span><span>Report Management</span><b class="nav-count">8</b></a>
+        <a class="nav-link" href="[Admin] payment-records-admin.html"><span class="nav-icon">₱</span><span>Payment Records</span></a>
+        <a class="nav-link" href="[Admin] archives-admin.html"><span class="nav-icon">▣</span><span>Archives</span></a>
+        <a class="nav-link" href="[Admin] barangay-management.html"><span class="nav-icon">⌖</span><span>Barangay Management</span></a>
+        <p class="nav-label tools-label">SYSTEM</p>
+        <a class="nav-link" href="[Admin] activity-log.html"><span class="nav-icon">◷</span><span>Activity Log</span></a>
+        <a class="nav-link active" href="[Admin] admin-settings.html" aria-current="page"><span class="nav-icon">⚙</span><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-bottom"><div class="help-card"><span class="help-icon">?</span><strong>Workspace settings</strong><p>Review the sample preferences for this TaskTap admin prototype.</p><a class="demo-link" href="[Admin] admin-guide.html#settings">About settings <span>→</span></a></div><button class="admin-user" id="adminProfile"><span class="avatar">AD</span><span><strong>Admin Demo</strong><small>Administrator</small></span><span class="user-more">···</span></button></div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar"><button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button><div class="breadcrumbs"><a href="[Admin] admin-dashboard.html">Workspace</a><b>/</b><strong>Settings</strong></div><div class="top-actions"><span class="demo-pill"><i></i> DEMO DATA</span><a class="icon-button" id="helpButton" href="[Admin] admin-guide.html#settings" aria-label="Open Admin Guide">?</a><button class="icon-button notification-button" id="notificationButton" aria-label="Notifications">♧<i></i></button><span class="top-divider"></span><button class="top-profile" id="profileButton"><span class="avatar small-avatar">AD</span><span><strong>Admin Demo</strong><small>Administrator</small></span><b>⌄</b></button></div></header>
+      <div class="page-content settings-page">
+        <section class="welcome-row"><div><p class="eyebrow">ADMINISTRATION <span class="eyebrow-dot">•</span> PREFERENCES</p><h1>Settings</h1><p class="welcome-copy">Manage workspace preferences for the TaskTap admin prototype.</p></div><div class="welcome-actions"><button class="button secondary" id="resetSettings" type="button">Restore defaults</button><button class="button primary" id="saveSettings" type="button"><span>✓</span> Save changes</button></div></section>
+        <section class="settings-demo-banner" id="settingsDemoBanner"><span class="settings-banner-icon">ⓘ</span><p><strong>Demo settings</strong> — Changes apply only to this page session. They are not sent to a server and do not change live TaskTap accounts or platform behavior.</p><span id="saveState" class="save-state">All changes saved</span></section>
+        <div class="settings-layout">
+          <nav class="settings-nav panel" aria-label="Settings sections"><p>SETTINGS</p><a class="settings-nav-link active" href="#general" data-section="general"><span>▣</span> General</a><a class="settings-nav-link" href="#notifications" data-section="notifications"><span>♧</span> Notifications</a><a class="settings-nav-link" href="#security" data-section="security"><span>◈</span> Security</a><a class="settings-nav-link" href="#localization" data-section="localization"><span>⌖</span> Localization</a><div class="settings-nav-foot"><span class="settings-version-icon">◉</span><span><strong>TaskTap Admin</strong><small>Frontend prototype · v1.0</small></span></div></nav>
+          <form class="settings-content" id="settingsForm">
+            <section class="settings-card panel" id="general">
+              <div class="settings-card-heading"><span class="section-icon general-icon">▣</span><div><h2>General</h2><p>Workspace identity and community defaults.</p></div></div>
+              <div class="settings-fields"><label class="settings-field"><span>Workspace name</span><input type="text" id="workspaceName" maxlength="60" value="TaskTap PH"><small>Name shown in this admin workspace.</small></label><label class="settings-field"><span>Support email</span><input type="email" id="supportEmail" value="support@tasktap.demo"><small>Demo contact address for prototype content.</small></label><label class="settings-field"><span>Default service area</span><select id="defaultArea"><option>All service areas</option><option>Caloocan City</option><option>Manila</option><option>Quezon City</option><option>Makati City</option></select><small>Used as the starting area in admin views.</small></label></div>
+              <div class="settings-switch-row"><div><strong>Show demo data badge</strong><small>Display the demo label in the admin header.</small></div><label class="switch"><input type="checkbox" id="demoBadge" checked><span></span><em class="sr-only">Show demo data badge</em></label></div>
+              <div class="settings-switch-row"><div><strong>Maintenance notice</strong><small>Show a sample maintenance banner in admin previews.</small></div><label class="switch"><input type="checkbox" id="maintenanceNotice"><span></span><em class="sr-only">Show maintenance notice</em></label></div>
+            </section>
+            <section class="settings-card panel" id="notifications">
+              <div class="settings-card-heading"><span class="section-icon notifications-icon">♧</span><div><h2>Notifications</h2><p>Choose which sample admin updates appear in this workspace.</p></div></div>
+              <div class="settings-switch-row"><div><strong>New reports</strong><small>Notify admins when a report enters the review queue.</small></div><label class="switch"><input type="checkbox" id="notifyReports" checked><span></span><em class="sr-only">Notify about new reports</em></label></div>
+              <div class="settings-switch-row"><div><strong>Payment records flagged for review</strong><small>Show a notice when a member-entered record needs attention.</small></div><label class="switch"><input type="checkbox" id="notifyPayments" checked><span></span><em class="sr-only">Notify about payment review flags</em></label></div>
+              <div class="settings-switch-row"><div><strong>Barangay coverage reminders</strong><small>Show reminders for service areas due for review.</small></div><label class="switch"><input type="checkbox" id="notifyCoverage"><span></span><em class="sr-only">Notify about coverage reminders</em></label></div>
+              <div class="settings-switch-row"><div><strong>Daily activity summary</strong><small>Include a sample daily summary in the admin overview.</small></div><label class="switch"><input type="checkbox" id="dailySummary" checked><span></span><em class="sr-only">Enable daily summary</em></label></div>
+            </section>
+            <section class="settings-card panel" id="security">
+              <div class="settings-card-heading"><span class="section-icon security-icon">◈</span><div><h2>Security</h2><p>Sample administrative access preferences. No real authentication is connected.</p></div></div>
+              <div class="settings-fields two-column"><label class="settings-field"><span>Session timeout</span><select id="sessionTimeout"><option value="15">15 minutes</option><option value="30" selected>30 minutes</option><option value="60">1 hour</option><option value="240">4 hours</option></select><small>Demo preference only; sessions are not managed.</small></label><label class="settings-field"><span>Minimum password length</span><select id="passwordLength"><option value="8">8 characters</option><option value="10" selected>10 characters</option><option value="12">12 characters</option><option value="14">14 characters</option></select><small>Displayed policy preference for the prototype.</small></label></div>
+              <div class="settings-switch-row"><div><strong>Require two-step verification</strong><small>Illustrative policy toggle; no verification service is connected.</small></div><label class="switch"><input type="checkbox" id="twoStep"><span></span><em class="sr-only">Require two-step verification</em></label></div>
+              <div class="settings-switch-row"><div><strong>Alert on repeated sign-in failures</strong><small>Show a sample alert when repeated attempts are detected.</small></div><label class="switch"><input type="checkbox" id="failedSignInAlert" checked><span></span><em class="sr-only">Alert about repeated sign-in failures</em></label></div>
+              <div class="security-callout"><span>ⓘ</span><p>These settings do not secure an account or change authentication. Connect an approved identity provider before using real admin access.</p></div>
+            </section>
+            <section class="settings-card panel" id="localization">
+              <div class="settings-card-heading"><span class="section-icon locale-icon">⌖</span><div><h2>Localization</h2><p>Set sample formats for dates, time, language, and currency.</p></div></div>
+              <div class="settings-fields two-column"><label class="settings-field"><span>Language</span><select id="language"><option value="en-PH">English (Philippines)</option><option value="fil-PH">Filipino</option></select><small>Language shown by the prototype.</small></label><label class="settings-field"><span>Time zone</span><select id="timeZone"><option value="Asia/Manila">Asia/Manila (UTC+8)</option><option value="Asia/Singapore">Asia/Singapore (UTC+8)</option><option value="UTC">UTC</option></select><small>Used for sample dates and times.</small></label><label class="settings-field"><span>Date format</span><select id="dateFormat"><option value="dmy">DD MMM YYYY</option><option value="mdy">MMM DD, YYYY</option><option value="iso">YYYY-MM-DD</option></select><small>Example: 11 Oct 2026.</small></label><label class="settings-field"><span>Currency display</span><select id="currency"><option value="PHP">PHP · Philippine peso</option><option value="USD">USD · US dollar</option></select><small>Display preference only; no transactions are processed.</small></label></div>
+            </section>
+            <div class="settings-bottom-actions"><span id="lastSavedNote">Changes are held in this page session.</span><button class="button secondary" id="resetSettingsBottom" type="button">Restore defaults</button><button class="button primary" id="saveSettingsBottom" type="button">Save changes</button></div>
+          </form>
+        </div>
+        <footer class="page-footer"><span>TaskTap Admin Console <b>·</b> A-11 Settings <b>·</b> Frontend demo</span><span>Preferences are not saved to a server.</span></footer>
+      </div>
+    </main>
+  </div>
+  <div class="sidebar-scrim" id="sidebarScrim"></div><div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="modal-backdrop" id="resetModal" hidden><section class="reset-modal" role="dialog" aria-modal="true" aria-labelledby="resetModalTitle"><button class="modal-close" data-close-modal aria-label="Close">×</button><div class="reset-icon">↺</div><h2 id="resetModalTitle">Restore default settings?</h2><p>This will reset the sample preferences on this page. It will not change server settings or live accounts.</p><div class="modal-actions"><button class="button secondary" data-close-modal>Cancel</button><button class="button primary" id="confirmReset">Restore defaults</button></div></section></div>
+  <script src="admin-settings.js"></script>
+</body>
+</html>

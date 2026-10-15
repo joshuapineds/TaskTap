@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TaskTap administrator barangay coverage management demo.">
+  <title>TaskTap Admin — Barangay Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin-dashboard.css"><link rel="stylesheet" href="barangay-management.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="[Admin] admin-dashboard.html" aria-label="TaskTap Admin dashboard"><span class="brand-mark"><i></i><b></b></span><span>Task<span class="brand-accent">Tap</span><small>ADMIN CONSOLE</small></span></a>
+      <div class="workspace"><span class="workspace-icon">⌂</span><span><strong>TaskTap PH</strong><small>Community workspace</small></span><span class="workspace-chevron">⌄</span></div>
+      <p class="nav-label">OVERVIEW</p>
+      <nav class="admin-nav" aria-label="Admin navigation">
+        <a class="nav-link" href="[Admin] admin-dashboard.html"><span class="nav-icon">▦</span><span>Dashboard</span></a>
+        <p class="nav-label manage-label">MANAGE</p>
+        <a class="nav-link" href="[Admin] user-management.html"><span class="nav-icon">♙</span><span>User Management</span></a>
+        <a class="nav-link" href="[Admin] user-detail.html"><span class="nav-icon">◉</span><span>User Detail</span></a>
+        <a class="nav-link" href="[Admin] task-management.html"><span class="nav-icon">▤</span><span>Task Management</span></a>
+        <a class="nav-link" href="[Admin] category-management.html"><span class="nav-icon">◈</span><span>Category Management</span></a>
+        <a class="nav-link" href="[Admin] report-management.html"><span class="nav-icon">⚑</span><span>Report Management</span><b class="nav-count">8</b></a>
+        <a class="nav-link" href="[Admin] payment-records-admin.html"><span class="nav-icon">₱</span><span>Payment Records</span></a>
+        <a class="nav-link" href="[Admin] archives-admin.html"><span class="nav-icon">▣</span><span>Archives</span></a>
+        <a class="nav-link active" href="[Admin] barangay-management.html" aria-current="page"><span class="nav-icon">⌖</span><span>Barangay Management</span></a>
+        <p class="nav-label tools-label">SYSTEM</p>
+        <a class="nav-link" href="[Admin] activity-log.html"><span class="nav-icon">◷</span><span>Activity Log</span></a>
+        <a class="nav-link" href="[Admin] admin-settings.html"><span class="nav-icon">⚙</span><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-bottom"><div class="help-card"><span class="help-icon">?</span><strong>Coverage guidance</strong><p>Keep service area details current so neighbors can find local help.</p><a class="demo-link" href="[Admin] admin-guide.html#barangays">View coverage guidance <span>→</span></a></div><button class="admin-user" id="adminProfile"><span class="avatar">AD</span><span><strong>Admin Demo</strong><small>Administrator</small></span><span class="user-more">···</span></button></div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar"><button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button><div class="breadcrumbs"><a href="[Admin] admin-dashboard.html">Workspace</a><b>/</b><strong>Barangay Management</strong></div><div class="top-actions"><span class="demo-pill"><i></i> DEMO DATA</span><a class="icon-button" id="helpButton" href="[Admin] admin-guide.html#barangays" aria-label="Open Admin Guide">?</a><button class="icon-button notification-button" id="notificationButton" aria-label="Notifications">♧<i></i></button><span class="top-divider"></span><button class="top-profile" id="profileButton"><span class="avatar small-avatar">AD</span><span><strong>Admin Demo</strong><small>Administrator</small></span><b>⌄</b></button></div></header>
+      <div class="page-content barangay-page">
+        <section class="welcome-row"><div><p class="eyebrow">ADMINISTRATION <span class="eyebrow-dot">•</span> COMMUNITY COVERAGE</p><h1>Barangay Management</h1><p class="welcome-copy">Manage service areas and keep a clear view of local TaskTap coverage.</p></div><div class="welcome-actions"><button class="button secondary" id="exportBarangays"><span>↓</span> Export list</button><button class="button primary" id="addBarangay"><span>＋</span> Add barangay</button></div></section>
+        <section class="barangay-stats" aria-label="Barangay coverage summary">
+          <article class="barangay-stat"><span class="b-stat-icon areas-icon">⌖</span><div><span>Service areas</span><strong id="statAreas">8</strong></div><small>Barangays in this demo</small></article>
+          <article class="barangay-stat"><span class="b-stat-icon members-icon">♙</span><div><span>Active members</span><strong id="statMembers">1,284</strong></div><small>Across listed areas</small></article>
+          <article class="barangay-stat"><span class="b-stat-icon tasks-icon">▤</span><div><span>Open tasks</span><strong id="statTasks">46</strong></div><small>Sample active listings</small></article>
+          <article class="barangay-stat"><span class="b-stat-icon coverage-icon">◉</span><div><span>Coverage status</span><strong id="statCoverage">6 / 8</strong></div><small>Areas marked active</small></article>
+        </section>
+        <section class="coverage-grid">
+          <article class="coverage-map panel"><div class="coverage-panel-heading"><div><h2>Coverage overview</h2><p>Illustrative neighborhood view · Caloocan City, Metro Manila</p></div><span class="coverage-pill"><i></i><span id="coverageActiveLabel">6 active areas</span></span></div>
+            <div class="coverage-illustration" role="img" aria-label="Illustrative coverage grid for sample barangays"><div class="map-road road-one"></div><div class="map-road road-two"></div><div class="map-road road-three"></div><div class="map-road road-four"></div><div class="map-blocks" id="coverageBlocks"></div><span class="map-label map-label-north">N</span><span class="map-label map-label-south">S</span><span class="map-caption">SAMPLE COVERAGE VIEW</span></div>
+            <div class="coverage-legend"><span><i class="legend-dot active-dot"></i>Active service area</span><span><i class="legend-dot review-dot"></i>Needs review</span><span><i class="legend-dot inactive-dot"></i>Inactive</span></div>
+          </article>
+          <article class="coverage-insights panel"><div class="panel-title-row"><div><h2>Coverage insights</h2><p>Quick signals from sample service areas</p></div><span class="insights-icon">✦</span></div><div class="insight-highlight"><span class="insight-mark">↗</span><div><strong id="topAreaTitle">Brgy. 179 has the most open tasks</strong><small id="topAreaCopy">9 active listings · strongest local demand</small></div></div><div class="insight-row"><span class="insight-symbol demand">⌖</span><div><strong id="reviewInsightTitle">2 areas need a coverage review</strong><small>Confirm local coordinator and service details</small></div><button class="text-action" id="showReviewAreas">View</button></div><div class="insight-row"><span class="insight-symbol growth">＋</span><div><strong id="growthInsightTitle">Brgy. 184 is growing</strong><small>Member count increased in this sample period</small></div><span class="growth-tag">+18%</span></div><div class="insight-foot"><span>ⓘ</span> Coverage figures are illustrative and are not live service availability.</div></article>
+        </section>
+        <section class="barangay-directory panel" id="barangayDirectory">
+          <div class="directory-heading"><div><h2>Service area directory</h2><p>Search and maintain the barangay details shown in TaskTap.</p></div><span class="directory-count" id="directoryCount">8 areas</span></div>
+          <div class="directory-controls"><label class="directory-search"><span>⌕</span><input id="barangaySearch" type="search" placeholder="Search barangay or coordinator" aria-label="Search barangays"><kbd>⌘ K</kbd></label><div class="directory-filter-wrap"><label><span class="sr-only">Filter barangays by status</span><select id="barangayStatus"><option value="all">All statuses</option><option value="Active">Active</option><option value="Needs review">Needs review</option><option value="Inactive">Inactive</option></select></label><label><span class="sr-only">Sort barangays</span><select id="barangaySort"><option value="name">Barangay name</option><option value="tasks">Most open tasks</option><option value="members">Most members</option><option value="coverage">Coverage status</option></select></label></div></div>
+          <div class="directory-result"><span id="directoryResult">Showing 8 service areas</span><button id="clearBarangayFilters" hidden>Clear filters</button><span>Last updated: <strong>Oct 11, 2026</strong> · Demo data</span></div>
+          <div class="barangay-table-wrap"><table class="barangay-table"><thead><tr><th>SERVICE AREA</th><th>COORDINATOR</th><th>ACTIVE MEMBERS</th><th>OPEN TASKS</th><th>COVERAGE STATUS</th><th>LAST REVIEWED</th><th></th></tr></thead><tbody id="barangayRows"></tbody></table><div class="barangay-empty" id="barangayEmpty" hidden><span>⌖</span><strong>No barangays found</strong><p>Try changing your search or filters.</p></div></div>
+          <div class="directory-footer"><span>Membership and task totals are sample figures.</span><span id="directoryFooter">8 sample areas</span></div>
+        </section>
+        <section class="barangay-note"><span>ⓘ</span><p><strong>Service area information</strong> — This frontend demo does not validate official boundaries or publish changes to a live TaskTap service. Edits stay in this page for the current session.</p></section>
+        <footer class="page-footer"><span>TaskTap Admin Console <b>·</b> A-09 Barangay Management <b>·</b> Frontend demo</span><span>Directory actions are not saved to a server.</span></footer>
+      </div>
+    </main>
+  </div>
+  <div class="sidebar-scrim" id="sidebarScrim"></div><div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="modal-backdrop" id="barangayModal" hidden><section class="barangay-modal" role="dialog" aria-modal="true" aria-labelledby="barangayModalTitle"><button class="modal-close" data-close-modal aria-label="Close">×</button><p class="modal-kicker">SERVICE AREA</p><h2 id="barangayModalTitle">Add barangay</h2><p class="modal-intro">Enter sample directory details for this service area.</p><form id="barangayForm"><input type="hidden" id="barangayId"><label>Barangay name<input id="barangayName" required maxlength="70" placeholder="e.g. Brgy. 186"></label><div class="form-row"><label>City / municipality<input id="barangayCity" required maxlength="60" value="Caloocan City"></label><label>Province / region<input id="barangayRegion" required maxlength="60" value="Metro Manila"></label></div><div class="form-row"><label>Coordinator name<input id="barangayCoordinator" maxlength="70" placeholder="Optional coordinator"></label><label>Coverage status<select id="barangayFormStatus"><option>Active</option><option>Needs review</option><option>Inactive</option></select></label></div><div class="form-row"><label>Active members<input id="barangayMembers" type="number" min="0" max="99999" value="0"></label><label>Open tasks<input id="barangayTasks" type="number" min="0" max="9999" value="0"></label></div><div class="form-error" id="barangayFormError" role="alert"></div><div class="modal-actions"><button class="button secondary" type="button" data-close-modal>Cancel</button><button class="button primary" type="submit" id="saveBarangay">Save area</button></div></form></section></div>
+  <script src="barangay-management.js"></script>
+</body>
+</html>

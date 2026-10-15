@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TaskTap administrator activity log demo.">
+  <title>TaskTap Admin — Activity Log</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin-dashboard.css"><link rel="stylesheet" href="activity-log.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="[Admin] admin-dashboard.html" aria-label="TaskTap Admin dashboard"><span class="brand-mark"><i></i><b></b></span><span>Task<span class="brand-accent">Tap</span><small>ADMIN CONSOLE</small></span></a>
+      <div class="workspace"><span class="workspace-icon">⌂</span><span><strong>TaskTap PH</strong><small>Community workspace</small></span><span class="workspace-chevron">⌄</span></div>
+      <p class="nav-label">OVERVIEW</p>
+      <nav class="admin-nav" aria-label="Admin navigation">
+        <a class="nav-link" href="[Admin] admin-dashboard.html"><span class="nav-icon">▦</span><span>Dashboard</span></a>
+        <p class="nav-label manage-label">MANAGE</p>
+        <a class="nav-link" href="[Admin] user-management.html"><span class="nav-icon">♙</span><span>User Management</span></a>
+        <a class="nav-link" href="[Admin] user-detail.html"><span class="nav-icon">◉</span><span>User Detail</span></a>
+        <a class="nav-link" href="[Admin] task-management.html"><span class="nav-icon">▤</span><span>Task Management</span></a>
+        <a class="nav-link" href="[Admin] category-management.html"><span class="nav-icon">◈</span><span>Category Management</span></a>
+        <a class="nav-link" href="[Admin] report-management.html"><span class="nav-icon">⚑</span><span>Report Management</span><b class="nav-count">8</b></a>
+        <a class="nav-link" href="[Admin] payment-records-admin.html"><span class="nav-icon">₱</span><span>Payment Records</span></a>
+        <a class="nav-link" href="[Admin] archives-admin.html"><span class="nav-icon">▣</span><span>Archives</span></a>
+        <a class="nav-link" href="[Admin] barangay-management.html"><span class="nav-icon">⌖</span><span>Barangay Management</span></a>
+        <p class="nav-label tools-label">SYSTEM</p>
+        <a class="nav-link active" href="[Admin] activity-log.html" aria-current="page"><span class="nav-icon">◷</span><span>Activity Log</span></a>
+        <a class="nav-link" href="[Admin] admin-settings.html"><span class="nav-icon">⚙</span><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-bottom"><div class="help-card"><span class="help-icon">?</span><strong>Audit trail</strong><p>Review sample administrative events by date, section, and outcome.</p><a class="demo-link" href="[Admin] admin-guide.html#activity-log">About activity logs <span>→</span></a></div><button class="admin-user" id="adminProfile"><span class="avatar">AD</span><span><strong>Admin Demo</strong><small>Administrator</small></span><span class="user-more">···</span></button></div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar"><button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button><div class="breadcrumbs"><a href="[Admin] admin-dashboard.html">Workspace</a><b>/</b><strong>Activity Log</strong></div><div class="top-actions"><span class="demo-pill"><i></i> DEMO DATA</span><a class="icon-button" id="helpButton" href="[Admin] admin-guide.html#activity-log" aria-label="Open Admin Guide">?</a><button class="icon-button notification-button" id="notificationButton" aria-label="Notifications">♧<i></i></button><span class="top-divider"></span><button class="top-profile" id="profileButton"><span class="avatar small-avatar">AD</span><span><strong>Admin Demo</strong><small>Administrator</small></span><b>⌄</b></button></div></header>
+      <div class="page-content activity-page">
+        <section class="welcome-row"><div><p class="eyebrow">ADMINISTRATION <span class="eyebrow-dot">•</span> AUDIT TRAIL</p><h1>Activity Log</h1><p class="welcome-copy">Review a time-ordered record of administrative actions across TaskTap.</p></div><div class="welcome-actions"><button class="button secondary" id="refreshLog"><span>↻</span> Refresh</button><button class="button primary" id="exportLog"><span>↓</span> Export log</button></div></section>
+        <section class="log-stats" aria-label="Activity summary">
+          <article class="log-stat"><span class="log-stat-icon total-log-icon">◷</span><div><span>Events today</span><strong id="statToday">6</strong></div><small>Sample admin activity</small></article>
+          <article class="log-stat"><span class="log-stat-icon success-log-icon">✓</span><div><span>Successful actions</span><strong id="statSuccess">13</strong></div><small>Recorded in this sample</small></article>
+          <article class="log-stat"><span class="log-stat-icon review-log-icon">◉</span><div><span>Needs review</span><strong id="statReview">3</strong></div><small>Review flagged events</small></article>
+          <article class="log-stat"><span class="log-stat-icon actors-log-icon">♙</span><div><span>Unique actors</span><strong id="statActors">4</strong></div><small>Admins and system</small></article>
+        </section>
+        <section class="activity-overview-grid">
+          <article class="activity-chart-panel panel"><div class="overview-heading"><div><h2>Activity volume</h2><p>Sample administrative events over the past 7 days</p></div><span class="chart-period">LAST 7 DAYS</span></div><div class="activity-chart" id="activityChart" aria-label="Activity volume chart for the last seven days"></div><div class="chart-footnote"><span><i></i> Admin events</span><span id="chartTotal">19 events this week</span></div></article>
+          <article class="module-panel panel"><div class="overview-heading"><div><h2>Events by section</h2><p>Where sample activity occurred</p></div><span class="module-icon">▤</span></div><div class="module-bars" id="moduleBars"></div><a class="module-link" href="#logTable" id="viewAllModules">View activity details <span>→</span></a></article>
+        </section>
+        <section class="log-register panel" id="logTable">
+          <div class="log-register-heading"><div><h2>Event register</h2><p>Sample admin events with actor, section, timestamp, and result.</p></div><span class="immutable-tag"><i></i> READ ONLY SAMPLE</span></div>
+          <div class="log-filter-bar"><label class="log-search"><span>⌕</span><input id="logSearch" type="search" placeholder="Search event, actor, or record ID" aria-label="Search activity log"><kbd>⌘ K</kbd></label><div class="log-filter-selects"><label><span class="sr-only">Filter by date</span><select id="dateFilter"><option value="7">Past 7 days</option><option value="today">Today</option><option value="30">Past 30 days</option><option value="all">All sample dates</option></select></label><label><span class="sr-only">Filter by section</span><select id="moduleFilter"><option value="all">All sections</option><option>Dashboard</option><option>User Management</option><option>Task Management</option><option>Category Management</option><option>Report Management</option><option>Payment Records</option><option>Archives</option><option>Barangay Management</option><option>System</option></select></label><label><span class="sr-only">Filter by outcome</span><select id="outcomeFilter"><option value="all">All outcomes</option><option>Success</option><option>Review</option><option>Notice</option></select></label></div></div>
+          <div class="log-quick-filters" role="tablist" aria-label="Filter events by outcome"><button class="log-tab active" data-outcome="all" role="tab" aria-selected="true">All events <span id="tabAll">19</span></button><button class="log-tab" data-outcome="Success" role="tab" aria-selected="false">Successful <span id="tabSuccess">13</span></button><button class="log-tab" data-outcome="Review" role="tab" aria-selected="false">Needs review <span id="tabReview">3</span></button><span class="quick-filter-spacer"></span><button class="clear-log-filters" id="clearLogFilters" hidden>Clear filters</button></div>
+          <div class="log-results-line"><span id="logResults">Showing 19 sample events</span><span>Times shown in Asia/Manila (UTC+8)</span></div>
+          <div class="log-table-wrap"><table class="log-table"><thead><tr><th>EVENT</th><th>ACTOR</th><th>SECTION</th><th>DATE &amp; TIME</th><th>OUTCOME</th><th></th></tr></thead><tbody id="logRows"></tbody></table><div class="log-empty" id="logEmpty" hidden><span>◷</span><strong>No activity found</strong><p>Try changing your search or filters.</p></div></div>
+          <div class="log-table-footer"><span id="logFooterNote">Activity entries are illustrative and are not live audit records.</span><span id="logFooterCount">Showing 19 of 19 events</span></div>
+        </section>
+        <section class="log-note"><span>ⓘ</span><p><strong>Sample audit trail</strong> — These entries are illustrative examples only. This frontend does not record real administrative actions or provide an authoritative security audit log.</p></section>
+        <footer class="page-footer"><span>TaskTap Admin Console <b>·</b> A-10 Activity Log <b>·</b> Frontend demo</span><span>Log data is read-only sample content.</span></footer>
+      </div>
+    </main>
+  </div>
+  <div class="sidebar-scrim" id="sidebarScrim"></div><div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="modal-backdrop" id="eventModal" hidden><section class="event-modal" role="dialog" aria-modal="true" aria-labelledby="eventModalTitle"><button class="modal-close" data-close-modal aria-label="Close">×</button><div id="eventModalContent"></div></section></div>
+  <script src="activity-log.js"></script>
+</body>
+</html>

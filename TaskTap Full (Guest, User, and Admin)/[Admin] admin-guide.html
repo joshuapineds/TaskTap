@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TaskTap admin guide for the frontend prototype.">
+  <title>TaskTap Admin — Help Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin-dashboard.css"><link rel="stylesheet" href="admin-guide.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="[Admin] admin-dashboard.html" aria-label="TaskTap Admin dashboard"><span class="brand-mark"><i></i><b></b></span><span>Task<span class="brand-accent">Tap</span><small>ADMIN CONSOLE</small></span></a>
+      <div class="workspace"><span class="workspace-icon">⌂</span><span><strong>TaskTap PH</strong><small>Community workspace</small></span><span class="workspace-chevron">⌄</span></div>
+      <p class="nav-label">OVERVIEW</p>
+      <nav class="admin-nav" aria-label="Admin navigation">
+        <a class="nav-link" href="[Admin] admin-dashboard.html"><span class="nav-icon">▦</span><span>Dashboard</span></a>
+        <p class="nav-label manage-label">MANAGE</p>
+        <a class="nav-link" href="[Admin] user-management.html"><span class="nav-icon">♙</span><span>User Management</span></a>
+        <a class="nav-link" href="[Admin] user-detail.html"><span class="nav-icon">◉</span><span>User Detail</span></a>
+        <a class="nav-link" href="[Admin] task-management.html"><span class="nav-icon">▤</span><span>Task Management</span></a>
+        <a class="nav-link" href="[Admin] category-management.html"><span class="nav-icon">◈</span><span>Category Management</span></a>
+        <a class="nav-link" href="[Admin] report-management.html"><span class="nav-icon">⚑</span><span>Report Management</span></a>
+        <a class="nav-link" href="[Admin] payment-records-admin.html"><span class="nav-icon">₱</span><span>Payment Records</span></a>
+        <a class="nav-link" href="[Admin] archives-admin.html"><span class="nav-icon">▣</span><span>Archives</span></a>
+        <a class="nav-link" href="[Admin] barangay-management.html"><span class="nav-icon">⌖</span><span>Barangay Management</span></a>
+        <p class="nav-label tools-label">SYSTEM</p>
+        <a class="nav-link" href="[Admin] activity-log.html"><span class="nav-icon">◷</span><span>Activity Log</span></a>
+        <a class="nav-link" href="[Admin] admin-settings.html"><span class="nav-icon">⚙</span><span>Settings</span></a>
+        <p class="nav-label tools-label">SUPPORT</p>
+        <a class="nav-link active" href="[Admin] admin-guide.html" aria-current="page"><span class="nav-icon">?</span><span>Admin Guide</span></a>
+      </nav>
+      <div class="sidebar-bottom"><div class="help-card"><span class="help-icon">?</span><strong>Need more help?</strong><p>Return to this guide any time from the admin pages.</p><a class="demo-link" href="[Admin] admin-dashboard.html">Back to dashboard <span>→</span></a></div><button class="admin-user" id="adminProfile"><span class="avatar">AD</span><span><strong>Admin Demo</strong><small>Administrator</small></span><span class="user-more">···</span></button></div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar"><button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button><div class="breadcrumbs"><a href="[Admin] admin-dashboard.html">Workspace</a><b>/</b><strong>Admin Guide</strong></div><div class="top-actions"><span class="demo-pill"><i></i> DEMO DATA</span><a class="guide-back-link" href="[Admin] admin-dashboard.html">Return to dashboard <span>→</span></a></div></header>
+      <div class="page-content guide-page">
+        <section class="guide-welcome" id="overview"><div><p class="eyebrow">TASKTAP ADMIN <span class="eyebrow-dot">•</span> HELP CENTER</p><h1>Admin Guide</h1><p>Quick instructions for the TaskTap administration prototype.</p></div><div class="guide-search"><span>⌕</span><input type="search" id="guideSearch" placeholder="Search this guide" aria-label="Search admin guide"><kbd>Ctrl K</kbd></div></section>
+        <section class="guide-demo-note"><span>ⓘ</span><p><strong>Prototype guide</strong> — The admin pages use sample data. Actions such as suspend, archive, restore, and save are demonstrations and don’t change real accounts or platform records.</p></section>
+        <section class="guide-shortcuts" aria-label="Common admin tasks">
+          <a href="[Admin] user-management.html" class="guide-shortcut"><span class="shortcut-icon members-shortcut">♙</span><span><strong>Find a member</strong><small>Search or filter the directory</small></span><b>→</b></a>
+          <a href="[Admin] task-management.html" class="guide-shortcut"><span class="shortcut-icon tasks-shortcut">▤</span><span><strong>Review a task</strong><small>Inspect task details and status</small></span><b>→</b></a>
+          <a href="[Admin] report-management.html" class="guide-shortcut"><span class="shortcut-icon reports-shortcut">⚑</span><span><strong>Review a report</strong><small>Open the moderation queue</small></span><b>→</b></a>
+        </section>
+        <div class="guide-layout">
+          <nav class="guide-index panel" aria-label="Guide contents"><strong>IN THIS GUIDE</strong><a href="#users">Members</a><a href="#tasks">Tasks</a><a href="#categories">Categories</a><a href="#reports">Reports</a><a href="#payments">Payment records</a><a href="#archives">Archives</a><a href="#barangays">Barangays</a><a href="#activity-log">Activity log</a><a href="#settings">Settings</a><a href="#demo-limits">Demo limits</a></nav>
+          <div class="guide-sections">
+            <article class="guide-section panel" id="users" data-guide-section><div class="guide-section-heading"><span class="guide-number">01</span><div><h2>Members and profiles</h2><p>Find members and review their sample account information.</p></div></div><ol><li>Use <strong>User Management</strong> to search by name, email, or member ID and filter by role, verification, or status.</li><li>Open a member row to review their profile, verification state, task history, reviews, reports, and sample activity timeline.</li><li>Demo status actions update only the current page’s sample data.</li></ol><a href="[Admin] user-management.html" class="guide-open-link">Open User Management <span>→</span></a></article>
+            <article class="guide-section panel" id="tasks" data-guide-section><div class="guide-section-heading"><span class="guide-number">02</span><div><h2>Tasks</h2><p>Search listings, inspect details, and review demo task status.</p></div></div><ol><li>Filter the Task Management list by status, category, barangay, or search text.</li><li>Open a task to see the poster, listing amount, report context, and sample history.</li><li>Pause, resume, or archive controls are local demonstrations; task budgets are not payment transactions.</li></ol><a href="[Admin] task-management.html" class="guide-open-link">Open Task Management <span>→</span></a></article>
+            <article class="guide-section panel" id="categories" data-guide-section><div class="guide-section-heading"><span class="guide-number">03</span><div><h2>Categories</h2><p>Maintain the categories shown by the category prototype.</p></div></div><ol><li>Search or filter active and inactive sample categories.</li><li>Add or edit a category from the page controls, then use the status action to deactivate or reactivate it.</li><li>Edits remain in the category page and do not update member task forms or other pages.</li></ol><a href="[Admin] category-management.html" class="guide-open-link">Open Category Management <span>→</span></a></article>
+            <article class="guide-section panel" id="reports" data-guide-section><div class="guide-section-heading"><span class="guide-number">04</span><div><h2>Reports and moderation</h2><p>Review a sample report queue and its linked context.</p></div></div><ol><li>Start with high-priority and open cases, then open a report to read the summary and context.</li><li>Follow links to the related sample member or task when more context is needed.</li><li>Review, resolve, dismiss, or reopen actions only update the report page’s sample state. They don’t contact anyone.</li></ol><a href="[Admin] report-management.html" class="guide-open-link">Open Report Management <span>→</span></a></article>
+            <article class="guide-section panel" id="payments" data-guide-section><div class="guide-section-heading"><span class="guide-number">05</span><div><h2>Payment records</h2><p>Review information members entered about payments.</p></div></div><ol><li>Search and filter by payment status or method, then open a record to inspect its notes.</li><li>Use review flags to mark sample entries that need attention.</li><li>TaskTap doesn’t process, hold, or transfer money; the page is a record ledger only.</li></ol><a href="[Admin] payment-records-admin.html" class="guide-open-link">Open Payment Records <span>→</span></a></article>
+            <article class="guide-section panel" id="archives" data-guide-section><div class="guide-section-heading"><span class="guide-number">06</span><div><h2>Archives</h2><p>Find retained task, member, and report records.</p></div></div><ol><li>Choose a record type, search, and sort by archive or review date.</li><li>Open a record to inspect its reason and source-page link.</li><li>Restore marks the archive entry as restored in the archive demo only; it doesn’t reactivate or republish the original record.</li></ol><a href="[Admin] archives-admin.html" class="guide-open-link">Open Archives <span>→</span></a></article>
+            <article class="guide-section panel" id="barangays" data-guide-section><div class="guide-section-heading"><span class="guide-number">07</span><div><h2>Barangay coverage</h2><p>Review service area sample data and coverage signals.</p></div></div><ol><li>Search by barangay or coordinator, filter by coverage status, or sort by task and member counts.</li><li>Select a map tile or choose Edit to update a sample area; use Add barangay to create a temporary entry.</li><li>The coverage view and area counts are illustrative, not official boundaries or live availability.</li></ol><a href="[Admin] barangay-management.html" class="guide-open-link">Open Barangay Management <span>→</span></a></article>
+            <article class="guide-section panel" id="activity-log" data-guide-section><div class="guide-section-heading"><span class="guide-number">08</span><div><h2>Activity log</h2><p>Explore the prewritten administrative event examples.</p></div></div><ol><li>Filter by date, section, outcome, or search terms.</li><li>Open an event to view its actor, related record, timestamp, and sample context.</li><li>Export downloads the currently filtered sample events. The page is not a live or authoritative audit log.</li></ol><a href="[Admin] activity-log.html" class="guide-open-link">Open Activity Log <span>→</span></a></article>
+            <article class="guide-section panel" id="settings" data-guide-section><div class="guide-section-heading"><span class="guide-number">09</span><div><h2>Settings</h2><p>Adjust the settings page’s sample workspace preferences.</p></div></div><ol><li>Use the section links to jump between General, Notifications, Security, and Localization.</li><li>Save changes to update the demo page session, or restore the defaults to reset its controls.</li><li>Settings don’t change real security, notifications, language, or platform configuration.</li></ol><a href="[Admin] admin-settings.html" class="guide-open-link">Open Settings <span>→</span></a></article>
+            <article class="guide-section guide-limits panel" id="demo-limits" data-guide-section><div class="guide-section-heading"><span class="guide-number">10</span><div><h2>What this prototype does not do</h2><p>Use this project to review frontend flow and presentation.</p></div></div><ul><li>It doesn’t connect to a server, database, payment provider, messaging channel, or identity service.</li><li>Most lists and actions are isolated sample data; changing one page usually doesn’t update another page.</li><li>Don’t treat sample accounts, reports, archive entries, location counts, or audit events as real records.</li></ul><a href="[Admin] admin-dashboard.html" class="guide-open-link">Return to Admin Dashboard <span>→</span></a></article>
+            <div class="guide-no-results" id="guideNoResults" hidden><strong>No guide sections match</strong><span>Try a different search term or clear the search.</span></div>
+          </div>
+        </div>
+        <footer class="page-footer"><span>TaskTap Admin Console <b>·</b> Help Center <b>·</b> Frontend demo</span><span class="guide-footer-links"><a href="[Admin] admin-login.html">Admin demo sign in</a><a href="[Admin] admin-dashboard.html">Return to dashboard</a></span></footer>
+      </div>
+    </main>
+  </div>
+  <div class="sidebar-scrim" id="sidebarScrim"></div>
+  <script src="admin-guide.js"></script>
+</body>
+</html>

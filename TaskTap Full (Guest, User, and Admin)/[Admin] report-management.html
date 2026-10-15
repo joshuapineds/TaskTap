@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TaskTap administrator report management demo.">
+  <title>TaskTap Admin — Report Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin-dashboard.css"><link rel="stylesheet" href="report-management.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="[Admin] admin-dashboard.html" aria-label="TaskTap Admin dashboard"><span class="brand-mark"><i></i><b></b></span><span>Task<span class="brand-accent">Tap</span><small>ADMIN CONSOLE</small></span></a>
+      <div class="workspace"><span class="workspace-icon">⌂</span><span><strong>TaskTap PH</strong><small>Community workspace</small></span><span class="workspace-chevron">⌄</span></div>
+      <p class="nav-label">OVERVIEW</p>
+      <nav class="admin-nav" aria-label="Admin navigation">
+        <a class="nav-link" href="[Admin] admin-dashboard.html"><span class="nav-icon">▦</span><span>Dashboard</span></a>
+        <p class="nav-label manage-label">MANAGE</p>
+        <a class="nav-link" href="[Admin] user-management.html"><span class="nav-icon">♙</span><span>User Management</span></a>
+        <a class="nav-link" href="[Admin] user-detail.html"><span class="nav-icon">◉</span><span>User Detail</span></a>
+        <a class="nav-link" href="[Admin] task-management.html"><span class="nav-icon">▤</span><span>Task Management</span></a>
+        <a class="nav-link" href="[Admin] category-management.html"><span class="nav-icon">◈</span><span>Category Management</span></a>
+        <a class="nav-link active" href="[Admin] report-management.html" aria-current="page"><span class="nav-icon">⚑</span><span>Report Management</span><b class="nav-count" id="sidebarOpenCount">8</b></a>
+        <a class="nav-link" href="[Admin] payment-records-admin.html"><span class="nav-icon">₱</span><span>Payment Records</span></a>
+        <a class="nav-link" href="[Admin] archives-admin.html"><span class="nav-icon">▣</span><span>Archives</span></a>
+        <a class="nav-link" href="[Admin] barangay-management.html"><span class="nav-icon">⌖</span><span>Barangay Management</span></a>
+        <p class="nav-label tools-label">SYSTEM</p>
+        <a class="nav-link" href="[Admin] activity-log.html"><span class="nav-icon">◷</span><span>Activity Log</span></a>
+        <a class="nav-link" href="[Admin] admin-settings.html"><span class="nav-icon">⚙</span><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-bottom"><div class="help-card"><span class="help-icon">?</span><strong>Need a hand?</strong><p>Review reports fairly and keep member details private.</p><a class="demo-link" href="[Admin] admin-guide.html#reports">Moderation guidance <span>→</span></a></div><button class="admin-user" id="adminProfile"><span class="avatar">AD</span><span><strong>Admin Demo</strong><small>Administrator</small></span><span class="user-more">···</span></button></div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar"><button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button><div class="breadcrumbs"><a href="[Admin] admin-dashboard.html">Workspace</a><b>/</b><strong>Report Management</strong></div><div class="top-actions"><span class="demo-pill"><i></i> DEMO DATA</span><a class="icon-button" id="helpButton" href="[Admin] admin-guide.html#reports" aria-label="Open Admin Guide">?</a><button class="icon-button notification-button" id="notificationButton" aria-label="Notifications">♧<i></i></button><span class="top-divider"></span><button class="top-profile" id="profileButton"><span class="avatar small-avatar">AD</span><span><strong>Admin Demo</strong><small>Administrator</small></span><b>⌄</b></button></div></header>
+      <div class="page-content report-page">
+        <section class="welcome-row"><div><p class="eyebrow">ADMINISTRATION <span class="eyebrow-dot">•</span> TRUST & SAFETY</p><h1>Report management</h1><p class="welcome-copy">Review member-submitted concerns and keep a clear moderation history.</p></div><div class="welcome-actions"><button class="button secondary" id="exportReports"><span>↓</span> Export reports</button></div></section>
+        <section class="report-stats" aria-label="Report status summary">
+          <article class="report-stat"><span class="report-stat-icon open-icon">⚑</span><div><span>Open reports</span><strong id="openCount">8</strong></div><small>Awaiting review</small></article>
+          <article class="report-stat"><span class="report-stat-icon urgent-icon">!</span><div><span>High priority</span><strong id="highCount">3</strong></div><small>Review promptly</small></article>
+          <article class="report-stat"><span class="report-stat-icon review-icon">◷</span><div><span>Under review</span><strong id="reviewCount">0</strong></div><small>Assigned to admins</small></article>
+          <article class="report-stat"><span class="report-stat-icon resolved-icon">✓</span><div><span>Resolved this month</span><strong id="resolvedCount">0</strong></div><small>Sample outcomes</small></article>
+        </section>
+        <section class="report-panel panel">
+          <div class="report-panel-heading"><div><h2>Moderation queue</h2><p>Each report is a member-submitted concern and should be reviewed in context.</p></div><span class="queue-demo-tag"><i></i> SAMPLE QUEUE</span></div>
+          <div class="report-tabs" role="tablist" aria-label="Filter reports by status"><button class="report-tab active" data-status="all" role="tab" aria-selected="true">All reports <span id="tabAll">8</span></button><button class="report-tab" data-status="Open" role="tab" aria-selected="false">Open <span id="tabOpen">8</span></button><button class="report-tab" data-status="Under review" role="tab" aria-selected="false">Under review <span id="tabReview">0</span></button><button class="report-tab" data-status="Resolved" role="tab" aria-selected="false">Resolved <span id="tabResolved">0</span></button><button class="report-tab" data-status="Dismissed" role="tab" aria-selected="false">Dismissed <span id="tabDismissed">0</span></button></div>
+          <div class="report-controls"><label class="report-search"><span>⌕</span><input type="search" id="reportSearch" placeholder="Search report, member, or reference" aria-label="Search reports"><kbd>⌘ K</kbd></label><div class="report-filters"><label><span class="sr-only">Filter report type</span><select id="typeFilter"><option value="all">All types</option><option value="Task">Task reports</option><option value="User">User reports</option></select></label><label><span class="sr-only">Filter report reason</span><select id="reasonFilter"><option value="all">All reasons</option><option>Misleading listing</option><option>Harassment</option><option>Spam</option><option>Unsafe behavior</option><option>Off-platform payment</option><option>Duplicate listing</option><option>Other concern</option></select></label><label><span class="sr-only">Filter priority</span><select id="priorityFilter"><option value="all">All priorities</option><option>High</option><option>Normal</option><option>Low</option></select></label></div></div>
+          <div class="report-result-row"><span id="reportResult">Showing 8 sample reports</span><button id="clearReportFilters" hidden>Clear filters</button><span class="report-sample-note">Private report details · Demo only</span></div>
+          <div class="reports-table-wrap"><table class="reports-table"><thead><tr><th>REPORT</th><th>REPORTED ITEM</th><th>SUBMITTED BY</th><th>REASON</th><th>SUBMITTED</th><th>PRIORITY</th><th>STATUS</th><th></th></tr></thead><tbody id="reportRows"></tbody></table><div class="reports-empty" id="reportsEmpty" hidden><span>✓</span><strong>No reports match</strong><p>Try changing your search or filters.</p></div></div>
+          <div class="report-footer"><span id="reportFooterNote">Handle reports privately and review context before acting.</span><span id="reportFooterCount">8 sample reports</span></div>
+        </section>
+        <section class="report-guidance"><span>ⓘ</span><p><strong>Review fairly</strong> — A report is a request for review, not a finding. Check the reported content and relevant context before taking action. This demo does not create a moderation ticket or contact members.</p></section>
+        <footer class="page-footer"><span>TaskTap Admin Console <b>·</b> A-06 Report Management <b>·</b> Frontend demo</span><span>All reports, notes, and outcomes are sample data.</span></footer>
+      </div>
+    </main>
+  </div>
+  <div class="sidebar-scrim" id="sidebarScrim"></div><div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="modal-backdrop" id="reportModal" hidden><section class="report-modal" role="dialog" aria-modal="true" aria-labelledby="reportModalTitle"><button class="modal-close" data-close-modal aria-label="Close">×</button><div id="reportModalContent"></div></section></div>
+  <div class="modal-backdrop" id="outcomeModal" hidden><section class="report-modal outcome-modal" role="dialog" aria-modal="true" aria-labelledby="outcomeTitle"><button class="modal-close" data-close-modal aria-label="Close">×</button><div class="confirm-icon">⚑</div><h2 id="outcomeTitle">Update report status?</h2><p id="outcomeCopy"></p><label class="resolution-field" id="resolutionField"><span>Internal demo note (optional)</span><textarea id="resolutionNote" rows="3" placeholder="Add brief context for this sample outcome"></textarea></label><div class="modal-actions"><button class="button secondary" data-close-modal>Cancel</button><button class="button primary" id="confirmOutcome">Confirm update</button></div></section></div>
+  <script src="report-management.js"></script>
+</body>
+</html>
