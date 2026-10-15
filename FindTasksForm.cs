@@ -246,45 +246,45 @@ namespace TaskTap
             var names = new[] { "Cleaning", "Tutoring", "Repairs", "Shopping", "Pet Care", "Others" };
             for (var index = 0; index < names.Length; index++)
             {
-                var check = new CheckBox { Name = $"category{names[index].Replace(" ", string.Empty)}", Text = names[index], Location = new Point(14, 88 + index * 24), Size = new Size(166, 22), Font = new Font("Segoe UI", 8F), ForeColor = Navy, AutoSize = false };
+                var check = new CheckBox { Name = $"category{names[index].Replace(" ", string.Empty)}", Text = names[index], Location = new Point(14, 88 + index * 25), Size = new Size(166, 24), Font = new Font("Segoe UI", 8F), ForeColor = Navy, AutoSize = false };
                 check.CheckedChanged += (_, _) => ApplyFilters();
                 categoryFilters.Add(check);
                 filterPanel.Controls.Add(check);
             }
-            AddDivider(filterPanel, 239);
-            AddFilterHeading("Price Range", 248);
+            AddDivider(filterPanel, 245);
+            AddFilterHeading("Price Range", 254);
             minPrice.Name = "findMinPrice";
             minPrice.PlaceholderText = "₱0";
-            minPrice.Location = new Point(14, 271);
+            minPrice.Location = new Point(14, 277);
             minPrice.Size = new Size(68, 26);
             minPrice.TextChanged += (_, _) => ApplyFilters();
             filterPanel.Controls.Add(minPrice);
             var to = MakeLabel("to", 8, Muted);
-            to.Location = new Point(88, 276);
+            to.Location = new Point(88, 282);
             filterPanel.Controls.Add(to);
             maxPrice.Name = "findMaxPrice";
             maxPrice.PlaceholderText = "₱1,000+";
-            maxPrice.Location = new Point(108, 271);
+            maxPrice.Location = new Point(108, 277);
             maxPrice.Size = new Size(74, 26);
             maxPrice.TextChanged += (_, _) => ApplyFilters();
             filterPanel.Controls.Add(maxPrice);
-            AddDivider(filterPanel, 307);
-            AddFilterHeading("Deadline", 316);
+            AddDivider(filterPanel, 313);
+            AddFilterHeading("Deadline", 322);
             deadlineFilter.Name = "findDeadlineFilter";
             deadlineFilter.DropDownStyle = ComboBoxStyle.DropDownList;
             deadlineFilter.Items.AddRange(["Any deadline", "Within 3 days", "Within 7 days", "Within 14 days"]);
             deadlineFilter.SelectedIndex = 0;
-            deadlineFilter.Location = new Point(14, 339);
+            deadlineFilter.Location = new Point(14, 345);
             deadlineFilter.Size = new Size(168, 28);
             deadlineFilter.SelectedIndexChanged += (_, _) => ApplyFilters();
             filterPanel.Controls.Add(deadlineFilter);
-            AddDivider(filterPanel, 379);
-            AddFilterHeading("Barangay", 388);
+            AddDivider(filterPanel, 385);
+            AddFilterHeading("Barangay", 394);
             barangayFilter.Name = "findBarangayFilter";
             barangayFilter.DropDownStyle = ComboBoxStyle.DropDownList;
             barangayFilter.Items.AddRange(["All Barangays", "Brgy. 176", "Brgy. 178", "Brgy. 179"]);
             barangayFilter.SelectedIndex = 0;
-            barangayFilter.Location = new Point(14, 411);
+            barangayFilter.Location = new Point(14, 417);
             barangayFilter.Size = new Size(168, 28);
             barangayFilter.SelectedIndexChanged += (_, _) =>
             {
@@ -296,7 +296,7 @@ namespace TaskTap
             filterPanel.Controls.Add(barangayFilter);
             nearbyOnly.Name = "findNearbyOnly";
             nearbyOnly.Text = "Show nearby only";
-            nearbyOnly.Location = new Point(14, 448);
+            nearbyOnly.Location = new Point(14, 454);
             nearbyOnly.Size = new Size(168, 34);
             nearbyOnly.Font = new Font("Segoe UI", 8F);
             nearbyOnly.ForeColor = Navy;
@@ -308,11 +308,11 @@ namespace TaskTap
             };
             filterPanel.Controls.Add(nearbyOnly);
             var note = MakeLabel("Uses your selected barangay, not GPS.", 7, Muted);
-            note.Location = new Point(14, 480);
-            note.MaximumSize = new Size(170, 30);
+            note.Location = new Point(14, 486);
+            note.MaximumSize = new Size(170, 36);
             filterPanel.Controls.Add(note);
             var apply = MakeAction("Apply Filters", "FindApplyFiltersButton", true, 168);
-            apply.Location = new Point(14, 515);
+            apply.Location = new Point(14, 528);
             apply.Click += (_, _) => { ApplyFilters(); ShowToast("Filters applied to sample tasks."); };
             filterPanel.Controls.Add(apply);
             canvas.Controls.Add(filterPanel);
@@ -408,7 +408,7 @@ namespace TaskTap
 
         private void BuildTaskRow(TaskRecord task)
         {
-            var row = new Panel { Name = $"taskRow{tasks.IndexOf(task)}", Size = new Size(440, 144), BackColor = Color.White, Margin = new Padding(4, 5, 4, 2), Tag = task };
+            var row = new Panel { Name = $"taskRow{tasks.IndexOf(task)}", Size = new Size(440, 156), BackColor = Color.White, Margin = new Padding(4, 5, 4, 2), Tag = task };
             row.BorderStyle = BorderStyle.FixedSingle;
             var thumb = new Label { Text = task.Icon, Location = new Point(10, 21), Size = new Size(55, 58), BackColor = task.IconBack, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Segoe UI Emoji", 21F) };
             row.Controls.Add(thumb);
@@ -439,13 +439,13 @@ namespace TaskTap
             var desc = MakeLabel(task.Description, 7.5F, Muted);
             desc.Name = "taskDescriptionLabel";
             desc.Location = new Point(76, 64);
-            desc.MaximumSize = new Size(390, 32);
+            desc.MaximumSize = new Size(390, 40);
             row.Controls.Add(desc);
             var meta = MakeLabel($"⌖ Brgy. {task.Barangay}   ·   ◷ {task.Deadline}", 7, Muted);
-            meta.Location = new Point(76, 100);
+            meta.Location = new Point(76, 108);
             row.Controls.Add(meta);
             var details = MakeTextButton("View Details", $"ViewTaskDetails{tasks.IndexOf(task)}");
-            details.Location = new Point(76, 124);
+            details.Location = new Point(76, 130);
             details.Click += (_, _) => OpenTaskDetails(task);
             row.Controls.Add(details);
             row.Click += (_, _) => SelectTask(task);
@@ -559,11 +559,11 @@ namespace TaskTap
             var left = 22;
             var right = width - 22;
             Position("findEyebrow", left, 18);
-            Position("findTitle", left, 36);
-            Position("findSubtitle", left, 82);
+            Position("findTitle", left, 40);
+            Position("findSubtitle", left, 91);
             var post = canvas.Controls.OfType<Button>().First(button => button.Name == "FindPostTaskButton");
             post.Location = new Point(right - post.Width, 48);
-            searchPanel.Location = new Point(left, 126);
+            searchPanel.Location = new Point(left, 140);
             searchPanel.Size = new Size(width - 44, 56);
             var searchInput = searchPanel.Controls.Find("findTaskSearch", false).FirstOrDefault();
             var quick = searchPanel.Controls.Find("findQuickBarangay", false).FirstOrDefault();
@@ -582,7 +582,7 @@ namespace TaskTap
                     quickLabel.Location = new Point(quick.Left + 4, 3);
                 searchButton.Bounds = new Rectangle(searchPanel.Width - searchButton.Width - 10, 14, searchButton.Width, 27);
             }
-            var resultsTop = 196;
+            var resultsTop = 210;
             var resultWidth = width - 44;
             var filterWidth = 194;
             filterPanel.Location = new Point(left, resultsTop);
@@ -613,7 +613,7 @@ namespace TaskTap
                 item.Width = Math.Max(180, listWidth - taskList.Padding.Horizontal - item.Margin.Horizontal - SystemInformation.VerticalScrollBarWidth - 4);
                 var details = item.Controls.OfType<Button>().FirstOrDefault(button => button.Name.StartsWith("ViewTaskDetails", StringComparison.Ordinal));
                 if (details is not null)
-                    details.Location = new Point(76, 112);
+                    details.Location = new Point(76, 130);
                 var save = item.Controls.OfType<Button>().FirstOrDefault(button => button.Name.StartsWith("SaveTask", StringComparison.Ordinal));
                 if (save is not null)
                     save.Location = new Point(item.Width - save.Width - 8, 4);
@@ -622,7 +622,7 @@ namespace TaskTap
                     title.MaximumSize = new Size(Math.Max(100, item.Width - 132), 24);
                 var description = item.Controls.Find("taskDescriptionLabel", false).FirstOrDefault();
                 if (description is not null)
-                    description.MaximumSize = new Size(Math.Max(100, item.Width - 100), 32);
+                    description.MaximumSize = new Size(Math.Max(100, item.Width - 100), 40);
             }
             mapCanvas.Bounds = new Rectangle(0, 0, mapPanel.ClientSize.Width, mapPanel.ClientSize.Height);
             var zoomIn = mapPanel.Controls.Find("FindMapZoomInButton", false).FirstOrDefault();
@@ -637,7 +637,7 @@ namespace TaskTap
             if (emptyPanel.Controls.OfType<Button>().FirstOrDefault() is { } reset)
                 reset.Location = new Point((emptyPanel.Width - reset.Width) / 2, emptyPanel.Height / 2 + 10);
             PositionMapPins();
-            canvas.Height = 770;
+            canvas.Height = resultsPanel.Bottom + 24;
         }
 
         private void ApplyFilters()
