@@ -114,7 +114,7 @@ namespace TaskTap
                 sidebar.Controls.Add(button);
             }
             var account = MakeLabel("ACCOUNT", 8, Color.FromArgb(126, 159, 198), true);
-            account.Location = new Point(22, 393);
+            account.Location = new Point(22, 414);
             sidebar.Controls.Add(account);
             var logout = MakeNavButton("Log out", false);
             logout.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
@@ -214,7 +214,7 @@ namespace TaskTap
                 panel.Controls.Add(title);
                 var subtitle = MakeLabel(string.Empty, 8.5F, Muted);
                 subtitle.Name = "stepDescription";
-                subtitle.Location = new Point(18, 69);
+                subtitle.Location = new Point(18, 73);
                 panel.Controls.Add(subtitle);
                 stepPanels[step - 1] = panel;
                 formCard.Controls.Add(panel);
@@ -236,24 +236,24 @@ namespace TaskTap
             taskTitle.Location = new Point(18, 128);
             taskTitle.Size = new Size(650, 34);
             panel.Controls.Add(taskTitle);
-            AddHint(panel, "Keep it short and specific.", 18, 166);
-            AddFieldLabel(panel, "Category *", 18, 198);
+            AddHint(panel, "Keep it short and specific.", 18, 171);
+            AddFieldLabel(panel, "Category *", 18, 204);
             category.Name = "postTaskCategory";
             category.DropDownStyle = ComboBoxStyle.DropDownList;
             category.Items.AddRange(["Select a category", "Cleaning", "Tutoring", "Repairs", "Shopping", "Pet Care", "Delivery", "Others"]);
             category.SelectedIndex = 0;
-            category.Location = new Point(18, 222);
+            category.Location = new Point(18, 228);
             category.Size = new Size(300, 32);
             panel.Controls.Add(category);
-            AddFieldLabel(panel, "Task type", 344, 198);
+            AddFieldLabel(panel, "Task type", 344, 204);
             taskType.Name = "postTaskType";
             taskType.DropDownStyle = ComboBoxStyle.DropDownList;
             taskType.Items.AddRange(["One-time task", "Short-term / recurring"]);
             taskType.SelectedIndex = 0;
-            taskType.Location = new Point(344, 222);
+            taskType.Location = new Point(344, 228);
             taskType.Size = new Size(300, 32);
             panel.Controls.Add(taskType);
-            AddTip(panel, "Good task titles get better requests. Include the action and item involved.", 18, 267, false);
+            AddTip(panel, "Good task titles get better requests. Include the action and item involved.", 18, 276, false);
         }
 
         private void ConfigureStepTwo()
@@ -525,10 +525,10 @@ namespace TaskTap
             var right = width - 22;
             Position("postTaskEyebrow", left, 18);
             Position("postTaskHeading", left, 40);
-            Position("postTaskSubtitle", left, 82);
+            Position("postTaskSubtitle", left, 92);
             var cancel = Find<Button>("PostTaskCancelButton");
             if (cancel is not null) cancel.Location = new Point(right - cancel.Width, 18);
-            stepper.Bounds = new Rectangle(left, 116, width - 44, 64);
+            stepper.Bounds = new Rectangle(left, 128, width - 44, 64);
             var stepWidth = (stepper.Width - 16) / 4;
             for (var index = 0; index < stepButtons.Length; index++)
             {
@@ -538,7 +538,7 @@ namespace TaskTap
                 stepButtons[index].ForeColor = active || done ? Blue : Muted;
                 stepButtons[index].Font = new Font("Segoe UI", 8F, active ? FontStyle.Bold : FontStyle.Regular);
             }
-            var bodyTop = 194;
+            var bodyTop = 206;
             var previewWidth = 254;
             var gap = 14;
             var mainWidth = width - 44 - previewWidth - gap;
@@ -815,13 +815,13 @@ namespace TaskTap
 
         private void AddTip(Control parent, string text, int x, int y, bool orange)
         {
-            var tip = new Panel { Name = "postTaskTip", Location = new Point(x, y), Size = new Size(650, 48), BackColor = orange ? Color.FromArgb(255, 247, 235) : Color.FromArgb(238, 247, 255) };
+            var tip = new Panel { Name = "postTaskTip", Location = new Point(x, y), Size = new Size(650, 54), BackColor = orange ? Color.FromArgb(255, 247, 235) : Color.FromArgb(238, 247, 255) };
             var icon = MakeLabel(orange ? "₱" : "i", 9, orange ? Color.FromArgb(224, 132, 52) : Blue, true);
-            icon.Location = new Point(12, 12);
+            icon.Location = new Point(12, 16);
             tip.Controls.Add(icon);
             var body = MakeLabel(text, 7.5F, Muted);
-            body.Location = new Point(32, 12);
-            body.MaximumSize = new Size(595, 34);
+            body.Location = new Point(32, 10);
+            body.MaximumSize = new Size(595, 42);
             tip.Controls.Add(body);
             parent.Controls.Add(tip);
         }
@@ -845,7 +845,11 @@ namespace TaskTap
             label.Location = new Point(14, 12);
             parent.Controls.Add(label);
             var heading = MakeLabel(title, 10, Navy, true);
-            heading.Location = new Point(14, 27);
+            heading.Name = "previewCardHeading";
+            heading.AutoSize = false;
+            heading.Size = new Size(220, 22);
+            heading.Location = new Point(14, 26);
+            heading.TextAlign = ContentAlignment.MiddleLeft;
             parent.Controls.Add(heading);
         }
 
