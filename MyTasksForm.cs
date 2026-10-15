@@ -173,9 +173,9 @@ namespace TaskTap
                 var card = new Panel { Name = $"myTasksStat{index + 1}", BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle };
                 var icon = new Label { Text = stat.Item1, Size = new Size(40, 40), Location = new Point(12, 14), BackColor = stat.Item5, ForeColor = stat.Item6, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Segoe UI", 15F, FontStyle.Bold) };
                 card.Controls.Add(icon);
-                var value = MakeLabel(stat.Item2, 15, Navy, true); value.Location = new Point(62, 11); card.Controls.Add(value);
-                    var name = MakeLabel(stat.Item3, 8, Muted); name.Location = new Point(62, 34); card.Controls.Add(name);
-                    var detail = MakeLabel(stat.Item4, 7, Muted); detail.Location = new Point(62, 57); card.Controls.Add(detail);
+                var value = MakeLabel(stat.Item2, 15, Navy, true); value.Name = "myTasksStatValue"; value.Location = new Point(62, 8); card.Controls.Add(value);
+                var name = MakeLabel(stat.Item3, 8, Muted); name.Name = "myTasksStatName"; name.Location = new Point(62, 32); card.Controls.Add(name);
+                var detail = MakeLabel(stat.Item4, 7, Muted); detail.Name = "myTasksStatDetail"; detail.Location = new Point(62, 55); card.Controls.Add(detail);
                 canvas.Controls.Add(card);
             }
 
@@ -253,7 +253,7 @@ namespace TaskTap
             const int left = 22;
             Position("myTasksEyebrow", left, 16);
             Position("myTasksHeading", left, 36);
-            Position("myTasksSubtitle", left, 76);
+            Position("myTasksSubtitle", left, 72);
             var post = Find<Button>("MyTasksPostTaskButton");
             var find = Find<Button>("MyTasksFindTasksButton");
             var payment = Find<Button>("MyTasksPaymentHistoryButton");
@@ -263,7 +263,22 @@ namespace TaskTap
             var gap = 12;
             var statWidth = (width - 44 - gap * 3) / 4;
             for (var index = 0; index < 4; index++)
-                Find<Panel>($"myTasksStat{index + 1}")!.Bounds = new Rectangle(left + index * (statWidth + gap), 104, statWidth, 80);
+            {
+                var card = Find<Panel>($"myTasksStat{index + 1}")!;
+                card.Bounds = new Rectangle(left + index * (statWidth + gap), 112, statWidth, 80);
+                var name = card.Controls.Find("myTasksStatName", false).FirstOrDefault();
+                var detail = card.Controls.Find("myTasksStatDetail", false).FirstOrDefault();
+                if (name is not null)
+                {
+                    name.Location = new Point(62, 31);
+                    name.MaximumSize = new Size(card.Width - 72, 20);
+                }
+                if (detail is not null)
+                {
+                    detail.Location = new Point(62, 54);
+                    detail.MaximumSize = new Size(card.Width - 72, 18);
+                }
+            }
             var toolbar = Find<Panel>("myTasksToolbar")!;
             toolbar.Bounds = new Rectangle(left, 198, width - 44, 116);
             var requestShortcut = toolbar.Controls.Find("MyTasksRequestsButton", false).FirstOrDefault() as Button;
@@ -272,10 +287,10 @@ namespace TaskTap
             var tabX = 12;
             foreach (var (key, tab) in tabs)
             {
-                tab.Location = new Point(tabX, 40);
+                tab.Location = new Point(tabX, 34);
                 tabX += tab.Width + 2;
             }
-            var controlsY = 78;
+            var controlsY = 80;
             var buttonsWidth = 36 * 2 + 8;
             var filterWidth = 130 + 136 + 16;
             var searchWidth = Math.Max(180, toolbar.Width - filterWidth - buttonsWidth - 52);
@@ -307,7 +322,12 @@ namespace TaskTap
 
         private Button MakeTab(string key, string text)
         {
-            return new Button { Name = $"myTasksTab{key}", Text = $"{text}  {tabCounts[key]}", Size = new Size(text == "In Progress" ? 106 : 84, 31), FlatStyle = FlatStyle.Flat, BackColor = Color.White, ForeColor = Muted, Font = new Font("Segoe UI", 8F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft, Cursor = Cursors.Hand, UseVisualStyleBackColor = false }.Also(button => button.FlatAppearance.BorderSize = 0);
+            var label = $"{text}  {tabCounts[key]}";
+            var font = new Font("Segoe UI", 8F, FontStyle.Bold);
+            var textWidth = TextRenderer.MeasureText(label, font, Size.Empty, TextFormatFlags.NoPadding | TextFormatFlags.SingleLine).Width;
+            var button = new Button { Name = $"myTasksTab{key}", Text = label, Size = new Size(Math.Max(text == "In Progress" ? 106 : 84, textWidth + 18), 31), FlatStyle = FlatStyle.Flat, BackColor = Color.White, ForeColor = Muted, Font = font, TextAlign = ContentAlignment.MiddleLeft, Cursor = Cursors.Hand, UseVisualStyleBackColor = false };
+            button.FlatAppearance.BorderSize = 0;
+            return button;
         }
 
         private void SelectTab(string key)
