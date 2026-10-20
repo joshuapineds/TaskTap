@@ -261,10 +261,28 @@ namespace TaskTap
             filtersPanel.Controls.Add(divider);
 
             AddFilterHeading("Category", 50);
-            var categories = new[] { ("Cleaning", "12"), ("Tutoring", "8"), ("Repairs", "6"), ("Shopping", "9"), ("Pet Care", "5"), ("Others", "4") };
-            for (var index = 0; index < categories.Length; index++)
+            var taskCounts = DemoDataStore.AvailableTasks
+                .GroupBy(task => task.Category, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(group => group.Key, group => group.Count(), StringComparer.OrdinalIgnoreCase);
+            var categories = DemoDataStore.Categories
+                .Select(category => category.Name)
+                .Where(name => !string.IsNullOrWhiteSpace(name))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Select(name => (Name: name, Count: taskCounts.TryGetValue(name, out var count) ? count : 0))
+                .Take(6)
+                .ToList();
+            if (categories.Count == 0)
             {
-                var (category, count) = categories[index];
+                categories = taskCounts
+                    .OrderByDescending(pair => pair.Value)
+                    .Take(6)
+                    .Select(pair => (Name: pair.Key, Count: pair.Value))
+                    .ToList();
+            }
+            for (var index = 0; index < categories.Count; index++)
+            {
+                var category = categories[index].Name;
+                var count = categories[index].Count.ToString();
                 var check = new CheckBox
                 {
                     Name = $"category{category.Replace(" ", string.Empty)}CheckBox",

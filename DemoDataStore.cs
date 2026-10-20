@@ -19,6 +19,7 @@ public sealed record DemoTask(
     public int Id { get; set; }
     public int PosterId { get; set; }
     public string PosterName { get; set; } = "";
+    public string Status { get; set; } = "Active";
     public string Requirements { get; set; } = "";
     public string TaskType { get; set; } = "";
     public string PaymentMethod { get; set; } = "";

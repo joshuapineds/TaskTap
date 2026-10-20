@@ -118,7 +118,7 @@ public sealed class ProfilePage : AppPage
         leftColumn.Controls.Add(aboutCard);
         AddSectionHeading(aboutCard, "ABOUT", $"About {AppSession.CurrentUser.FirstName}", "Edit", OpenAccountSettings);
         AddLabel(aboutCard, string.IsNullOrWhiteSpace(Backend.GetPhoneAndBio(AppSession.CurrentUser.Id).Bio) ? "You have not added a bio yet. Add one in Account Settings." : Backend.GetPhoneAndBio(AppSession.CurrentUser.Id).Bio, 9, Muted, false, new Point(20, 70), new Size(650, 78));
-        var skills = Array.Empty<string>();
+        var skills = ProfileLinks.Find(AppSession.CurrentUser.FullName)?.Skills ?? [];
         var x = 20;
         var y = 157;
         foreach (var skill in skills)

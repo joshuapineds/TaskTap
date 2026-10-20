@@ -1,3 +1,5 @@
+using TaskTap.Data;
+
 namespace TaskTap;
 
 /// <summary>
@@ -295,7 +297,18 @@ public sealed class UserDetailPage : AdminPage
     private void BuildTasks(int width)
     {
         var userId = Backend.ParseUserKey(user.Id);
-        var tasks = DemoDataStore.PostedTasks.Where(task => task.PosterId == userId).ToList();
+        var tasks = DemoDataStore.AvailableTasks
+            .Concat(DemoDataStore.ArchivedTasks)
+            .Where(task => task.PosterId == userId)
+            .GroupBy(task => task.Id)
+            .Select(group => group.First())
+            .ToList();
+
+        if (tasks.Count == 0)
+        {
+            Empty("No tasks posted by this account.");
+            return;
+        }
 
         var note = AdminUi.MakeLabel("Task activity shown from the TaskTap marketplace.", 8, AdminUi.Muted);
         note.Location = new Point(0, 0);
@@ -327,7 +340,10 @@ public sealed class UserDetailPage : AdminPage
             meta.Location = new Point(72, 34);
             row.Controls.Add(meta);
 
-            var status = AdminUi.MakePill("Active", Color.FromArgb(232, 248, 241), AdminUi.Good);
+            var statusText = DemoDataStore.ArchivedTasks.Any(candidate => candidate.Id == task.Id) ? "Closed" : "Active";
+            var status = AdminUi.MakePill(statusText,
+                statusText == "Active" ? Color.FromArgb(232, 248, 241) : Color.FromArgb(240, 245, 250),
+                statusText == "Active" ? AdminUi.Good : AdminUi.Muted);
             status.Location = new Point(width - 86, 24);
             row.Controls.Add(status);
 
@@ -376,6 +392,9 @@ public sealed class UserDetailPage : AdminPage
 
     private void BuildReviews(int width)
     {
+        var userId = Backend.ParseUserKey(user.Id);
+        var reviews = userId == 0 ? [] : Backend.LoadReviews(userId, true);
+
         var summary = AdminUi.MakeCard();
         summary.SetBounds(0, 0, width, 92);
 
@@ -391,29 +410,27 @@ public sealed class UserDetailPage : AdminPage
         caption.Location = new Point(110, 44);
         summary.Controls.Add(caption);
 
-        var note = AdminUi.MakeLabel("Reviews are not recorded yet.", 8, AdminUi.Muted);
+        var note = AdminUi.MakeLabel(reviews.Count == 0 ? "No review details are available." : "Most recent reviews", 8, AdminUi.Muted);
         note.Location = new Point(110, 62);
         summary.Controls.Add(note);
 
         bodyPanel.Controls.Add(summary);
 
-        var samples = Array.Empty<(string Title, string Body, string Stars)>();
-
         var y = 104;
-        foreach (var (title, body, ratingStars) in samples)
+        foreach (var review in reviews)
         {
             var card = AdminUi.MakeCard();
             card.SetBounds(0, y, width, 92);
 
-            var headline = AdminUi.MakeLabel(title, 10, AdminUi.Navy, true);
+            var headline = AdminUi.MakeLabel(review.Title.Length == 0 ? review.Task : review.Title, 10, AdminUi.Navy, true);
             headline.Location = new Point(18, 14);
             card.Controls.Add(headline);
 
-            var starLabel = AdminUi.MakeLabel(ratingStars, 9, Color.FromArgb(255, 176, 102), true);
+            var starLabel = AdminUi.MakeLabel(new string('★', review.Rating), 9, Color.FromArgb(255, 176, 102), true);
             starLabel.Location = new Point(width - 110, 14);
             card.Controls.Add(starLabel);
 
-            var text = AdminUi.MakeWrappedLabel(body, 8.5F, AdminUi.Muted, Math.Max(300, width - 200));
+            var text = AdminUi.MakeWrappedLabel($"{review.OtherName} · {review.Date:MMM d, yyyy}\n{review.Body}", 8.5F, AdminUi.Muted, Math.Max(300, width - 200));
             text.Location = new Point(18, 38);
             card.Controls.Add(text);
 
