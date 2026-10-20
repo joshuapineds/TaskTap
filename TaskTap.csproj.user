@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Compile Update="AboutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="AccountSettingsPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="ActivityLogPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="AdminAnnouncementsPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="AdminCharts.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="AdminDashboardPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="AdminDialogs.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="AdminLoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="AdminPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="AdminPlaceholderPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="AdminProfilePage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="AdminSettingsPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="AdminShellForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="AnnouncementDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="AppPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="ArchivedTasksPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="ArchivesPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="BarangayManagementPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="BrowseTasksForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="CategoryManagementPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="DashboardPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="DisputesPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="EarningsPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="EditTaskPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="FindTasksPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Form2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="HowItWorksForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="InfoArticleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="InfoArticlePage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MainShellForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ManageRequestsPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MessagesPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MyDisputesPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MyRequestsPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MyTasksPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="NotificationsPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="PasswordRecoveryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PaymentHistoryPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="PaymentRecordPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="PaymentRecordsPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="PostTaskPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="ProfilePage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="PublicInfoFormBase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PublicProfilePage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="RateReviewPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="RecordPaymentPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="ReportManagementPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="ReviewsPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="RolesPermissionsPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="SavedTasksPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="SupportPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="SupportTicketsPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="TaskDetailsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="TaskManagementPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="TaskTapLogo.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="UserDetailPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="UserManagementPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="UserTaskDetailsPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="VerificationQueuePage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+  </ItemGroup>
+</Project>

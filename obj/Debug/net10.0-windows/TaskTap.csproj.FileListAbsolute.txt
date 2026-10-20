@@ -1,0 +1,8 @@
+C:\Users\Joshua\Downloads\TaskTap (1)\TaskTap (1)\obj\Debug\net10.0-windows\TaskTap.csproj.AssemblyReference.cache
+C:\Users\Joshua\Downloads\TaskTap (1)\TaskTap (1)\obj\Debug\net10.0-windows\TaskTap.Form1.resources
+C:\Users\Joshua\Downloads\TaskTap (1)\TaskTap (1)\obj\Debug\net10.0-windows\TaskTap.Form2.resources
+C:\Users\Joshua\Downloads\TaskTap (1)\TaskTap (1)\obj\Debug\net10.0-windows\TaskTap.csproj.GenerateResource.cache
+C:\Users\Joshua\Downloads\TaskTap (1)\TaskTap (1)\obj\Debug\net10.0-windows\TaskTap.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Joshua\Downloads\TaskTap (1)\TaskTap (1)\obj\Debug\net10.0-windows\TaskTap.AssemblyInfoInputs.cache
+C:\Users\Joshua\Downloads\TaskTap (1)\TaskTap (1)\obj\Debug\net10.0-windows\TaskTap.AssemblyInfo.cs
+C:\Users\Joshua\Downloads\TaskTap (1)\TaskTap (1)\obj\Debug\net10.0-windows\TaskTap.csproj.CoreCompileInputs.cache
