@@ -32,6 +32,7 @@ namespace TaskTap
                     MessageBoxIcon.Information);
             }
 
+            Geo.Initialize(AppConfig.Load());
             DemoDataStore.LoadPublicData();
             Application.Run(new Form1());
         }

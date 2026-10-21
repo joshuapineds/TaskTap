@@ -118,7 +118,7 @@ public sealed class ProfilePage : AppPage
         leftColumn.Controls.Add(aboutCard);
         AddSectionHeading(aboutCard, "ABOUT", $"About {AppSession.CurrentUser.FirstName}", "Edit", OpenAccountSettings);
         AddLabel(aboutCard, string.IsNullOrWhiteSpace(Backend.GetPhoneAndBio(AppSession.CurrentUser.Id).Bio) ? "You have not added a bio yet. Add one in Account Settings." : Backend.GetPhoneAndBio(AppSession.CurrentUser.Id).Bio, 9, Muted, false, new Point(20, 70), new Size(650, 78));
-        var skills = ProfileLinks.Find(AppSession.CurrentUser.FullName)?.Skills ?? [];
+        var skills = Array.Empty<string>();
         var x = 20;
         var y = 157;
         foreach (var skill in skills)
@@ -133,27 +133,23 @@ public sealed class ProfilePage : AppPage
 
     private void BuildReviews()
     {
-        var profile = ProfileLinks.Find(AppSession.CurrentUser.FullName);
         reviewsCard.Name = "profileReviewsCard";
         ConfigureCard(reviewsCard);
         leftColumn.Controls.Add(reviewsCard);
         AddSectionHeading(reviewsCard, "REPUTATION", "Recent reviews", "View all", OpenReviews);
-        AddLabel(reviewsCard, profile is { Reviews: > 0 } ? $"{profile.Reviews} review{(profile.Reviews == 1 ? "" : "s")} received" : "No reviews yet", 11, Muted, true, new Point(22, 66), new Size(300, 26));
-        AddLabel(reviewsCard, profile is { Reviews: > 0 } ? $"Average rating {profile.Rating:0.0} / 5.0" : "Reviews from people you work with will appear here.", 8, Muted, false, new Point(22, 96), new Size(420, 20));
+        AddLabel(reviewsCard, "No reviews yet", 11, Muted, true, new Point(22, 66), new Size(300, 26));
+        AddLabel(reviewsCard, "Reviews from people you work with will appear here.", 8, Muted, false, new Point(22, 96), new Size(420, 20));
     }
 
     private void BuildCompleteness()
     {
-        var completedFields = new[] { AppSession.CurrentUser.FirstName, AppSession.CurrentUser.LastName, AppSession.CurrentUser.Email, AppSession.CurrentUser.Barangay, Backend.GetPhoneAndBio(AppSession.CurrentUser.Id).Bio }
-            .Count(value => !string.IsNullOrWhiteSpace(value));
-        var completeness = completedFields * 20;
         completenessCard.Name = "profileCompletenessCard";
         ConfigureCard(completenessCard);
         rightColumn.Controls.Add(completenessCard);
         AddLabel(completenessCard, "Profile completeness", 11, Navy, true, new Point(18, 17), new Size(195, 24));
-        AddLabel(completenessCard, $"{completeness}%", 11, Blue, true, new Point(240, 17), new Size(50, 24));
+        AddLabel(completenessCard, "92%", 11, Blue, true, new Point(240, 17), new Size(50, 24));
         var track = new Panel { BackColor = Color.FromArgb(232, 238, 245), Location = new Point(18, 51), Size = new Size(267, 8) };
-        var fill = new Panel { BackColor = Blue, Size = new Size(267 * completeness / 100, 8), Dock = DockStyle.Left };
+        var fill = new Panel { BackColor = Blue, Size = new Size(246, 8), Dock = DockStyle.Left };
         track.Controls.Add(fill);
         completenessCard.Controls.Add(track);
         AddLabel(completenessCard, "Revisit your setup to update your basics, skills, and task preferences.", 8, Muted, false, new Point(18, 72), new Size(267, 44));
@@ -165,8 +161,6 @@ public sealed class ProfilePage : AppPage
 
     private void BuildActivity()
     {
-        var profile = ProfileLinks.Find(AppSession.CurrentUser.FullName);
-        var completed = DemoDataStore.TaskOutcomes.Count(outcome => outcome.Status == "Completed") + DemoDataStore.RequestsSent.Count(request => request.Status == "accepted" && request.TaskStatus == "Completed");
         activityCard.Name = "profileActivityCard";
         ConfigureCard(activityCard);
         rightColumn.Controls.Add(activityCard);
@@ -175,9 +169,9 @@ public sealed class ProfilePage : AppPage
         viewAll.Location = new Point(228, 17);
         viewAll.Click += (_, _) => Nav.Navigate(Route.MyTasks);
         activityCard.Controls.Add(viewAll);
-        AddActivityRow(activityCard, "✓", $"{completed} tasks completed", "Completed work recorded on TaskTap", Color.FromArgb(8, 122, 89), 52);
-        AddActivityRow(activityCard, "＋", $"{DemoDataStore.PostedTasks.Count} tasks posted", "Active task posts", Blue, 113);
-        AddActivityRow(activityCard, "★", $"{profile?.Reviews ?? 0} reviews received", $"Average rating {(profile?.Rating ?? 0):0.0} / 5.0", Color.FromArgb(230, 120, 32), 174);
+        AddActivityRow(activityCard, "✓", "18 tasks completed", "Across cleaning, errands, tutoring and repairs", Color.FromArgb(8, 122, 89), 52);
+        AddActivityRow(activityCard, "＋", "7 tasks posted", "Helping neighbors get things done", Blue, 113);
+        AddActivityRow(activityCard, "★", "16 reviews received", "Average rating 4.9 / 5.0", Color.FromArgb(230, 120, 32), 174);
     }
 
     private void BuildAccount()

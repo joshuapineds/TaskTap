@@ -97,6 +97,12 @@
     <Compile Update="ManageRequestsPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Map\LocationPickerDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Map\MapView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="MessagesPage.cs">
       <SubType>UserControl</SubType>
     </Compile>

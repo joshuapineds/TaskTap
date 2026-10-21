@@ -168,7 +168,7 @@ public sealed class AdminAnnouncementsPage : AdminPage
             Audience = dialog.AnnouncementAudience,
             Active = dialog.AnnouncementActive,
             PublishedAt = DateTime.Today.ToString("MMM d, yyyy"),
-            Author = AppSession.CurrentAdmin?.FullName ?? "System"
+            Author = "TaskTap Admin"
         });
 
         RefreshList();

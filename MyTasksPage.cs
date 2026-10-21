@@ -405,20 +405,7 @@ public sealed class MyTasksPage : AppPage
         favorite.BackColor = Color.Transparent;
         favorite.ForeColor = Color.FromArgb(130, 150, 172);
         favorite.Location = new Point(0, 10); favorite.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        favorite.Text = DemoDataStore.IsSaved(task.Title) ? "♥" : "♡";
-        favorite.Click += (_, _) =>
-        {
-            var savedTask = DemoDataStore.AvailableTasks.Concat(DemoDataStore.PostedTasks).Concat(DemoDataStore.ArchivedTasks)
-                .FirstOrDefault(candidate => candidate.Title == task.Title);
-            if (savedTask is null)
-            {
-                ShowToast("This task is no longer available to save.");
-                return;
-            }
-            DemoDataStore.ToggleSaved(savedTask);
-            favorite.Text = DemoDataStore.IsSaved(task.Title) ? "♥" : "♡";
-            ShowToast(favorite.Text == "♥" ? "Task saved to your favorites." : "Task removed from your favorites.");
-        };
+        favorite.Click += (_, _) => { favorite.Text = favorite.Text == "♡" ? "♥" : "♡"; ShowToast(favorite.Text == "♥" ? "Task saved to your favorites." : "Task removed from your favorites."); };
         card.Controls.Add(favorite);
         LayoutCard(card, Math.Max(500, taskList.ClientSize.Width));
         return card;

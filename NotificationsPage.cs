@@ -26,7 +26,6 @@ public sealed class NotificationsPage : AppPage
     private readonly Dictionary<NotificationItem, Button> readButtons = [];
     private string activeFilter = "all";
     private bool pageBuilt;
-    private Dictionary<string, bool> preferenceValues = new(StringComparer.OrdinalIgnoreCase);
 
     private sealed class NotificationItem(string title, string time, string description, string action, string type, string period, string icon, Color iconColor, bool unread)
     {
@@ -64,7 +63,6 @@ public sealed class NotificationsPage : AppPage
     {
         if (AppSession.IsSignedIn)
         {
-            Db.Try(() => preferenceValues = Backend.LoadNotificationPreferences(AppSession.CurrentUser.Id));
             List<Backend.NotificationRow> rows = [];
             Db.Try(() => rows = Backend.LoadNotifications(AppSession.CurrentUser.Id));
             foreach (var row in rows)
@@ -192,7 +190,7 @@ public sealed class NotificationsPage : AppPage
     private void BuildPreferences()
     {
         AddCardLabel(preferenceCard, "Notification preferences", 13, Navy, true, new Point(18, 18), new Size(250, 24));
-        AddCardLabel(preferenceCard, "Choose which updates you want to see in your TaskTap activity center.", 8, Muted, false, new Point(18, 48), new Size(275, 43));
+        AddCardLabel(preferenceCard, "Updates that appear in your TaskTap activity center.", 8, Muted, false, new Point(18, 48), new Size(275, 43));
         var preferences = new[]
         {
             ("Task requests", "New requests and decisions"),
@@ -208,13 +206,6 @@ public sealed class NotificationsPage : AppPage
             preferenceCard.Controls.Add(divider);
             AddCardLabel(preferenceCard, title, 9, Navy, true, new Point(18, y + 11), new Size(190, 20));
             AddCardLabel(preferenceCard, subtitle, 7.5F, Muted, false, new Point(18, y + 31), new Size(200, 18));
-            var preferenceKey = title.ToLowerInvariant().Replace(" ", "_");
-            var toggle = new CheckBox { Name = $"NotificationPreference_{preferenceKey}", Checked = !preferenceValues.TryGetValue(preferenceKey, out var enabled) || enabled, Appearance = Appearance.Button, Text = "ON", TextAlign = ContentAlignment.MiddleCenter, FlatStyle = FlatStyle.Flat, BackColor = Blue, ForeColor = Color.White, Font = new Font("Segoe UI", 7F, FontStyle.Bold), Size = new Size(46, 24), Location = new Point(244, y + 17), Cursor = Cursors.Hand };
-            toggle.FlatAppearance.BorderSize = 0;
-            toggle.CheckedChanged += (_, _) => { toggle.Text = toggle.Checked ? "ON" : "OFF"; toggle.BackColor = toggle.Checked ? Blue : Color.FromArgb(170, 184, 200);
-                if (AppSession.IsSignedIn) Db.Try(() => Backend.SetNotificationPreference(AppSession.CurrentUser.Id, preferenceKey, toggle.Checked));
-                ShowToast($"{title} notifications {(toggle.Checked ? "enabled" : "disabled")}."); };
-            preferenceCard.Controls.Add(toggle);
         }
     }
 

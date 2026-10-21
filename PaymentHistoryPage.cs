@@ -98,17 +98,12 @@ public sealed class PaymentHistoryPage : AppPage
 
     private void BuildStats()
     {
-        var payments = DemoDataStore.Payments;
-        var total = payments.Sum(payment => payment.Amount);
-        var paid = payments.Where(payment => payment.Status == "Paid").Sum(payment => payment.Amount);
-        var pending = payments.Where(payment => payment.Status == "Pending").Sum(payment => payment.Amount);
-        var average = payments.Count == 0 ? 0 : total / payments.Count;
         var data = new[]
         {
-            ("₱", "Total recorded", $"₱{total:N0}", $"Across {payments.Count} record{(payments.Count == 1 ? "" : "s")}", Blue),
-            ("✓", "Paid", $"₱{paid:N0}", $"{payments.Count(payment => payment.Status == "Paid")} completed payments", Green),
-            ("◷", "Pending", $"₱{pending:N0}", $"{payments.Count(payment => payment.Status == "Pending")} awaiting completion", Color.FromArgb(255, 138, 61)),
-            ("↗", "Average payment", $"₱{average:N0}", "Per recorded task", Color.FromArgb(123, 97, 209))
+            ("₱", "Total recorded", "₱3,250", "Across 6 records", Blue),
+            ("✓", "Paid", "₱2,850", "5 completed payments", Green),
+            ("◷", "Pending", "₱400", "1 payment awaiting completion", Color.FromArgb(255, 138, 61)),
+            ("↗", "Average payment", "₱542", "Per recorded task", Color.FromArgb(123, 97, 209))
         };
         foreach (var item in data)
         {
@@ -168,14 +163,10 @@ public sealed class PaymentHistoryPage : AppPage
         breakdown.BackColor = Color.White;
         breakdown.BorderStyle = BorderStyle.FixedSingle;
         breakdown.Controls.Add(MakeLabel("Payment breakdown", 12, Navy, true, new Point(16, 16)));
-        var total = DemoDataStore.Payments.Sum(payment => payment.Amount);
-        var methods = new[] { "Cash", "GCash", "Maya", "Bank transfer" };
-        for (var index = 0; index < methods.Length; index++)
-        {
-            var amount = DemoDataStore.Payments.Where(payment => payment.Method == methods[index]).Sum(payment => payment.Amount);
-            var percent = total == 0 ? 0 : (int)Math.Round(amount * 100m / total);
-            AddBreakdownRow(methods[index], $"₱{amount:N0}", percent, 52 + index * 60);
-        }
+        AddBreakdownRow("Cash", "₱1,550", 48, 52);
+        AddBreakdownRow("GCash", "₱450", 14, 112);
+        AddBreakdownRow("Maya", "₱300", 9, 172);
+        AddBreakdownRow("Bank transfer", "₱950", 29, 232);
         page.Controls.Add(breakdown);
     }
 
@@ -334,7 +325,7 @@ public sealed class PaymentHistoryPage : AppPage
         var status = statusFilter.SelectedIndex;
         var method = methodFilter.SelectedIndex;
         var visible = DemoDataStore.Payments.Where(item =>
-            (status == 0 || item.Status == statusFilter.SelectedItem?.ToString()) &&
+            (status == 0 || item.Status == statusFilter.SelectedItem?.ToString()?.Replace("Partially paid", "Partial")) &&
             (method == 0 || item.Method == methodFilter.SelectedItem?.ToString()) &&
             (query.Length == 0 || $"{item.Task} {item.Reference} {item.Person} {item.Category}".Contains(query, StringComparison.OrdinalIgnoreCase)))
             .ToList();

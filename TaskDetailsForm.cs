@@ -27,6 +27,7 @@ namespace TaskTap
         private readonly Label toastLabel = new();
         private readonly System.Windows.Forms.Timer toastTimer = new() { Interval = 2300 };
         private readonly string title;
+        private MapView? areaMap;
         private readonly string category;
         private readonly int price;
         private readonly string barangay;
@@ -249,6 +250,16 @@ namespace TaskTap
             mapPanel.BackColor = Color.FromArgb(233, 242, 231);
             mapPanel.Paint += PaintMap;
             locationCard.Controls.Add(mapPanel);
+
+            // Real OpenStreetMap showing only an approximate area. The painted map stays as the fallback.
+            var known = DemoDataStore.AvailableTasks.FirstOrDefault(task => task.Title == title);
+            var view = new MapView { Name = "detailsLeafletMap" };
+            areaMap = view;
+            view.Ready += () => mapPanel.Visible = false;
+            view.Unavailable += _ => view.Visible = false;
+            locationCard.Controls.Add(view);
+            view.BringToFront();
+            view.ShowArea(new MapTask(known?.Id ?? 0, title, "", barangay, known?.Latitude, known?.Longitude, "#0875e8"));
         }
 
         private void BuildPoster()
@@ -383,6 +394,8 @@ namespace TaskTap
             locationCard.Bounds = new Rectangle(0, 368, primaryWidth, 244);
             SetControlLocation(locationCard, "detailsLocationPrivacy", primaryWidth - 178, 15);
             mapPanel.Bounds = new Rectangle(12, 42, primaryWidth - 24, 188);
+            if (areaMap is not null)
+                areaMap.Bounds = mapPanel.Bounds;
 
             posterCard.Bounds = new Rectangle(0, 0, sideWidth, 138);
             SetControlLocation(posterCard, "posterAvatar", 14, 38);

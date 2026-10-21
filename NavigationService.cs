@@ -57,9 +57,20 @@ public sealed class NavigationService
         _ => false
     };
 
-    /// <summary>Creates the parameterless contextual pages so route navigation never dead-ends.</summary>
+    /// <summary>Creates the parameterless pages that are rebuilt on every visit.</summary>
     private static AppPage CreateContextual(Route route) => route switch
     {
+        Route.Dashboard => new DashboardPage(),
+        Route.FindTasks => new FindTasksPage(),
+        Route.PostTask => new PostTaskPage(),
+        Route.MyTasks => new MyTasksPage(),
+        Route.Messages => new MessagesPage(),
+        Route.Notifications => new NotificationsPage(),
+        Route.Profile => new ProfilePage(),
+        Route.SavedTasks => new SavedTasksPage(),
+        Route.MyDisputes => new MyDisputesPage(),
+        Route.Earnings => new EarningsPage(),
+        Route.Support => new SupportPage(),
         Route.AccountSettings => new AccountSettingsPage(),
         Route.PublicProfile => new PublicProfilePage(),
         Route.Reviews => new ReviewsPage(),
@@ -76,7 +87,6 @@ public sealed class NavigationService
         if (_backStack.Count == 0)
             return false;
 
-        DemoDataStore.RefreshIfStale(TimeSpan.Zero);
         Show(_backStack.Pop(), pushCurrent: false);
         return true;
     }
@@ -106,7 +116,10 @@ public sealed class NavigationService
             _backStack.Push(CurrentPage);
 
         if (CurrentPage is not null && CurrentPage != page)
+        {
+            CurrentPage.OnNavigatedFrom();
             host.Controls.Remove(CurrentPage);
+        }
 
         CurrentPage = page;
         page.Dock = DockStyle.Fill;
@@ -118,19 +131,9 @@ public sealed class NavigationService
         Navigated?.Invoke(page.RouteName);
     }
 
+    /// <summary>Creates a cached (singleton) page; only static content is cached.</summary>
     private static AppPage Create(Route route) => route switch
     {
-        Route.Dashboard => new DashboardPage(),
-        Route.FindTasks => new FindTasksPage(),
-        Route.PostTask => new PostTaskPage(),
-        Route.MyTasks => new MyTasksPage(),
-        Route.Messages => new MessagesPage(),
-        Route.Notifications => new NotificationsPage(),
-        Route.Profile => new ProfilePage(),
-        Route.SavedTasks => new SavedTasksPage(),
-        Route.MyDisputes => new MyDisputesPage(),
-        Route.Earnings => new EarningsPage(),
-        Route.Support => new SupportPage(),
         Route.HelpFaq => new InfoArticlePage(Route.HelpFaq, InfoArticleCatalog.HelpFaq),
         Route.CommunityGuidelines => new InfoArticlePage(Route.CommunityGuidelines, InfoArticleCatalog.CommunityGuidelines),
         Route.Terms => new InfoArticlePage(Route.Terms, InfoArticleCatalog.Terms),

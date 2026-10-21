@@ -101,6 +101,8 @@ public sealed class EditTaskPage : AppPage
         barangay.SelectedItem = task is null ? null : $"Brgy. {task.Barangay}";
         if (barangay.SelectedIndex < 0) barangay.SelectedIndex = 0;
         scheduleNotes.Text = task?.ScheduleNotes ?? "";
+        pinLat = task?.Latitude;
+        pinLng = task?.Longitude;
     }
 
     private void BuildPage()
@@ -291,7 +293,7 @@ public sealed class EditTaskPage : AppPage
         AddTip(panel, "TaskTap does not process payments. Payment is arranged directly between members.", 18, 340, true);
     }
 
-    private void BuildScheduleFields(Control panel)
+    private void BuildScheduleFields(Panel panel)
     {
         AddFieldLabel(panel, "Deadline *", 18, 96);
         deadline.Name = "editTaskDeadline";
@@ -318,8 +320,9 @@ public sealed class EditTaskPage : AppPage
         scheduleNotes.Multiline = true;
         scheduleNotes.MaxLength = 500;
         scheduleNotes.Location = new Point(18, 262);
-        scheduleNotes.Size = new Size(644, 68);
+        scheduleNotes.Size = new Size(644, 38);
         panel.Controls.Add(scheduleNotes);
+        BuildPinControls(panel, 308);
         AddTip(panel, "Task area is approximate. Avoid posting your exact home address.", 18, 350, false);
         var review = MakeLabel("Review  •  Task, budget, deadline, and area are shown in the live preview.", 8, Muted);
         review.Location = new Point(18, 410);
@@ -610,7 +613,9 @@ public sealed class EditTaskPage : AppPage
             PaymentMethod = paymentMethod.SelectedItem?.ToString() ?? "",
             BudgetType = budgetType.SelectedItem?.ToString() ?? "",
             Duration = duration.SelectedItem?.ToString() ?? "",
-            ScheduleNotes = scheduleNotes.Text.Trim()
+            ScheduleNotes = scheduleNotes.Text.Trim(),
+            Latitude = pinLat,
+            Longitude = pinLng
         };
         DemoDataStore.UpdatePostedTask(editing, updated, taskStatus.SelectedIndex == 1);
         DemoDataStore.EditingTask = updated;
@@ -639,6 +644,48 @@ public sealed class EditTaskPage : AppPage
         label.Location = new Point(x, y);
         parent.Controls.Add(label);
     }
+
+    private double? pinLat;
+    private double? pinLng;
+    private readonly Button pinButton = new();
+    private readonly Label pinLabel = new();
+
+    private void BuildPinControls(Panel panel, int top)
+    {
+        pinButton.Name = "taskPinButton";
+        pinButton.Text = "📍 Pin the spot on the map (optional)";
+        pinButton.Location = new Point(18, top);
+        pinButton.Size = new Size(262, 30);
+        pinButton.FlatStyle = FlatStyle.Flat;
+        pinButton.BackColor = Color.White;
+        pinButton.ForeColor = Color.FromArgb(8, 117, 232);
+        pinButton.FlatAppearance.BorderColor = Color.FromArgb(8, 117, 232);
+        pinButton.Cursor = Cursors.Hand;
+        pinButton.Click += (_, _) => PickLocation();
+        panel.Controls.Add(pinButton);
+        pinLabel.Name = "taskPinLabel";
+        pinLabel.AutoSize = true;
+        pinLabel.ForeColor = Color.FromArgb(91, 111, 134);
+        pinLabel.Font = new Font("Segoe UI", 8F);
+        pinLabel.Location = new Point(290, top + 7);
+        panel.Controls.Add(pinLabel);
+        UpdatePinLabel();
+    }
+
+    private void PickLocation()
+    {
+        var area = string.IsNullOrEmpty(barangay.Text) || barangay.Text.StartsWith("Select", StringComparison.Ordinal) ? "" : barangay.Text;
+        if (LocationPickerDialog.Pick(this, pinLat, pinLng, area) is { } picked)
+        {
+            pinLat = picked.Lat;
+            pinLng = picked.Lng;
+            UpdatePinLabel();
+        }
+    }
+
+    private void UpdatePinLabel() => pinLabel.Text = pinLat is null
+        ? "Not pinned: the barangay area is used."
+        : "Pinned. Others see only an approximate area.";
 
     private void AddTip(Control parent, string text, int x, int y, bool orange)
     {

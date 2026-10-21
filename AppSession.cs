@@ -12,9 +12,7 @@ public sealed record AppUser(
     string Barangay,
     string Email,
     string MemberSince,
-    int Id = 0,
-    string AdminRole = "",
-    string LastActive = "Never");
+    int Id = 0);
 
 /// <summary>
 /// The shared session. Every page reads the current user from here. Signing in loads that

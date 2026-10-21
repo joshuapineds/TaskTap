@@ -266,3 +266,80 @@ public sealed class AdminBarangayDialog : Form
         CancelButton = cancel;
     }
 }
+
+/// <summary>Modal "reset password" dialog used by an admin to set a member's new password.</summary>
+public sealed class AdminResetPasswordDialog : Form
+{
+    private readonly TextBox next = new() { UseSystemPasswordChar = true };
+    private readonly TextBox confirm = new() { UseSystemPasswordChar = true };
+    private readonly Label message = new() { AutoSize = false, ForeColor = Color.FromArgb(190, 60, 60) };
+
+    public string NewPassword { get; private set; } = "";
+
+    private AdminResetPasswordDialog(string memberName)
+    {
+        Text = "Reset password";
+        StartPosition = FormStartPosition.CenterParent;
+        FormBorderStyle = FormBorderStyle.FixedDialog;
+        MaximizeBox = false;
+        MinimizeBox = false;
+        ShowInTaskbar = false;
+        ClientSize = new Size(380, 254);
+        BackColor = Color.White;
+        Font = new Font("Segoe UI", 9F);
+
+        Controls.Add(new Label
+        {
+            Text = $"New password for {memberName}",
+            Location = new Point(20, 16),
+            AutoSize = true,
+            ForeColor = AdminUi.Navy,
+            Font = new Font("Segoe UI", 9F, FontStyle.Bold)
+        });
+
+        AddRow("New password (min. 8 characters)", next, 56);
+        AddRow("Confirm new password", confirm, 116);
+        message.Bounds = new Rectangle(20, 176, 340, 30);
+        Controls.Add(message);
+
+        var cancel = new Button { Text = "Cancel", Bounds = new Rectangle(160, 212, 90, 34), DialogResult = DialogResult.Cancel };
+        var save = new Button { Text = "Reset", Bounds = new Rectangle(262, 212, 98, 34), BackColor = Color.FromArgb(8, 117, 232), ForeColor = Color.White, FlatStyle = FlatStyle.Flat };
+        save.FlatAppearance.BorderSize = 0;
+        save.Click += (_, _) => Save();
+        Controls.Add(cancel);
+        Controls.Add(save);
+        AcceptButton = save;
+        CancelButton = cancel;
+    }
+
+    private void AddRow(string label, TextBox box, int top)
+    {
+        Controls.Add(new Label { Text = label, Location = new Point(20, top), AutoSize = true, ForeColor = Color.FromArgb(8, 38, 87), Font = new Font("Segoe UI", 8.5F, FontStyle.Bold) });
+        box.Bounds = new Rectangle(20, top + 22, 340, 28);
+        Controls.Add(box);
+    }
+
+    private void Save()
+    {
+        if (next.Text.Length < 8)
+        {
+            message.Text = "The new password must be at least 8 characters.";
+            return;
+        }
+        if (next.Text != confirm.Text)
+        {
+            message.Text = "The new passwords do not match.";
+            return;
+        }
+        NewPassword = next.Text;
+        DialogResult = DialogResult.OK;
+        Close();
+    }
+
+    /// <summary>Shows the dialog; returns the new password, or null when cancelled.</summary>
+    public static string? ShowFor(IWin32Window owner, string memberName)
+    {
+        using var dialog = new AdminResetPasswordDialog(memberName);
+        return dialog.ShowDialog(owner) == DialogResult.OK ? dialog.NewPassword : null;
+    }
+}

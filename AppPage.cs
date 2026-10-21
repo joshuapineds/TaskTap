@@ -24,4 +24,9 @@ public abstract class AppPage : UserControl
     public virtual void OnNavigatedTo()
     {
     }
+
+    /// <summary>Called when the shell replaces this page (it may stay on the back stack).</summary>
+    public virtual void OnNavigatedFrom()
+    {
+    }
 }

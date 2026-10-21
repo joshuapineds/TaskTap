@@ -321,10 +321,10 @@ namespace TaskTap
             BuildLoginView();
             BuildRegisterView();
 
-            feedbackLabel = MakeLabel(string.Empty, 8, Color.FromArgb(185, 55, 67));
+            feedbackLabel = MakeLabel(string.Empty, 8.5F, Color.FromArgb(185, 55, 67), true);
             feedbackLabel.Name = "authenticationFeedback";
             feedbackLabel.Location = new Point(0, 472);
-            feedbackLabel.MaximumSize = new Size(370, 18);
+            feedbackLabel.MaximumSize = new Size(370, 20);
             authBox.Controls.Add(feedbackLabel);
 
             var securityNote = MakeLabel("🔒  Your account information is used to manage your TaskTap profile and tasks.", 7.5F, Color.FromArgb(139, 155, 174));
@@ -369,21 +369,11 @@ namespace TaskTap
             loginSubmitButton.Click += (_, _) => SubmitLogin();
             loginView.Controls.Add(loginSubmitButton);
 
-            AddDivider(loginView, 213);
-            var googleButton = MakeSocialButton("G", "Continue with Google", "GoogleSignInButton");
-            googleButton.Location = new Point(0, 236);
-            googleButton.Click += (_, _) => BeginSupportedSignIn("Google");
-            loginView.Controls.Add(googleButton);
-            var facebookButton = MakeSocialButton("f", "Continue with Facebook", "FacebookSignInButton");
-            facebookButton.Location = new Point(0, 278);
-            facebookButton.Click += (_, _) => BeginSupportedSignIn("Facebook");
-            loginView.Controls.Add(facebookButton);
-
             var noAccount = MakeLabel("Don't have an account?", 8, MutedColor);
-            noAccount.Location = new Point(56, 326);
+            noAccount.Location = new Point(56, 240);
             loginView.Controls.Add(noAccount);
             loginSwitchButton = MakeLinkButton("Sign up", "SwitchToRegisterButton");
-            loginSwitchButton.Location = new Point(184, 321);
+            loginSwitchButton.Location = new Point(184, 235);
             loginSwitchButton.Click += (_, _) => SetMode(true);
             loginView.Controls.Add(loginSwitchButton);
         }
@@ -546,8 +536,6 @@ namespace TaskTap
 
             foreach (var button in new[] { loginSubmitButton, registerSubmitButton })
                 button.Width = innerWidth;
-            foreach (var button in FindControls<Button>(loginView).Where(control => control.Name is "GoogleSignInButton" or "FacebookSignInButton"))
-                button.Width = innerWidth;
             if (registerBarangayComboBox is not null)
                 registerBarangayComboBox.Width = innerWidth;
             var securityNote = authBox.Controls.Find("authenticationSecurityNote", false).FirstOrDefault();
@@ -581,45 +569,20 @@ namespace TaskTap
             LayoutPage();
         }
 
-        private void BeginSupportedSignIn(string provider)
-        {
-            SetMode(false);
-            loginIdentityTextBox.Focus();
-            feedbackLabel.Text = $"{provider} sign-in is not connected. Use your TaskTap email or phone number below.";
-        }
-
         private void SubmitLogin()
         {
             if (string.IsNullOrWhiteSpace(loginIdentityTextBox.Text) || string.IsNullOrWhiteSpace(loginPasswordTextBox.Text))
             {
-                feedbackLabel.Text = "Enter your email or phone number and password.";
+                SetFeedback("Enter your email or phone number and password.");
                 return;
             }
 
             SetBusy(loginSubmitButton, true, "Signing in...");
-            Backend.AuthResult result;
-            try
-            {
-                result = Backend.Authenticate(loginIdentityTextBox.Text, loginPasswordTextBox.Text, adminOnly: false);
-            }
-            catch (Exception ex)
-            {
-                result = new Backend.AuthResult(false, $"Unable to sign in right now: {ex.Message}");
-            }
-            finally
-            {
-                SetBusy(loginSubmitButton, false, "Login");
-            }
+            var result = Backend.Authenticate(loginIdentityTextBox.Text, loginPasswordTextBox.Text, adminOnly: false);
+            SetBusy(loginSubmitButton, false, "Login");
             if (!result.Success || result.User is null)
             {
-                feedbackLabel.Text = result.Error;
-                loginPasswordTextBox.Clear();
-                return;
-            }
-
-            if (string.Equals(result.User.Role, "Administrator", StringComparison.OrdinalIgnoreCase))
-            {
-                feedbackLabel.Text = "This is an administrator account. Use the Admin sign-in link.";
+                SetFeedback(result.Error);
                 loginPasswordTextBox.Clear();
                 return;
             }
@@ -635,6 +598,12 @@ namespace TaskTap
             button.Enabled = !busy;
             button.Text = text;
             button.Refresh();
+        }
+
+        private void SetFeedback(string message)
+        {
+            feedbackLabel.Text = message;
+            feedbackLabel.BringToFront();
         }
 
         private void OpenDashboard()
@@ -684,47 +653,33 @@ namespace TaskTap
                 registerBarangayComboBox.SelectedIndex == 0 ||
                 !termsCheckBox.Checked)
             {
-                feedbackLabel.Text = "Complete all required fields, select your barangay, and accept the terms.";
+                SetFeedback("Complete all required fields, select your barangay, and accept the terms.");
                 return;
             }
 
             if (registerPasswordTextBox.Text.Length < 8)
             {
-                feedbackLabel.Text = "Your password must be at least 8 characters.";
+                SetFeedback("Your password must be at least 8 characters.");
                 return;
             }
 
             if (!string.Equals(registerPasswordTextBox.Text, registerConfirmPasswordTextBox.Text, StringComparison.Ordinal))
             {
-                feedbackLabel.Text = "Your passwords do not match.";
-                return;
-            }
-
-            var firstName = registerFirstNameTextBox.Text.Trim();
-            var lastName = registerLastNameTextBox.Text.Trim();
-            var phone = registerPhoneTextBox.Text.Trim();
-            if (firstName.Length > 60 || lastName.Length > 60)
-            {
-                feedbackLabel.Text = "First and last names must be 60 characters or fewer.";
-                return;
-            }
-            if (!System.Text.RegularExpressions.Regex.IsMatch(phone, @"^\+?[0-9 ()-]{7,20}$"))
-            {
-                feedbackLabel.Text = "Enter a valid phone number using digits, spaces, +, or hyphens.";
+                SetFeedback("Your passwords do not match.");
                 return;
             }
 
             var email = registerEmailTextBox.Text.Trim();
             if (!System.Text.RegularExpressions.Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
             {
-                feedbackLabel.Text = "Enter a valid email address.";
+                SetFeedback("Enter a valid email address.");
                 return;
             }
 
             var password = registerPasswordTextBox.Text;
             if (!password.Any(char.IsDigit) && !password.Any(ch => !char.IsLetterOrDigit(ch)))
             {
-                feedbackLabel.Text = "Use a number or a special character in your password.";
+                SetFeedback("Use a number or a special character in your password.");
                 return;
             }
 
@@ -733,10 +688,10 @@ namespace TaskTap
             var result = Backend.Register(
                 registerFirstNameTextBox.Text, registerLastNameTextBox.Text, email,
                 registerPhoneTextBox.Text, barangayRaw, password);
-            SetBusy(registerSubmitButton, false, "Create Account");
+            SetBusy(registerSubmitButton, false, "Create My Account");
             if (!result.Success || result.User is null)
             {
-                feedbackLabel.Text = result.Error;
+                SetFeedback(result.Error);
                 return;
             }
 
@@ -785,17 +740,6 @@ namespace TaskTap
             textBox.Width = width;
         }
 
-        private void AddDivider(Control parent, int top)
-        {
-            var left = new Panel { Name = "socialDividerLeft", BackColor = Color.FromArgb(226, 233, 241), Location = new Point(0, top + 8), Size = new Size(150, 1) };
-            var right = new Panel { Name = "socialDividerRight", BackColor = Color.FromArgb(226, 233, 241), Location = new Point(210, top + 8), Size = new Size(150, 1) };
-            var or = MakeLabel("or", 8, MutedColor);
-            or.Location = new Point(174, top);
-            parent.Controls.Add(left);
-            parent.Controls.Add(right);
-            parent.Controls.Add(or);
-        }
-
         private Button MakeTab(string text, string name)
         {
             var button = new Button
@@ -828,25 +772,6 @@ namespace TaskTap
                 UseVisualStyleBackColor = false
             };
             button.FlatAppearance.BorderSize = 0;
-            return button;
-        }
-
-        private Button MakeSocialButton(string icon, string text, string name)
-        {
-            var button = new Button
-            {
-                Name = name,
-                Text = $"{icon}     {text}",
-                Size = new Size(360, 36),
-                BackColor = Color.White,
-                ForeColor = NavyColor,
-                Font = new Font("Segoe UI", 8F, FontStyle.Bold),
-                FlatStyle = FlatStyle.Flat,
-                Cursor = Cursors.Hand,
-                UseVisualStyleBackColor = false
-            };
-            button.FlatAppearance.BorderColor = Color.FromArgb(215, 227, 239);
-            button.FlatAppearance.BorderSize = 1;
             return button;
         }
 
@@ -902,17 +827,6 @@ namespace TaskTap
             path.AddArc(bounds.X, bounds.Bottom - diameter, diameter, diameter, 90, 90);
             path.CloseFigure();
             return path;
-        }
-
-        private static IEnumerable<TControl> FindControls<TControl>(Control parent) where TControl : Control
-        {
-            foreach (Control control in parent.Controls)
-            {
-                if (control is TControl match)
-                    yield return match;
-                foreach (var child in FindControls<TControl>(control))
-                    yield return child;
-            }
         }
 
         private sealed class BrandMark : Control

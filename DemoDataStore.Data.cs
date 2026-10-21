@@ -114,6 +114,9 @@ public static partial class DemoDataStore
             AdminPermissions.Clear();
             foreach (var (role, permissions) in Backend.LoadPermissions())
                 AdminPermissions[role] = permissions;
+            foreach (var role in AdminRoles)
+                if (!AdminPermissions.ContainsKey(role))
+                    AdminPermissions[role] = [];
 
             _activitySequence = Math.Max(2002, Backend.MaxIdNumber("activity_log", "ACT-"));
             _lastLoad = DateTime.Now;

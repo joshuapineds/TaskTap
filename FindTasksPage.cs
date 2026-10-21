@@ -15,6 +15,7 @@ public sealed class FindTasksPage : AppPage
     private readonly Panel resultsPanel = new();
     private readonly Panel listPanel = new();
     private readonly Panel mapPanel = new();
+    private MapView? leaflet;
     private readonly Panel mapCanvas = new();
     private readonly Panel emptyPanel = new();
     private readonly TextBox topSearch = new();
@@ -298,6 +299,7 @@ public sealed class FindTasksPage : AppPage
         mapNote.BackColor = Color.White;
         mapNote.Location = new Point(10, 0);
         mapPanel.Controls.Add(mapNote);
+        BuildLeafletMap();
         resultsPanel.Controls.Add(mapPanel);
 
         emptyPanel.Name = "findEmptyState";
@@ -371,6 +373,46 @@ public sealed class FindTasksPage : AppPage
         taskRows.Add(task, row);
         taskList.Controls.Add(row);
     }
+
+    /// <summary>Real OpenStreetMap (Leaflet). The painted map below stays as the fallback if it cannot load.</summary>
+    private void BuildLeafletMap()
+    {
+        var view = new MapView { Name = "findLeafletMap" };
+        leaflet = view;
+        view.Ready += () =>
+        {
+            mapCanvas.Visible = false;
+            foreach (var name in new[] { "FindMapZoomInButton", "FindMapZoomOutButton" })
+            {
+                if (mapPanel.Controls.Find(name, false).FirstOrDefault() is { } button)
+                    button.Visible = false;
+            }
+            if (mapPanel.Controls.Find("findMapNote", false).FirstOrDefault() is { } note)
+                note.BringToFront();
+        };
+        view.Unavailable += _ =>
+        {
+            view.Visible = false;
+            mapCanvas.Visible = true;
+        };
+        view.MarkerSelected += id =>
+        {
+            if (tasks.FirstOrDefault(task => task.Id == id) is { } task)
+                SelectTask(task, fromMap: true);
+        };
+        view.MarkerOpened += id =>
+        {
+            if (tasks.FirstOrDefault(task => task.Id == id) is { } task)
+                Nav.Navigate(new UserTaskDetailsPage(task.Title, task.Category, task.Price, task.Barangay, task.Days, task.Deadline, task.Icon, task.Description, task.IconBack, task.Id));
+        };
+        mapPanel.Controls.Add(view);
+        view.BringToFront();
+        view.ShowTasks(tasks.Select(MapTask.From).ToList());
+    }
+
+    public override void OnNavigatedFrom() => leaflet?.Suspend();
+
+    public override void OnNavigatedTo() => leaflet?.Resume();
 
     private void BuildMapPins()
     {
@@ -521,6 +563,8 @@ public sealed class FindTasksPage : AppPage
                 save.Location = new Point(item.Width - 45, 4);
         }
         mapCanvas.Bounds = new Rectangle(0, 0, mapPanel.ClientSize.Width, mapPanel.ClientSize.Height);
+        if (leaflet is not null)
+            leaflet.Bounds = mapCanvas.Bounds;
         var zoomIn = mapPanel.Controls.Find("FindMapZoomInButton", false).FirstOrDefault();
         var zoomOut = mapPanel.Controls.Find("FindMapZoomOutButton", false).FirstOrDefault();
         if (zoomIn is not null) zoomIn.Location = new Point(mapPanel.Width - 43, 10);
@@ -556,12 +600,13 @@ public sealed class FindTasksPage : AppPage
         else if (sortTasks.SelectedIndex == 3) filtered = filtered.OrderBy(task => task.Days).ToList();
         foreach (var task in tasks)
         {
-            if (taskRows.TryGetValue(task, out var row)) row.Visible = filtered.Contains(task);
-            if (mapPins.TryGetValue(task, out var pin)) pin.Visible = filtered.Contains(task);
+            taskRows[task].Visible = filtered.Contains(task);
+            mapPins[task].Visible = filtered.Contains(task);
         }
         foreach (var task in filtered)
-            if (taskRows.TryGetValue(task, out var row)) taskList.Controls.SetChildIndex(row, filtered.IndexOf(task));
+            taskList.Controls.SetChildIndex(taskRows[task], filtered.IndexOf(task));
         resultCount.Text = filtered.Count.ToString();
+        leaflet?.ShowTasks(filtered.Select(MapTask.From).ToList());
         var caption = resultsPanel.Controls.Find("findResultsCaption", false).FirstOrDefault();
         if (caption is not null)
             caption.Text = $"{filtered.Count} available tasks";
@@ -600,8 +645,10 @@ public sealed class FindTasksPage : AppPage
         LayoutPage();
     }
 
-    private void SelectTask(TaskRecord task)
+    private void SelectTask(TaskRecord task, bool fromMap = false)
     {
+        if (!fromMap)
+            leaflet?.Highlight(task.Id);
         foreach (var pair in taskRows)
             pair.Value.BackColor = ReferenceEquals(pair.Key, task) ? Color.FromArgb(242, 248, 255) : Color.White;
         foreach (var pair in mapPins)

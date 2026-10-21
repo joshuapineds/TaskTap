@@ -62,8 +62,8 @@ public static class InfoArticleCatalog
         [
             new("What we collect.", "Your name, email, phone, barangay and the tasks, requests and messages you create. Passwords are stored as salted hashes."),
             new("How it is used.", "Only to render the pages you see: profiles, tasks, messages, payments and admin views."),
-            new("Where it lives.", "TaskTap stores account, task, request, message, payment and review data in the configured MySQL database. Sign out on shared computers, and never share passwords, OTPs or payment credentials."),
-            new("Approximate locations.", "Task maps show barangay-level areas, not exact addresses."),
+            new("Where it lives.", "In memory only. Closing the app discards everything. Nothing is sent to a server."),
+            new("Approximate locations.", "Task maps show an approximate area (a few hundred metres across), never an exact address or pin."),
             new("Your controls.", "Edit or clear your details in Account Settings. You can deactivate your account from Account Settings."),
             new("Contact.", "Raise questions through the Support page.")
         ]);

@@ -39,13 +39,14 @@ namespace TaskTap
         private Button zoomOutButton = null!;
         private bool gridView;
         private int mapZoom = 1;
+        private MapView? leaflet;
 
         /// <summary>Open tasks from the database, shown to guests as a preview.</summary>
         private static BrowseTasksForm.TaskRecord[] TaskRecords => DemoDataStore.AvailableTasks
             .Select(task => new BrowseTasksForm.TaskRecord(
                 task.Title, task.Category, task.Price, task.Barangay, task.Deadline, task.Days, task.Icon,
                 task.Description.Length > 90 ? task.Description[..87] + "..." : task.Description,
-                task.Description, task.IconBack))
+                task.Description, task.IconBack, task.Id, task.Latitude, task.Longitude))
             .ToArray();
 
         public BrowseTasksForm()
@@ -126,6 +127,7 @@ namespace TaskTap
             mapPanel.BorderStyle = BorderStyle.FixedSingle;
             mapPanel.Paint += PaintMap;
             BuildMapControls();
+            BuildLeafletMap();
             mapContainer.Name = "mapContainer";
             mapContainer.BackColor = Color.Transparent;
             mapContainer.Controls.Add(mapPanel);
@@ -261,28 +263,10 @@ namespace TaskTap
             filtersPanel.Controls.Add(divider);
 
             AddFilterHeading("Category", 50);
-            var taskCounts = DemoDataStore.AvailableTasks
-                .GroupBy(task => task.Category, StringComparer.OrdinalIgnoreCase)
-                .ToDictionary(group => group.Key, group => group.Count(), StringComparer.OrdinalIgnoreCase);
-            var categories = DemoDataStore.Categories
-                .Select(category => category.Name)
-                .Where(name => !string.IsNullOrWhiteSpace(name))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .Select(name => (Name: name, Count: taskCounts.TryGetValue(name, out var count) ? count : 0))
-                .Take(6)
-                .ToList();
-            if (categories.Count == 0)
+            var categories = new[] { ("Cleaning", "12"), ("Tutoring", "8"), ("Repairs", "6"), ("Shopping", "9"), ("Pet Care", "5"), ("Others", "4") };
+            for (var index = 0; index < categories.Length; index++)
             {
-                categories = taskCounts
-                    .OrderByDescending(pair => pair.Value)
-                    .Take(6)
-                    .Select(pair => (Name: pair.Key, Count: pair.Value))
-                    .ToList();
-            }
-            for (var index = 0; index < categories.Count; index++)
-            {
-                var category = categories[index].Name;
-                var count = categories[index].Count.ToString();
+                var (category, count) = categories[index];
                 var check = new CheckBox
                 {
                     Name = $"category{category.Replace(" ", string.Empty)}CheckBox",
@@ -445,6 +429,39 @@ namespace TaskTap
             note.Location = new Point(0, 0);
             mapPanel.Controls.Add(note);
         }
+
+        /// <summary>Real OpenStreetMap (Leaflet). The painted map stays as the fallback if it cannot load.</summary>
+        private void BuildLeafletMap()
+        {
+            var view = new MapView { Name = "browseLeafletMap", Dock = DockStyle.Fill };
+            leaflet = view;
+            view.Ready += () =>
+            {
+                if (mapPanel.Controls.Find("mapZoomControls", false).FirstOrDefault() is { } zoom)
+                    zoom.Visible = false;
+                if (mapPanel.Controls.Find("approximateLocationNote", false).FirstOrDefault() is { } note)
+                    note.BringToFront();
+            };
+            view.Unavailable += _ => view.Visible = false;
+            view.MarkerOpened += id =>
+            {
+                if (taskCards.Select(card => card.Record).FirstOrDefault(record => record.Id == id) is { } record)
+                    ShowTaskDetails(record);
+            };
+            mapPanel.Controls.Add(view);
+            view.BringToFront();
+            view.ShowTasks(taskCards.Select(card => ToMapTask(card.Record)).ToList());
+            VisibleChanged += (_, _) =>
+            {
+                if (Visible)
+                    view.Resume();
+                else
+                    view.Suspend();
+            };
+        }
+
+        private static MapTask ToMapTask(TaskRecord record) => new(
+            record.Id, record.Title, $"₱{record.Price:N0} · {record.Category}", record.Barangay, record.Latitude, record.Longitude, MapTask.ColorFor(record.Category));
 
         private void BuildEmptyState()
         {
@@ -668,6 +685,7 @@ namespace TaskTap
             }
 
             resultCountLabel.Text = visibleCount.ToString();
+            leaflet?.ShowTasks(taskCards.Where(card => card.IsFilteredVisible).Select(card => ToMapTask(card.Record)).ToList());
             emptyStatePanel.Visible = visibleCount == 0;
             mapPanel.Visible = visibleCount > 0;
             LayoutPage();
@@ -967,7 +985,7 @@ namespace TaskTap
             };
         }
 
-        private sealed record TaskRecord(string Title, string Category, int Price, string Barangay, string Deadline, int Days, string Icon, string Summary, string Details, Color ThumbnailColor);
+        private sealed record TaskRecord(string Title, string Category, int Price, string Barangay, string Deadline, int Days, string Icon, string Summary, string Details, Color ThumbnailColor, int Id = 0, double? Latitude = null, double? Longitude = null);
 
         private sealed class BrowseTaskCard(TaskRecord record, Panel cardPanel, Panel thumbnailPanel, Label iconLabel, Panel bodyPanel, Label availabilityBadge, Button saveButton, Label titleLabel, Label priceLabel, Label summaryLabel, Label metadataLabel, Button detailsButton)
         {

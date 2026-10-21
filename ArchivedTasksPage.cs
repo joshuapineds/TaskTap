@@ -42,17 +42,16 @@ public sealed class ArchivedTasksPage : AppPage
 
     private void SeedTasks()
     {
-        foreach (var task in DemoDataStore.ArchivedTasks)
-        {
-            var outcome = DemoDataStore.TaskOutcomes.FirstOrDefault(item => item.Title == task.Title);
-            var status = outcome?.Status.ToLowerInvariant() ?? "completed";
-            var date = outcome?.Date ?? DateTime.Today;
-            var hasPayment = DemoDataStore.Payments.Any(payment => payment.Task == task.Title);
-            tasks.Add(new ArchivedTask(
-                task.Id.ToString(), task.Title, task.Category, task.Price, task.Barangay, date,
-                date.ToString("MMM d, yyyy"), status, outcome?.Reason ?? "Task moved to history.",
-                task.Description, null, task.Icon, task.IconBack, task.IconBack, hasPayment, false));
-        }
+        tasks.AddRange([
+            new("document-delivery", "Document Delivery", "Delivery", 350, "176", new(2026, 10, 2), "Sep 29, 2026", "completed", "Completed Sep 29, 2026", "Delivered documents to the requested address and confirmed receipt with the task poster.", "5.0", "⌂", Color.FromArgb(238, 240, 255), Color.FromArgb(91, 91, 214), true, true),
+            new("weekly-market", "Weekly Market Run", "Shopping", 400, "179", new(2026, 9, 27), "Sep 22, 2026", "completed", "Completed Sep 22, 2026", "Completed a weekly market shopping run and handed over all items with the receipt.", "4.9", "🛒", Color.FromArgb(255, 243, 232), Orange, false, true),
+            new("garden-cleanup", "Garden Cleanup", "Cleaning", 650, "178", new(2026, 9, 18), "Sep 15, 2026", "completed", "Completed Sep 15, 2026", "Cleared leaves, trimmed light overgrowth, and left the garden area tidy.", "5.0", "🧹", Color.FromArgb(234, 247, 242), Green, false, true),
+            new("senior-grocery", "Senior Grocery Assistance", "Shopping", 550, "176", new(2026, 9, 12), "Sep 10, 2026", "completed", "Completed Sep 10, 2026", "Picked up essential groceries and helped organize the items at the recipient’s home.", "5.0", "🛍", Color.FromArgb(255, 243, 232), Orange, false, true),
+            new("english-tutor", "English Practice Session", "Tutoring", 450, "179", new(2026, 9, 4), "Sep 2, 2026", "completed", "Completed Sep 2, 2026", "One-on-one practice focused on conversation, vocabulary, and short writing exercises.", "4.8", "∑", Color.FromArgb(242, 237, 255), Color.FromArgb(121, 80, 199), false, true),
+            new("pet-walk", "Afternoon Pet Walk", "Pet Care", 500, "176", new(2026, 8, 29), "Aug 27, 2026", "completed", "Completed Aug 27, 2026", "Took the family dog on a scheduled neighborhood walk and sent a completion update.", "5.0", "🐾", Color.FromArgb(234, 247, 242), Green, false, true),
+            new("move-help", "Small Move Assistance", "Delivery", 700, "178", new(2026, 8, 22), "Aug 18, 2026", "cancelled", "Cancelled by poster before work started", "The task was cancelled after the poster changed plans. No payment was recorded.", null, "⌂", Color.FromArgb(238, 240, 255), Color.FromArgb(91, 91, 214), false, false),
+            new("math-review", "Math Review Session", "Tutoring", 350, "179", new(2026, 8, 15), "Aug 12, 2026", "expired", "Deadline passed without completion", "The requested session was not completed before its scheduled deadline.", null, "∑", Color.FromArgb(242, 237, 255), Color.FromArgb(121, 80, 199), false, false)
+        ]);
     }
 
     private void BuildPage()

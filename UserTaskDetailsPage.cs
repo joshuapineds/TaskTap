@@ -19,8 +19,8 @@ public sealed class UserTaskDetailsPage : AppPage
     private readonly string description;
     private readonly Color iconBack;
     private readonly DemoTask? postedTask;
-    private readonly DemoTask? taskRecord;
     private readonly int taskId;
+    private MapView? areaMap;
     private readonly Panel scrollHost = new();
     private readonly Panel canvas = new();
     private readonly Panel content = new();
@@ -55,9 +55,7 @@ public sealed class UserTaskDetailsPage : AppPage
         this.icon = icon;
         this.description = description;
         this.iconBack = iconBack;
-        taskRecord = DemoDataStore.AvailableTasks.Concat(DemoDataStore.PostedTasks).Concat(DemoDataStore.ArchivedTasks)
-            .FirstOrDefault(task => task.Id == this.taskId || task.Title == taskTitle);
-        postedTask = taskRecord;
+        postedTask = DemoDataStore.PostedTasks.FirstOrDefault(posted => posted.Title == taskTitle);
         BuildPage();
     }
 
@@ -223,8 +221,23 @@ public sealed class UserTaskDetailsPage : AppPage
         map.BackColor = Color.FromArgb(232, 241, 242);
         map.Paint += PaintMap;
         locationCard.Controls.Add(map);
+
+        // Real OpenStreetMap showing only an approximate area. The painted map stays as the fallback.
+        var known = DemoDataStore.AvailableTasks.Concat(DemoDataStore.PostedTasks).Concat(DemoDataStore.ArchivedTasks)
+            .FirstOrDefault(task => task.Id == taskId && taskId > 0);
+        var view = new MapView { Name = "userDetailsLeafletMap" };
+        areaMap = view;
+        view.Ready += () => map.Visible = false;
+        view.Unavailable += _ => view.Visible = false;
+        locationCard.Controls.Add(view);
+        view.BringToFront();
+        view.ShowArea(new MapTask(taskId, taskTitle, "", barangay, known?.Latitude, known?.Longitude, "#0875e8"));
         primary.Controls.Add(locationCard);
     }
+
+    public override void OnNavigatedFrom() => areaMap?.Suspend();
+
+    public override void OnNavigatedTo() => areaMap?.Resume();
 
     private void PaintMap(object? sender, PaintEventArgs e)
     {
@@ -277,31 +290,29 @@ public sealed class UserTaskDetailsPage : AppPage
         AddCardHeading(posterCard, "Posted by");
         var profile = MakeTextButton("View profile", "UserDetailsViewProfileButton");
         profile.Location = new Point(0, 10);
-        profile.Click += (_, _) => Nav.Navigate(ProfileLinks.For(taskRecord?.PosterName));
+        profile.Click += (_, _) => Nav.Navigate(ProfileLinks.For("Maria Santos"));
         posterCard.Controls.Add(profile);
-        var posterName = string.IsNullOrWhiteSpace(taskRecord?.PosterName) ? "Task poster" : taskRecord.PosterName;
-        var poster = DemoDataStore.Users.FirstOrDefault(user => user.FullName.Equals(posterName, StringComparison.OrdinalIgnoreCase));
-        var avatar = MakeLabel(poster?.Initials ?? "TP", 11, Color.FromArgb(199, 106, 61), true);
+        var avatar = MakeLabel("MS", 11, Color.FromArgb(199, 106, 61), true);
         avatar.TextAlign = ContentAlignment.MiddleCenter;
         avatar.BackColor = Color.FromArgb(255, 237, 225);
         avatar.Location = new Point(14, 43);
         avatar.Size = new Size(38, 38);
         posterCard.Controls.Add(avatar);
-        var name = MakeLabel(posterName, 9, Navy, true);
+        var name = MakeLabel("Maria Santos", 9, Navy, true);
         name.Location = new Point(62, 41);
         name.Cursor = Cursors.Hand;
-        name.Click += (_, _) => Nav.Navigate(ProfileLinks.For(posterName));
+        name.Click += (_, _) => Nav.Navigate(ProfileLinks.For("Maria Santos"));
         posterCard.Controls.Add(name);
-        var posted = MakeLabel($"{poster?.PostedTasks ?? 0} completed tasks posted", 7.5F, Muted);
+        var posted = MakeLabel("12 completed tasks posted", 7.5F, Muted);
         posted.Location = new Point(62, 58);
         posterCard.Controls.Add(posted);
-        var rating = MakeLabel($"★★★★★  {(poster?.Rating ?? 0):0.0} ({poster?.Reviews ?? 0} reviews)", 8, Color.FromArgb(231, 144, 55), true);
+        var rating = MakeLabel("★★★★★  4.9 (16 reviews)", 8, Color.FromArgb(231, 144, 55), true);
         rating.Location = new Point(62, 73);
         posterCard.Controls.Add(rating);
         AddDivider(posterCard, 104);
-        AddPosterStat(posterCard, $"{poster?.Rating ?? 0:0.0}", "Rating", 20);
-        AddPosterStat(posterCard, (poster?.PostedTasks ?? 0).ToString(), "Tasks posted", 113);
-        AddPosterStat(posterCard, (poster?.Reviews ?? 0).ToString(), "Reviews", 208);
+        AddPosterStat(posterCard, "4.9", "Rating", 20);
+        AddPosterStat(posterCard, "12", "Tasks posted", 113);
+        AddPosterStat(posterCard, "16", "Reviews", 208);
         var quote = MakeLabel("“Very reliable and did a great job!”\nRecent community review", 7, Muted);
         quote.AutoSize = false;
         quote.Location = new Point(14, 148);
@@ -514,6 +525,8 @@ public sealed class UserTaskDetailsPage : AppPage
             facts[index].Size = new Size((primaryWidth - 34) / 2, 48);
         }
         map.Bounds = new Rectangle(14, 62, primaryWidth - 28, 232);
+        if (areaMap is not null)
+            areaMap.Bounds = map.Bounds;
         posterCard.Bounds = new Rectangle(0, 0, asideWidth, 198);
         requestCard.Bounds = new Rectangle(0, 214, asideWidth, 252);
         safetyCard.Bounds = new Rectangle(0, 482, asideWidth, 110);

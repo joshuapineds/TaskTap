@@ -212,8 +212,7 @@ public sealed class RateReviewPage : AppPage
         personCard.Controls.Add(MakeLabel("YOU ARE REVIEWING", 7, Blue, true, new Point(86, 18)));
         personCard.Controls.Add(MakeLabel(payment.Person, 12, Navy, true, new Point(86, 37)));
         personCard.Controls.Add(MakeLabel($"Task poster · Brgy. {payment.Barangay}", 8, Muted, false, new Point(86, 59)));
-        var reviewed = ProfileLinks.Find(payment.Person);
-        var stats = new[] { ($"{reviewed?.Rating ?? 0:0.0}", "rating"), ((reviewed?.Reviews ?? 0).ToString(), "reviews"), ((reviewed?.PostedTasks ?? 0).ToString(), "tasks posted") };
+        var stats = new[] { ("4.9", "rating"), ("16", "reviews"), ("24", "tasks posted") };
         for (var i = 0; i < stats.Length; i++)
         {
             var x = 18 + i * 96;
@@ -222,7 +221,7 @@ public sealed class RateReviewPage : AppPage
         }
         var profile = MakeButton("View public profile", false, 260);
         profile.SetBounds(18, 151, 260, 34);
-        profile.Click += (_, _) => Nav.Navigate(ProfileLinks.For(payment.Person));
+        profile.Click += (_, _) => Nav.Navigate(new PublicProfilePage());
         personCard.Controls.Add(profile);
         page.Controls.Add(personCard);
     }

@@ -19,13 +19,16 @@ public sealed record DemoTask(
     public int Id { get; set; }
     public int PosterId { get; set; }
     public string PosterName { get; set; } = "";
-    public string Status { get; set; } = "Active";
     public string Requirements { get; set; } = "";
     public string TaskType { get; set; } = "";
     public string PaymentMethod { get; set; } = "";
     public string BudgetType { get; set; } = "";
     public string Duration { get; set; } = "";
     public string ScheduleNotes { get; set; } = "";
+
+    /// <summary>Exact pin chosen by the poster (null = barangay area only). Never shown to other members.</summary>
+    public double? Latitude { get; set; }
+    public double? Longitude { get; set; }
 }
 
 /// <summary>A task the poster completed or cancelled, kept for history and disputes.</summary>
@@ -317,13 +320,11 @@ public static partial class DemoDataStore
     }
 
     /// <summary>Marks a sent request as withdrawn.</summary>
-    public static bool WithdrawRequest(DemoRequest request)
+    public static void WithdrawRequest(DemoRequest request)
     {
-        if (!Db.Try(() => Backend.SetRequestStatus(request.Id, "withdrawn")))
-            return false;
+        Persist(() => Backend.SetRequestStatus(request.Id, "withdrawn"));
         request.Withdrawn = true;
         request.Status = "withdrawn";
-        return true;
     }
 
     /// <summary>Marks a received applicant as accepted and declines the rest of that task's applicants.</summary>

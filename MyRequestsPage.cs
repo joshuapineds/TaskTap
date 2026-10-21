@@ -70,23 +70,13 @@ public sealed class MyRequestsPage : AppPage
         AddPageLabel("myRequestsSubtitle", "Track the tasks you’ve asked to perform and what happens next.", 10, Muted);
         var find = MakeButton("⌕  Find more tasks", "MyRequestsFindTasksButton", true, 145); find.Click += (_, _) => Nav.Navigate(Route.FindTasks); page.Controls.Add(find);
 
-        var stats = new[] { ("↗", "Total requests", Color.FromArgb(234, 243, 255), Blue), ("◷", "Pending", Color.FromArgb(255, 241, 232), Color.FromArgb(221, 117, 32)), ("✓", "Accepted", Color.FromArgb(233, 248, 242), Color.FromArgb(13, 155, 107)), ("★", "Tasks completed", Color.FromArgb(237, 240, 247), Navy) };
+        var stats = new[] { ("↗", "4", "Total requests", Color.FromArgb(234, 243, 255), Blue), ("◷", "2", "Pending", Color.FromArgb(255, 241, 232), Color.FromArgb(221, 117, 32)), ("✓", "1", "Accepted", Color.FromArgb(233, 248, 242), Color.FromArgb(13, 155, 107)), ("★", "18", "Tasks completed", Color.FromArgb(237, 240, 247), Navy) };
         for (var index = 0; index < stats.Length; index++)
         {
             var stat = stats[index]; var card = new Panel { Name = $"myRequestsStat{index}", BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle };
-            var icon = new Label { Text = stat.Item1, Size = new Size(40, 40), Location = new Point(14, 15), BackColor = stat.Item3, ForeColor = stat.Item4, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Segoe UI", 14F, FontStyle.Bold) }; card.Controls.Add(icon);
-            var value = index switch
-            {
-                0 => statTotal,
-                1 => statPending,
-                2 => statAccepted,
-                _ => statCompleted
-            };
-            value.Font = new Font("Segoe UI", 19F, FontStyle.Bold);
-            value.ForeColor = Navy;
-            value.Location = new Point(64, 12);
-            card.Controls.Add(value);
-            var caption = MakeLabel(stat.Item2, 8, Muted); caption.Location = new Point(64, 38); card.Controls.Add(caption);
+            var icon = new Label { Text = stat.Item1, Size = new Size(40, 40), Location = new Point(14, 15), BackColor = stat.Item4, ForeColor = stat.Item5, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Segoe UI", 14F, FontStyle.Bold) }; card.Controls.Add(icon);
+            var value = MakeLabel(stat.Item2, 19, Navy, true); value.Location = new Point(64, 12); card.Controls.Add(value);
+            var caption = MakeLabel(stat.Item3, 8, Muted); caption.Location = new Point(64, 38); card.Controls.Add(caption);
             page.Controls.Add(card);
         }
 
@@ -189,8 +179,6 @@ public sealed class MyRequestsPage : AppPage
         statTotal.Text = active.Count.ToString();
         statPending.Text = active.Count(request => request.Status == "pending").ToString();
         statAccepted.Text = active.Count(request => request.Status == "accepted").ToString();
-        statCompleted.Text = (DemoDataStore.TaskOutcomes.Count(outcome => outcome.Status == "Completed") +
-            requests.Count(request => request.Status == "accepted" && request.TaskStatus == "Completed")).ToString();
         foreach (var (key, tab) in tabs)
         {
             var count = key == "all" ? active.Count : active.Count(request => request.Status == key);
@@ -233,12 +221,7 @@ public sealed class MyRequestsPage : AppPage
         {
             if (withdrawDialog.DialogResult == DialogResult.OK && withdrawTarget is not null)
             {
-                var target = withdrawTarget;
-                if (!DemoDataStore.WithdrawRequest(target))
-                {
-                    withdrawDialog.DialogResult = DialogResult.Cancel;
-                    return;
-                }
+                withdrawTarget.Withdrawn = true;
                 withdrawTarget = null;
                 ApplyRequests();
                 ShowToast("Request withdrawn.");

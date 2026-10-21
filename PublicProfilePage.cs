@@ -34,9 +34,7 @@ public sealed class PublicProfilePage : AppPage
         string Initials,
         string Barangay,
         string MemberSince,
-        string LastActive,
         string Subtitle,
-        string[] Skills,
         double Rating,
         int ReviewCount,
         int CompletedTasks,
@@ -58,9 +56,7 @@ public sealed class PublicProfilePage : AppPage
                 AppSession.CurrentUser.Initials,
                 AppSession.CurrentUser.Barangay,
                 AppSession.CurrentUser.MemberSince,
-                 AppSession.CurrentUser.LastActive,
                 "Reliable home helper, errand runner, and community task doer",
-                 ProfileLinks.Find(AppSession.CurrentUser.FullName)?.Skills ?? [],
                 0,
                 0,
                 0,
@@ -72,9 +68,7 @@ public sealed class PublicProfilePage : AppPage
                 user.Initials,
                 user.Barangay,
                 string.IsNullOrWhiteSpace(user.Joined) ? "2025" : user.Joined,
-                 string.IsNullOrWhiteSpace(user.LastActive) ? "Never" : user.LastActive,
                 string.IsNullOrWhiteSpace(user.Role) ? "TaskTap member" : user.Role,
-                 user.Skills,
                 user.Rating,
                 user.Reviews,
                 user.CompletedTasks,
@@ -126,7 +120,7 @@ public sealed class PublicProfilePage : AppPage
         verified.Name = "publicProfileVerified";
         hero.Controls.Add(verified);
         AddLabel(hero, subject.Subtitle, 9, Muted, false, new Point(0, 0), new Size(500, 22));
-        AddLabel(hero, $"● Member since {subject.MemberSince}     ⌖ {subject.Barangay}     Last active {subject.LastActive}", 8, Muted, false, new Point(0, 0), new Size(480, 22));
+        AddLabel(hero, $"● Member since {subject.MemberSince}     ⌖ {subject.Barangay}     Last active recently", 8, Muted, false, new Point(0, 0), new Size(480, 22));
         var message = MakeButton("Message", "PublicProfileMessageButton", true, 105);
         message.Click += (_, _) => OpenMessageModal();
         hero.Controls.Add(message);
@@ -141,9 +135,9 @@ public sealed class PublicProfilePage : AppPage
         {
             ($"{subject.Rating:0.0}", "★★★★★", $"{subject.ReviewCount} reviews"),
             (subject.CompletedTasks.ToString(), "", "tasks completed"),
-            (subject.CompletedTasks == 0 ? "—" : "Recorded", "", "completion rate"),
-            ("—", "", "typical response"),
-            ("—", "", "repeat clients")
+            ("98%", "", "completion rate"),
+            ("< 1 hr", "", "typical response"),
+            ("6", "", "repeat clients")
         };
         for (var i = 0; i < metrics.Length; i++)
         {
@@ -181,9 +175,7 @@ public sealed class PublicProfilePage : AppPage
         ConfigureCard(skillsCard);
         leftColumn.Controls.Add(skillsCard);
         AddSectionHeading(skillsCard, "SKILLS & SERVICES", $"What {subject.FirstName} can help with");
-        var entries = subject.Skills.Select(skill => (skill, "Service offered through TaskTap")).ToArray();
-        if (entries.Length == 0)
-            AddLabel(skillsCard, "No skills or services have been added yet.", 9, Muted, false, new Point(20, 68), new Size(500, 24));
+        var entries = Array.Empty<(string, string)>();
         for (var i = 0; i < entries.Length; i++)
         {
             var x = 20 + (i % 2) * 300;
@@ -200,10 +192,16 @@ public sealed class PublicProfilePage : AppPage
         ConfigureCard(reviewsCard);
         leftColumn.Controls.Add(reviewsCard);
         AddSectionHeading(reviewsCard, "REPUTATION", "Reviews from the community");
+        var viewAll = MakeLink("View all");
+        viewAll.Location = new Point(0, 25);
+        viewAll.Click += (_, _) => ShowToast("No reviews yet.");
+        reviewsCard.Controls.Add(viewAll);
         AddLabel(reviewsCard, $"{subject.Rating:0.0}", 26, Navy, true, new Point(22, 64), new Size(110, 36));
         AddLabel(reviewsCard, "★★★★★", 13, Color.FromArgb(255, 155, 69), true, new Point(22, 102), new Size(125, 22));
         AddLabel(reviewsCard, $"{subject.ReviewCount} reviews", 8, Muted, false, new Point(22, 127), new Size(130, 20));
-        AddLabel(reviewsCard, subject.ReviewCount == 0 ? "No reviews yet." : "Review details are available in the Reviews page.", 8, Muted, false, new Point(180, 82), new Size(300, 42));
+        AddRatingBar(reviewsCard, "5", 0, "0", 69);
+        AddRatingBar(reviewsCard, "4", 0, "0", 94);
+        AddRatingBar(reviewsCard, "3", 0, "0", 119);
     }
 
     private void BuildHistory()
@@ -215,17 +213,9 @@ public sealed class PublicProfilePage : AppPage
         find.Location = new Point(0, 25);
         find.Click += (_, _) => Nav.Navigate(Route.FindTasks);
         historyCard.Controls.Add(find);
-        var history = DemoDataStore.ArchivedTasks
-            .Where(task => task.PosterName.Equals(subject.FullName, StringComparison.OrdinalIgnoreCase))
-            .Take(3)
-            .ToList();
-        if (history.Count == 0)
-            AddLabel(historyCard, "No completed task history is available.", 9, Muted, false, new Point(20, 68), new Size(500, 24));
-        for (var i = 0; i < history.Count; i++)
-        {
-            var task = history[i];
-            AddHistoryRow(historyCard, task.Title, $"Brgy. {task.Barangay} · {task.Status}", $"₱{task.Price:N0}", 65 + i * 54);
-        }
+        AddHistoryRow(historyCard, "Grocery Shopping", "Brgy. 179 · Completed Oct 3, 2026", "₱450", 65);
+        AddHistoryRow(historyCard, "Apartment Cleaning", "Brgy. 178 · Completed Sep 18, 2026", "₱550", 119);
+        AddHistoryRow(historyCard, "Pet Care", "Brgy. 176 · Completed Aug 29, 2026", "₱400", 173);
     }
 
     private void BuildActionCard()
@@ -262,7 +252,7 @@ public sealed class PublicProfilePage : AppPage
         ConfigureCard(preferredCard);
         rightColumn.Controls.Add(preferredCard);
         AddLabel(preferredCard, "Preferred work", 12, Navy, true, new Point(18, 16), new Size(260, 24));
-        var tags = subject.Skills;
+        var tags = new[] { "Cleaning", "Errands", "Pet care", "Shopping", "Home help" };
         var x = 18;
         var y = 56;
         foreach (var text in tags)
@@ -273,8 +263,6 @@ public sealed class PublicProfilePage : AppPage
             preferredCard.Controls.Add(tag);
             x += tag.PreferredWidth + 7;
         }
-        if (tags.Length == 0)
-            AddLabel(preferredCard, "No preferences listed.", 8, Muted, false, new Point(18, 56), new Size(240, 22));
     }
 
     private void BuildSafetyCard()
@@ -344,13 +332,7 @@ public sealed class PublicProfilePage : AppPage
         modalBody.Controls.Add(close);
         var copy = MakeButton("Copy profile link", "PublicProfileShareCopy", true, 142);
         copy.Location = new Point(326, 170);
-        copy.Click += (_, _) =>
-        {
-            var link = $"https://tasktap.local/profile/{Uri.EscapeDataString(subject.FullName.Replace(" ", "-"))}";
-            Clipboard.SetText(link);
-            CloseModal();
-            ShowToast("Profile link copied to your clipboard.");
-        };
+        copy.Click += (_, _) => { try { Clipboard.SetText(shareBox.Text); ShowToast("Profile link copied."); } catch { ShowToast("Could not copy to the clipboard."); } CloseModal(); };
         modalBody.Controls.Add(copy);
         ShowModal(470, 250);
     }

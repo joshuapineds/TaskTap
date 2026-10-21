@@ -1,4 +1,4 @@
-using System.Text;
+using System.Globalization;
 
 namespace TaskTap;
 
@@ -56,7 +56,7 @@ public sealed class PaymentRecordsPage : AdminPage
         page.Controls.Add(subtitle);
 
         var export = AdminUi.MakeSecondaryButton("Export", "paymentsExportButton", 150);
-        export.Click += (_, _) => ExportPayments();
+        export.Click += (_, _) => ExportCsv();
         page.Controls.Add(export);
 
         BuildTotals();
@@ -68,20 +68,6 @@ public sealed class PaymentRecordsPage : AdminPage
         RefreshList();
         LayoutPage();
     }
-
-    private void ExportPayments()
-    {
-        using var dialog = new SaveFileDialog { Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*", FileName = $"tasktap-payments-{DateTime.Today:yyyyMMdd}.csv", Title = "Export payment records" };
-        if (dialog.ShowDialog(FindForm()) != DialogResult.OK) return;
-        var csv = new StringBuilder();
-        csv.AppendLine("Reference,Task,Person,Method,Status,Amount,Date,Category,Barangay,Description");
-        foreach (var payment in DemoDataStore.Payments)
-            csv.AppendLine(string.Join(",", new[] { payment.Reference, payment.Task, payment.Person, payment.Method, payment.Status, payment.Amount.ToString(System.Globalization.CultureInfo.InvariantCulture), payment.Date.ToString("yyyy-MM-dd"), payment.Category, payment.Barangay, payment.Description }.Select(Csv)));
-        File.WriteAllText(dialog.FileName, csv.ToString(), Encoding.UTF8);
-        Toast($"Exported {DemoDataStore.Payments.Count} payment records.");
-    }
-
-    private static string Csv(string value) => $"\"{value.Replace("\"", "\"\"")}\"";
 
     private void BuildTotals()
     {
@@ -467,6 +453,49 @@ public sealed class PaymentRecordsPage : AdminPage
         "Void" => AdminUi.Bad,
         _ => AdminUi.Muted
     };
+
+    private void ExportCsv()
+    {
+        var payments = DemoDataStore.Payments.OrderByDescending(payment => payment.Date).ToList();
+        if (payments.Count == 0)
+        {
+            Toast("There are no payments to export.");
+            return;
+        }
+
+        using var dialog = new SaveFileDialog
+        {
+            Title = "Export payments",
+            Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*",
+            FileName = $"tasktap-payments-{DateTime.Now:yyyyMMdd-HHmmss}.csv",
+            DefaultExt = "csv"
+        };
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        var lines = new List<string>
+        {
+            "Reference,Task,Person,Method,Status,Amount,Date,Category,Barangay,Description"
+        };
+        foreach (var payment in payments)
+        {
+            lines.Add(string.Join(",", new[]
+            {
+                Csv(payment.Reference), Csv(payment.Task), Csv(payment.Person), Csv(payment.Method), Csv(payment.Status),
+                payment.Amount.ToString("0.00", CultureInfo.InvariantCulture),
+                payment.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                Csv(payment.Category), Csv(payment.Barangay), Csv(payment.Description)
+            }));
+        }
+
+        File.WriteAllLines(dialog.FileName, lines);
+        Toast($"Exported {payments.Count} payments.");
+    }
+
+    private static string Csv(string value) =>
+        value.Contains(',') || value.Contains('"') || value.Contains('\n') || value.Contains('\r')
+            ? $"\"{value.Replace("\"", "\"\"")}\""
+            : value;
 
     private static void Toast(string message) => AdminNavigationService.Current.Shell?.ShowToast(message);
 

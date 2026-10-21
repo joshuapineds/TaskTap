@@ -131,20 +131,10 @@ public sealed class MessagesPage : AppPage
         Resize += (_, _) => toast.Location = new Point((ClientSize.Width - toast.Width) / 2, ClientSize.Height - toast.Height - 18);
         pageBuilt = true;
         ApplyConversationFilters();
-        if (currentId.Length > 0)
-            SelectConversation(currentId);
-        else
-            ShowEmptyConversationState();
+        SelectConversation(currentId);
+        if (currentId.Length == 0)
+            placeholder.Visible = true;
         LayoutPage();
-    }
-
-    private void ShowEmptyConversationState()
-    {
-        placeholder.Visible = true;
-        chatPane.Visible = false;
-        bannerTask.Text = "";
-        bannerDetails.Text = "";
-        bannerStatus.Text = "";
     }
 
     private void BuildContent()
@@ -158,7 +148,7 @@ public sealed class MessagesPage : AppPage
         workspace.Name = "messagesWorkspace"; workspace.BackColor = Color.White; workspace.BorderStyle = BorderStyle.FixedSingle; page.Controls.Add(workspace);
         conversationPane.Name = "messagesConversationPane"; conversationPane.BackColor = Color.White; conversationPane.BorderStyle = BorderStyle.FixedSingle; workspace.Controls.Add(conversationPane);
         var head = MakeLabel("Conversations", 11, Navy, true); head.Location = new Point(14, 13); conversationPane.Controls.Add(head);
-        conversationCount.Name = "messagesConversationCount"; conversationCount.Text = $"{conversations.Count} chat{(conversations.Count == 1 ? "" : "s")}"; conversationCount.Font = new Font("Segoe UI", 7.5F); conversationCount.ForeColor = Muted; conversationCount.Location = new Point(14, 33); conversationPane.Controls.Add(conversationCount);
+        conversationCount.Name = "messagesConversationCount"; conversationCount.Text = "4 chats"; conversationCount.Font = new Font("Segoe UI", 7.5F); conversationCount.ForeColor = Muted; conversationCount.Location = new Point(14, 33); conversationPane.Controls.Add(conversationCount);
         var compose = MakeButton("＋", "MessagesComposeButton", false, 36); compose.Location = new Point(0, 10); compose.Anchor = AnchorStyles.Top | AnchorStyles.Right; compose.Click += (_, _) => OpenCompose(); conversationPane.Controls.Add(compose);
         conversationSearch.Name = "messagesConversationSearch"; conversationSearch.PlaceholderText = "⌕  Search conversations..."; conversationSearch.TextChanged += (_, _) => ApplyConversationFilters(); conversationPane.Controls.Add(conversationSearch);
         foreach (var (key, label) in new[] { ("all", "All"), ("unread", "Unread"), ("tasks", "Tasks") })
@@ -199,7 +189,6 @@ public sealed class MessagesPage : AppPage
         transcriptHost.Name = "messagesTranscriptHost"; transcriptHost.AutoScroll = true; transcriptHost.BackColor = Color.FromArgb(250, 252, 255); chatPane.Controls.Add(transcriptHost);
         transcript.Name = "messagesTranscript"; transcript.FlowDirection = FlowDirection.TopDown; transcript.WrapContents = false; transcript.AutoSize = true; transcript.AutoSizeMode = AutoSizeMode.GrowAndShrink; transcript.Padding = new Padding(12); transcript.BackColor = Color.FromArgb(250, 252, 255); transcriptHost.Controls.Add(transcript);
         var composer = new Panel { Name = "messagesComposer", BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle }; chatPane.Controls.Add(composer);
-        var attach = MakeButton("＋", "MessagesAttachButton", false, 38); attach.Location = new Point(10, 13); attach.Click += (_, _) => AttachFile(); composer.Controls.Add(attach);
         messageInput.Name = "messagesMessageInput"; messageInput.Multiline = true; messageInput.AcceptsReturn = true; messageInput.ScrollBars = ScrollBars.Vertical; messageInput.PlaceholderText = "Write a message..."; messageInput.Font = new Font("Segoe UI", 9F); composer.Controls.Add(messageInput);
         var hint = MakeLabel("Keep exact addresses and payment details private until necessary.", 6.5F, Muted); hint.Name = "messagesComposerHint"; composer.Controls.Add(hint);
         var send = MakeButton("➤", "MessagesSendButton", true, 42); send.Click += (_, _) => SendMessage(); composer.Controls.Add(send);
@@ -236,8 +225,6 @@ public sealed class MessagesPage : AppPage
     {
         if (!conversations.TryGetValue(id, out var conversation)) return;
         currentId = id;
-        chatPane.Visible = true;
-        placeholder.Visible = false;
         if (conversation.UnreadCount > 0 && int.TryParse(id, out var openedId))
             Db.Try(() => Backend.MarkConversationRead(openedId, AppSession.CurrentUser.Id));
         conversation.Unread = false;
@@ -314,17 +301,6 @@ public sealed class MessagesPage : AppPage
             bubble.Location = message.IsMine ? new Point(row.Width - bubble.Width - 8, 4) : new Point(8, 4); row.Controls.Add(bubble); transcript.Controls.Add(row);
         }
         transcript.ResumeLayout(); transcriptHost.ScrollControlIntoView(transcript.Controls.Count > 0 ? transcript.Controls[^1] : transcript); transcriptHost.AutoScrollPosition = new Point(0, transcriptHost.VerticalScroll.Maximum);
-    }
-
-    private void AttachFile()
-    {
-        if (!conversations.ContainsKey(currentId)) return;
-        using var dialog = new OpenFileDialog { Title = "Choose a file to mention in the conversation", CheckFileExists = true };
-        if (dialog.ShowDialog(FindForm()) != DialogResult.OK) return;
-        messageInput.Text = string.IsNullOrWhiteSpace(messageInput.Text)
-            ? $"[Attachment: {Path.GetFileName(dialog.FileName)}]"
-            : $"{messageInput.Text.Trim()} [Attachment: {Path.GetFileName(dialog.FileName)}]";
-        messageInput.Focus();
     }
 
     private void SendMessage()
@@ -486,12 +462,7 @@ public sealed class MessagesPage : AppPage
             var back = header.Controls.Find("MessagesBackConversationsButton", false).FirstOrDefault(); if (back is not null) back.Location = new Point(4, 12);
             chatAvatar.Location = new Point(16, 10); chatName.Location = new Point(64, 9); chatPresence.Location = new Point(64, 29);
             var menu = header.Controls.Find("MessagesChatMenuButton", false).FirstOrDefault(); if (menu is not null) menu.Location = new Point(width - menu.Width - 8, 10);
-            var context = header.Controls.Find("MessagesTaskContextButton", false).FirstOrDefault();
-            if (context is not null)
-            {
-                context.Location = new Point(width - (menu?.Width ?? 0) - context.Width - 12, 11);
-                context.Text = conversations.TryGetValue(currentId, out var activeConversation) ? activeConversation.Task : "";
-            }
+            var context = header.Controls.Find("MessagesTaskContextButton", false).FirstOrDefault(); if (context is not null) { context.Location = new Point(width - menu!.Width - context.Width - 12, 11); context.Text = conversations.TryGetValue(currentId, out var current) ? current.Task : ""; }
         }
         var banner = chatPane.Controls.Find("messagesTaskBanner", false).FirstOrDefault(); if (banner is not null) { banner.Bounds = new Rectangle(8, 66, width - 16, 48); bannerStatus.Location = new Point(banner.Width - bannerStatus.Width - 10, 12); }
         transcriptHost.Bounds = new Rectangle(0, 120, width, Math.Max(160, height - 206));
@@ -500,9 +471,8 @@ public sealed class MessagesPage : AppPage
         if (composer is not null)
         {
             composer.Bounds = new Rectangle(8, height - 78, width - 16, 70);
-            var attach = composer.Controls.Find("MessagesAttachButton", false).FirstOrDefault(); if (attach is not null) attach.Location = new Point(8, 14);
-            messageInput.Bounds = new Rectangle(54, 8, Math.Max(120, width - 132), 38);
-            var hint = composer.Controls.Find("messagesComposerHint", false).FirstOrDefault(); if (hint is not null) hint.Location = new Point(56, 48);
+            messageInput.Bounds = new Rectangle(10, 8, Math.Max(120, width - 86), 38);
+            var hint = composer.Controls.Find("messagesComposerHint", false).FirstOrDefault(); if (hint is not null) hint.Location = new Point(12, 48);
             var send = composer.Controls.Find("MessagesSendButton", false).FirstOrDefault(); if (send is not null) send.Location = new Point(width - 68, 14);
         }
     }
