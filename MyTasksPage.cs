@@ -393,11 +393,12 @@ public sealed class MyTasksPage : AppPage
         else
         {
             AddAction(actions, task.Tab == "requested" ? "View Task" : task.Tab == "completed" ? "View Details" : "Open Task", task.Tab != "completed", () => OpenTask(task));
-            AddAction(actions, task.Tab == "requested" ? "View Request" : task.Tab == "completed" ? "View payment / review" : "Message poster", false, () =>
+            AddAction(actions, task.Tab == "requested" ? "View Request" : task.Tab == "completed" ? "View payment / review" : "Contact poster", false, () =>
             {
                 if (task.Tab == "completed") Nav.Navigate(Route.PaymentHistory);
                 else if (task.Tab == "requested") Nav.Navigate(new MyRequestsPage());
-                else Nav.Navigate(Route.Messages);
+                else if (DemoDataStore.RequestsSent.FirstOrDefault(request => request.Title == task.Title && request.Status == "accepted") is { } accepted)
+                    CvTools.ShowContact(this, accepted.Id, "Poster");
             });
         }
         var favorite = MakeButton("♡", "MyTaskSaveButton", false, 32);
@@ -405,7 +406,20 @@ public sealed class MyTasksPage : AppPage
         favorite.BackColor = Color.Transparent;
         favorite.ForeColor = Color.FromArgb(130, 150, 172);
         favorite.Location = new Point(0, 10); favorite.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        favorite.Click += (_, _) => { favorite.Text = favorite.Text == "♡" ? "♥" : "♡"; ShowToast(favorite.Text == "♥" ? "Task saved to your favorites." : "Task removed from your favorites."); };
+        favorite.Text = DemoDataStore.IsSaved(task.Title) ? "♥" : "♡";
+        favorite.Click += (_, _) =>
+        {
+            var savedTask = DemoDataStore.AvailableTasks.Concat(DemoDataStore.PostedTasks).Concat(DemoDataStore.ArchivedTasks)
+                .FirstOrDefault(candidate => candidate.Title == task.Title);
+            if (savedTask is null)
+            {
+                ShowToast("This task is no longer available to save.");
+                return;
+            }
+            DemoDataStore.ToggleSaved(savedTask);
+            favorite.Text = DemoDataStore.IsSaved(task.Title) ? "♥" : "♡";
+            ShowToast(favorite.Text == "♥" ? "Task saved to your favorites." : "Task removed from your favorites.");
+        };
         card.Controls.Add(favorite);
         LayoutCard(card, Math.Max(500, taskList.ClientSize.Width));
         return card;

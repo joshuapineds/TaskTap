@@ -201,7 +201,7 @@ namespace TaskTap
             var headline = MakeLabel("Find a task.\nGet help.\nEarn locally.", 38, NavyColor, true);
             headline.Name = "heroHeadline";
             headline.AutoSize = true;
-            headline.MaximumSize = new Size(540, 142);
+            headline.MaximumSize = new Size(540, 200);
             headline.Margin = new Padding(0, 0, 0, 8);
             copy.Controls.Add(headline);
 

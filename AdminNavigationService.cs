@@ -24,6 +24,11 @@ public sealed class AdminNavigationService
     /// <summary>Navigate to a global (singleton) admin route, reusing its page instance.</summary>
     public void Navigate(AdminRoute route)
     {
+        if (!CanAccess(route))
+        {
+            _shell?.ShowToast("You do not have permission to open this section.");
+            return;
+        }
         if (!_singletons.TryGetValue(route, out var page))
         {
             page = Create(route);
@@ -42,11 +47,31 @@ public sealed class AdminNavigationService
         if (_backStack.Count == 0)
             return false;
 
+        DemoDataStore.RefreshIfStale(TimeSpan.Zero);
         Show(_backStack.Pop(), pushCurrent: false);
         return true;
     }
 
     public void GoHome() => Navigate(AdminRoute.Dashboard);
+
+    public bool CanAccess(AdminRoute route) => route switch
+    {
+        AdminRoute.Dashboard or AdminRoute.AdminProfile => true,
+        AdminRoute.Users or AdminRoute.UserDetail or AdminRoute.VerificationQueue => DemoDataStore.HasAdminPermission("Users"),
+        AdminRoute.Tasks => DemoDataStore.HasAdminPermission("Tasks"),
+        AdminRoute.Categories => DemoDataStore.HasAdminPermission("Categories"),
+        AdminRoute.Barangays => DemoDataStore.HasAdminPermission("Barangays"),
+        AdminRoute.Reports => DemoDataStore.HasAdminPermission("Reports"),
+        AdminRoute.Disputes => DemoDataStore.HasAdminPermission("Disputes"),
+        AdminRoute.Payments => DemoDataStore.HasAdminPermission("Payments"),
+        AdminRoute.Archives => DemoDataStore.HasAdminPermission("Archives"),
+        AdminRoute.ActivityLog => DemoDataStore.HasAdminPermission("Activity"),
+        AdminRoute.Settings => DemoDataStore.HasAdminPermission("Settings"),
+        AdminRoute.RolesPermissions => DemoDataStore.HasAdminPermission("Roles"),
+        AdminRoute.Announcements => DemoDataStore.HasAdminPermission("Settings"),
+        AdminRoute.SupportTickets => DemoDataStore.HasAdminPermission("Support"),
+        _ => false
+    };
 
     public void Reset()
     {

@@ -34,8 +34,8 @@ public static class InfoArticleCatalog
         [
             new("Be clear about the task.", "Describe the work, the location, the budget and the deadline before people request it."),
             new("Respect people and their property.", "Arrive on time, follow instructions, and treat homes and belongings with care."),
-            new("Keep communication on TaskTap.", "Use in-app messages for arrangements. Do not move to personal numbers before a task is confirmed."),
-            new("Never share sensitive details.", "Do not post passwords, OTPs, ID numbers or payment credentials in tasks, messages or reviews."),
+            new("Keep arrangements clear.", "Confirm the schedule, area and payment method before the task starts. Share contact details only after a request is accepted."),
+            new("Never share sensitive details.", "Do not post passwords, OTPs, ID numbers or payment credentials in tasks, CVs or reviews."),
             new("Use honest reviews.", "Review the work, not the person. No harassment, discrimination or personal remarks."),
             new("Report, don't retaliate.", "If something goes wrong, report it or open a dispute instead of escalating in chat.")
         ]);
@@ -60,9 +60,9 @@ public static class InfoArticleCatalog
         "Privacy Policy",
         "How TaskTap handles the information you enter.",
         [
-            new("What we collect.", "Your name, email, phone, barangay and the tasks, requests and messages you create. Passwords are stored as salted hashes."),
-            new("How it is used.", "Only to render the pages you see: profiles, tasks, messages, payments and admin views."),
-            new("Where it lives.", "In memory only. Closing the app discards everything. Nothing is sent to a server."),
+            new("What we collect.", "Your name, email, phone, barangay and the tasks, requests and CV files you create. Passwords are stored as salted hashes."),
+            new("How it is used.", "Only to render the pages you see: profiles, tasks, requests, payments and admin views."),
+            new("Where it lives.", "TaskTap stores account, task, request, message, payment and review data in the configured MySQL database. Sign out on shared computers, and never share passwords, OTPs or payment credentials."),
             new("Approximate locations.", "Task maps show an approximate area (a few hundred metres across), never an exact address or pin."),
             new("Your controls.", "Edit or clear your details in Account Settings. You can deactivate your account from Account Settings."),
             new("Contact.", "Raise questions through the Support page.")

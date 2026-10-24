@@ -36,7 +36,6 @@ public sealed class EditTaskPage : AppPage
     private readonly TextBox requirements = new();
     private readonly TextBox amount = new();
     private readonly ComboBox paymentMethod = new();
-    private readonly ComboBox budgetType = new();
     private readonly DateTimePicker deadline = new();
     private readonly DateTimePicker startTime = new();
     private readonly ComboBox duration = new();
@@ -81,10 +80,9 @@ public sealed class EditTaskPage : AppPage
         description.Text = task?.Description ?? "";
         requirements.Text = (task?.Requirements ?? "").Replace("\r\n", "\n").Replace("\n", "\r\n");
         amount.Text = task?.Price.ToString() ?? "";
-        paymentMethod.Items.AddRange(["Select a method", "Cash", "GCash", "Bank transfer", "Other agreed method"]);
+        paymentMethod.Items.AddRange(TaskFormHelpers.PaymentMethods);
         paymentMethod.SelectedIndex = Math.Max(0, paymentMethod.Items.IndexOf(task?.PaymentMethod ?? ""));
-        budgetType.Items.AddRange(["Fixed total", "Hourly rate"]);
-        budgetType.SelectedIndex = Math.Max(0, budgetType.Items.IndexOf(task?.BudgetType ?? ""));
+        TaskFormHelpers.ConfigureStartTime(startTime, task?.StartTime);
         var due = task is not null && DateTime.TryParseExact(task.Deadline, "MMM d, yyyy", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var parsed)
             ? parsed
             : DateTime.Today.AddDays(1);
@@ -115,7 +113,7 @@ public sealed class EditTaskPage : AppPage
         canvas.BackColor = Page;
         scrollHost.Controls.Add(canvas);
         BuildContent();
-        foreach (Control control in new Control[] { taskTitle, category, taskType, taskStatus, description, requirements, amount, paymentMethod, budgetType, deadline, startTime, duration, barangay, scheduleNotes })
+        foreach (Control control in new Control[] { taskTitle, category, taskType, taskStatus, description, requirements, amount, paymentMethod, deadline, startTime, duration, barangay, scheduleNotes })
         {
             control.TextChanged += (_, _) => UpdatePreview();
             if (control is ComboBox combo)
@@ -287,13 +285,11 @@ public sealed class EditTaskPage : AppPage
             panel.Controls.Add(button);
         }
         AddFieldLabel(panel, "Payment method *", 18, 260);
-        ConfigureCombo(panel, paymentMethod, "editTaskPayment", 18, 283, ["Select a method", "Cash", "GCash", "Bank transfer", "Other agreed method"]);
-        AddFieldLabel(panel, "Budget type", 352, 260);
-        ConfigureCombo(panel, budgetType, "editTaskBudgetType", 352, 283, ["Fixed total", "Hourly rate"]);
+        ConfigureCombo(panel, paymentMethod, "editTaskPayment", 18, 283, TaskFormHelpers.PaymentMethods);
         AddTip(panel, "TaskTap does not process payments. Payment is arranged directly between members.", 18, 340, true);
     }
 
-    private void BuildScheduleFields(Panel panel)
+    private void BuildScheduleFields(Control panel)
     {
         AddFieldLabel(panel, "Deadline *", 18, 96);
         deadline.Name = "editTaskDeadline";
@@ -302,19 +298,18 @@ public sealed class EditTaskPage : AppPage
         deadline.Location = new Point(18, 118);
         deadline.Size = new Size(310, 32);
         panel.Controls.Add(deadline);
-        AddFieldLabel(panel, "Preferred start time", 352, 96);
+        AddFieldLabel(panel, "Preferred start time (optional)", 352, 96);
         startTime.Name = "editTaskStartTime";
-        startTime.Format = DateTimePickerFormat.Time;
-        startTime.ShowUpDown = true;
         startTime.Location = new Point(352, 118);
         startTime.Size = new Size(310, 32);
         panel.Controls.Add(startTime);
         AddFieldLabel(panel, "Estimated duration", 18, 168);
         duration.Name = "editTaskDuration";
         ConfigureCombo(panel, duration, "editTaskDuration", 18, 191, ["Less than 1 hour", "1–2 hours", "2–3 hours", "Half day", "Full day", "Multiple days"]);
-        AddFieldLabel(panel, "Barangay / task area *", 352, 168);
+        AddFieldLabel(panel, "Barangay (from your profile)", 352, 168);
         barangay.Name = "editTaskBarangay";
-        ConfigureCombo(panel, barangay, "editTaskBarangay", 352, 191, ["Select barangay", "Brgy. 176", "Brgy. 178", "Brgy. 179"]);
+        ConfigureCombo(panel, barangay, "editTaskBarangay", 352, 191, ["Select barangay"]);
+        TaskFormHelpers.LockBarangay(barangay, editing is { Barangay.Length: > 0 } ? $"Brgy. {editing.Barangay}" : AppSession.CurrentUser.Barangay);
         AddFieldLabel(panel, "Additional schedule notes", 18, 239);
         scheduleNotes.Name = "editTaskScheduleNotes";
         scheduleNotes.Multiline = true;
@@ -476,10 +471,9 @@ public sealed class EditTaskPage : AppPage
         description.Width = width - 36;
         requirements.Width = width - 36;
         scheduleNotes.Width = width - 36;
-        foreach (var combo in new[] { category, taskType, taskStatus, paymentMethod, budgetType, duration, barangay })
+        foreach (var combo in new[] { category, taskType, taskStatus, paymentMethod, duration, barangay })
             combo.Width = halfWidth;
         taskType.Left = halfWidth + 18;
-        budgetType.Left = halfWidth + 18;
         barangay.Left = halfWidth + 18;
     }
 
@@ -611,7 +605,7 @@ public sealed class EditTaskPage : AppPage
             Requirements = requirements.Text.Trim(),
             TaskType = taskType.SelectedItem?.ToString() ?? "",
             PaymentMethod = paymentMethod.SelectedItem?.ToString() ?? "",
-            BudgetType = budgetType.SelectedItem?.ToString() ?? "",
+            StartTime = TaskFormHelpers.StartTimeText(startTime),
             Duration = duration.SelectedItem?.ToString() ?? "",
             ScheduleNotes = scheduleNotes.Text.Trim(),
             Latitude = pinLat,

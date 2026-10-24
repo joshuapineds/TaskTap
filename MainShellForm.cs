@@ -31,7 +31,7 @@ public sealed class MainShellForm : Form
         ("⌂", "Dashboard", Route.Dashboard),
         ("⌕", "Find Tasks", Route.FindTasks),
         ("▤", "My Tasks", Route.MyTasks),
-        ("▱", "Messages", Route.Messages),
+        ("◔", "Notifications", Route.Notifications),
         ("₱", "Payments", Route.PaymentHistory),
         ("◉", "Profile", Route.Profile)
     ];
@@ -239,7 +239,7 @@ public sealed class MainShellForm : Form
             Route.PostTask => -1,
             Route.FindTasks or Route.UserTaskDetails or Route.SavedTasks => 1,
             Route.MyTasks or Route.MyRequests or Route.ManageRequests or Route.EditTask or Route.ArchivedTasks or Route.MyDisputes => 2,
-            Route.Messages or Route.Notifications => 3,
+            Route.Notifications => 3,
             Route.PaymentHistory or Route.PaymentRecord or Route.RecordPayment or Route.RateReview or Route.Earnings => 4,
             _ => 5
         };
@@ -261,7 +261,6 @@ public sealed class MainShellForm : Form
             Route.ManageRequests => "My Tasks › Requests Received",
             Route.EditTask => "My Tasks › Edit Task",
             Route.ArchivedTasks => "My Tasks › Archived Tasks",
-            Route.Messages => "Messages",
             Route.Notifications => "Notifications",
             Route.Profile => "Profile",
             Route.AccountSettings => "Profile › Account Settings",
@@ -344,7 +343,7 @@ public sealed class MainShellForm : Form
         return badge;
     }
 
-    private void UpdateBadges() => UpdateBadge(_messagesBadge, DemoDataStore.UnreadMessages);
+    private void UpdateBadges() => UpdateBadge(_messagesBadge, DemoDataStore.UnreadNotifications);
 
     private static void UpdateBadge(Label? badge, int count)
     {

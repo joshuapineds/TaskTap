@@ -516,26 +516,47 @@ public sealed class TaskManagementPage : AdminPage
         delete.Click += (_, _) => DeleteTask(task);
         detailBody.Controls.Add(delete);
 
+        var edit = AdminUi.MakeSecondaryButton("Edit task", "taskDetailEdit", 160);
+        edit.Location = new Point(0, 296);
+        edit.Click += (_, _) => EditTask(task);
+        detailBody.Controls.Add(edit);
+
         var open = AdminUi.MakeLinkButton("View in user app →", "taskDetailOpenApp");
-        open.Location = new Point(0, 300);
+        open.Location = new Point(0, 348);
         open.Click += (_, _) => Toast("Members open this task from Find Tasks in the TaskTap app.");
         detailBody.Controls.Add(open);
 
         detailBody.ResumeLayout();
     }
 
+    private static readonly string[] RemovalReasons =
+    [
+        "Explicit or sexual content",
+        "Scam or fraud",
+        "Harassment or hate",
+        "Illegal or unsafe request",
+        "Other policy violation"
+    ];
+
+    private void EditTask(DemoTask task)
+    {
+        using var dialog = new AdminTaskEditDialog(task);
+        if (dialog.ShowDialog(this) != DialogResult.OK || dialog.Result is null)
+            return;
+        DemoDataStore.AdminUpdateTask(task, dialog.Result, dialog.Reason);
+        selected.Remove(task);
+        selectedEntry = null;
+        RefreshList();
+        Toast("Task updated and the poster was notified.");
+    }
+
     private void DeleteTask(DemoTask task)
     {
-        var answer = MessageBox.Show(
-            this,
-            $"Delete \"{task.Title}\"?\n\nThis permanently removes the listing and its requests.",
-            "Delete task",
-            MessageBoxButtons.YesNo,
-            MessageBoxIcon.Warning);
-        if (answer != DialogResult.Yes)
+        using var dialog = new ReasonDialog("Delete task", $"Why is \"{task.Title}\" being removed? The poster will be told. This cannot be undone.", RemovalReasons);
+        if (dialog.ShowDialog(this) != DialogResult.OK || dialog.SelectedReason is null)
             return;
 
-        DemoDataStore.DeleteTask(task);
+        DemoDataStore.DeleteTaskForReason(task, dialog.SelectedReason);
         selected.Remove(task);
         selectedEntry = null;
         RefreshList();
@@ -562,17 +583,12 @@ public sealed class TaskManagementPage : AdminPage
         if (selected.Count == 0)
             return;
 
-        var answer = MessageBox.Show(
-            this,
-            $"Delete {selected.Count} selected task{(selected.Count == 1 ? "" : "s")}?",
-            "Delete tasks",
-            MessageBoxButtons.YesNo,
-            MessageBoxIcon.Warning);
-        if (answer != DialogResult.Yes)
+        using var dialog = new ReasonDialog("Delete tasks", $"Why are the {selected.Count} selected task{(selected.Count == 1 ? " is" : "s are")} being removed? Each poster will be told. This cannot be undone.", RemovalReasons);
+        if (dialog.ShowDialog(this) != DialogResult.OK || dialog.SelectedReason is null)
             return;
 
         foreach (var task in selected.ToList())
-            DemoDataStore.DeleteTask(task);
+            DemoDataStore.DeleteTaskForReason(task, dialog.SelectedReason);
         selected.Clear();
         selectedEntry = null;
         RefreshList();

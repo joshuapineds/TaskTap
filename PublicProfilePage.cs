@@ -120,10 +120,7 @@ public sealed class PublicProfilePage : AppPage
         verified.Name = "publicProfileVerified";
         hero.Controls.Add(verified);
         AddLabel(hero, subject.Subtitle, 9, Muted, false, new Point(0, 0), new Size(500, 22));
-        AddLabel(hero, $"● Member since {subject.MemberSince}     ⌖ {subject.Barangay}     Last active recently", 8, Muted, false, new Point(0, 0), new Size(480, 22));
-        var message = MakeButton("Message", "PublicProfileMessageButton", true, 105);
-        message.Click += (_, _) => OpenMessageModal();
-        hero.Controls.Add(message);
+        AddLabel(hero, $"● Member since {subject.MemberSince}     ⌖ {subject.Barangay}     Last active {subject.LastActive}", 8, Muted, false, new Point(0, 0), new Size(480, 22));
         var share = MakeButton("↗ Share profile", "PublicProfileShareButton", false, 138);
         share.Click += (_, _) => OpenShareModal();
         hero.Controls.Add(share);
@@ -135,9 +132,9 @@ public sealed class PublicProfilePage : AppPage
         {
             ($"{subject.Rating:0.0}", "★★★★★", $"{subject.ReviewCount} reviews"),
             (subject.CompletedTasks.ToString(), "", "tasks completed"),
-            ("98%", "", "completion rate"),
-            ("< 1 hr", "", "typical response"),
-            ("6", "", "repeat clients")
+            (subject.CompletedTasks == 0 ? "—" : "Recorded", "", "completion rate"),
+            ("—", "", "typical response"),
+            ("—", "", "repeat clients")
         };
         for (var i = 0; i < metrics.Length; i++)
         {
@@ -225,11 +222,11 @@ public sealed class PublicProfilePage : AppPage
         var icon = new Label { Text = "✓", Location = new Point(18, 17), Size = new Size(38, 38), BackColor = Color.FromArgb(232, 248, 241), ForeColor = Color.FromArgb(8, 122, 89), TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Segoe UI", 14F, FontStyle.Bold) };
         actionCard.Controls.Add(icon);
         AddLabel(actionCard, $"Considering {subject.FirstName} for a task?", 11, Navy, true, new Point(18, 64), new Size(260, 28));
-        AddLabel(actionCard, "Message to discuss task details before sharing personal information.", 8, Muted, false, new Point(18, 96), new Size(260, 52));
-        var message = MakeButton($"Message {subject.FirstName}", "PublicProfileSideMessageButton", true, 260);
-        message.Location = new Point(18, 155);
-        message.Click += (_, _) => OpenMessageModal();
-        actionCard.Controls.Add(message);
+        AddLabel(actionCard, "Post a task and they can apply with their CV. Contact details are shared only after you accept a request.", 8, Muted, false, new Point(18, 96), new Size(260, 52));
+        var postTask = MakeButton("Post a task", "PublicProfilePostTaskButton", true, 260);
+        postTask.Location = new Point(18, 155);
+        postTask.Click += (_, _) => Nav.Navigate(Route.PostTask);
+        actionCard.Controls.Add(postTask);
         var find = MakeButton("Find tasks", "PublicProfileFindTasksButton", false, 260);
         find.Location = new Point(18, 199);
         find.Click += (_, _) => Nav.Navigate(Route.FindTasks);
@@ -300,25 +297,6 @@ public sealed class PublicProfilePage : AppPage
         modal.Controls.Add(modalBody);
     }
 
-    private void OpenMessageModal()
-    {
-        modalBody.Controls.Clear();
-        AddLabel(modalBody, $"Message {subject.FirstName}", 15, Navy, true, new Point(22, 18), new Size(400, 30));
-        AddLabel(modalBody, "Start a task-focused conversation. Keep personal and financial information private until genuinely needed.", 8, Muted, false, new Point(22, 53), new Size(400, 48));
-        AddLabel(modalBody, "Your message", 8, Navy, true, new Point(22, 112), new Size(350, 20));
-        var input = new TextBox { Name = "PublicProfileMessageText", Multiline = true, ScrollBars = ScrollBars.Vertical, PlaceholderText = $"Hi {subject.FirstName}, I'm interested in working with you on a task...", Bounds = new Rectangle(22, 137, 400, 92), Font = new Font("Segoe UI", 9F) };
-        modalBody.Controls.Add(input);
-        var cancel = MakeButton("Cancel", "PublicProfileMessageCancel", false, 96);
-        cancel.Location = new Point(220, 246);
-        cancel.Click += (_, _) => CloseModal();
-        modalBody.Controls.Add(cancel);
-        var send = MakeButton("Open conversation", "PublicProfileMessageSend", true, 142);
-        send.Location = new Point(326, 246);
-        send.Click += (_, _) => { if (string.IsNullOrWhiteSpace(input.Text)) { input.Focus(); return; } CloseModal(); Nav.Navigate(Route.Messages); };
-        modalBody.Controls.Add(send);
-        ShowModal(470, 330);
-    }
-
     private void OpenShareModal()
     {
         modalBody.Controls.Clear();
@@ -332,7 +310,13 @@ public sealed class PublicProfilePage : AppPage
         modalBody.Controls.Add(close);
         var copy = MakeButton("Copy profile link", "PublicProfileShareCopy", true, 142);
         copy.Location = new Point(326, 170);
-        copy.Click += (_, _) => { try { Clipboard.SetText(shareBox.Text); ShowToast("Profile link copied."); } catch { ShowToast("Could not copy to the clipboard."); } CloseModal(); };
+        copy.Click += (_, _) =>
+        {
+            var link = $"https://tasktap.local/profile/{Uri.EscapeDataString(subject.FullName.Replace(" ", "-"))}";
+            Clipboard.SetText(link);
+            CloseModal();
+            ShowToast("Profile link copied to your clipboard.");
+        };
         modalBody.Controls.Add(copy);
         ShowModal(470, 250);
     }
@@ -462,7 +446,7 @@ public sealed class PublicProfilePage : AppPage
             verified.Location = new Point(138 + nameWidth + 14, 52);
             verified.BringToFront();
         }
-        var message = hero.Controls.Find("PublicProfileMessageButton", false).FirstOrDefault();
+        Control? message = null;
         var share = hero.Controls.Find("PublicProfileShareButton", false).FirstOrDefault();
         if (message is not null) message.Location = new Point(contentWidth - 260, 45);
         if (share is not null) share.Location = new Point(contentWidth - 145, 45);

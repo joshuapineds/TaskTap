@@ -12,7 +12,8 @@ public sealed record AppUser(
     string Barangay,
     string Email,
     string MemberSince,
-    int Id = 0);
+    int Id = 0,
+    string AdminRole = "");
 
 /// <summary>
 /// The shared session. Every page reads the current user from here. Signing in loads that
@@ -44,6 +45,7 @@ public static class AppSession
     public static void SignInAs(AppUser user)
     {
         _currentUser = user;
+        _currentAdmin = null; // a member session must never be refreshed with admin-wide data
         DemoDataStore.LoadForUser(user);
     }
 

@@ -15,7 +15,6 @@ public enum Route
     ManageRequests,
     EditTask,
     ArchivedTasks,
-    Messages,
     Notifications,
     Profile,
     AccountSettings,

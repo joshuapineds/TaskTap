@@ -37,7 +37,7 @@ public sealed class UserManagementPage : AdminPage
     {
         prevButton = AdminUi.MakeSecondaryButton("← Previous", "UsersPrevButton", 100);
         nextButton = AdminUi.MakeSecondaryButton("Next →", "UsersNextButton", 100);
-        bulkSuspend = AdminUi.MakeSecondaryButton("Suspend selected", "UsersBulkSuspend", 140);
+        bulkSuspend = AdminUi.MakeSecondaryButton("Restrict selected", "UsersBulkSuspend", 140);
         bulkVerify = AdminUi.MakeSecondaryButton("Verify selected", "UsersBulkVerify", 130);
         BuildContent();
     }
@@ -369,7 +369,7 @@ public sealed class UserManagementPage : AdminPage
         view.Click += (_, _) => Nav.Navigate(new UserDetailPage(user));
         actions.Controls.Add(view);
 
-        var toggle = AdminUi.MakeLinkButton(user.Status == "Suspended" ? "Activate" : "Suspend", $"userToggle{user.Id}");
+        var toggle = AdminUi.MakeLinkButton(user.Status == "Suspended" ? "Restore access" : "Restrict", $"userToggle{user.Id}");
         toggle.Margin = new Padding(0, 0, 10, 0);
         toggle.ForeColor = user.Status == "Suspended" ? AdminUi.Good : AdminUi.Warn;
         toggle.Click += (_, _) =>
@@ -394,42 +394,8 @@ public sealed class UserManagementPage : AdminPage
             actions.Controls.Add(verify);
         }
 
-        var archive = AdminUi.MakeLinkButton(user.Status == "Deactivated" ? "Restore" : "Archive", $"userArchive{user.Id}");
-        archive.Margin = new Padding(0, 0, 10, 0);
-        archive.ForeColor = user.Status == "Deactivated" ? AdminUi.Good : AdminUi.Muted;
-        archive.Click += (_, _) =>
-        {
-            if (user.Status == "Deactivated")
-                DemoDataStore.RestoreUser(user);
-            else
-                DemoDataStore.ArchiveUser(user);
-            RefreshRows();
-        };
-        actions.Controls.Add(archive);
-
-        var delete = AdminUi.MakeLinkButton("Delete", $"userDelete{user.Id}");
-        delete.ForeColor = AdminUi.Bad;
-        delete.Click += (_, _) => DeleteUser(user);
-        actions.Controls.Add(delete);
-
         row.Controls.Add(actions);
         return row;
-    }
-
-    private void DeleteUser(DemoUser user)
-    {
-        var answer = MessageBox.Show(
-            this,
-            $"Delete {user.FullName}?\n\nThis permanently removes the account and everything it posted.",
-            "Delete user",
-            MessageBoxButtons.YesNo,
-            MessageBoxIcon.Warning);
-        if (answer != DialogResult.Yes)
-            return;
-
-        DemoDataStore.DeleteUser(user);
-        selectedIds.Remove(user.Id);
-        RefreshRows();
     }
 
     private void BulkAction(bool suspend)

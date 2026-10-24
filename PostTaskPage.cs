@@ -26,7 +26,6 @@ public sealed class PostTaskPage : AppPage
     private readonly TextBox requirements = new();
     private readonly ComboBox duration = new();
     private readonly ComboBox paymentMethod = new();
-    private readonly ComboBox budgetType = new();
     private readonly TextBox amount = new();
     private readonly DateTimePicker deadline = new();
     private readonly DateTimePicker startTime = new();
@@ -99,7 +98,7 @@ public sealed class PostTaskPage : AppPage
         BuildPreview();
         BuildSideTips();
         BuildFooterButtons();
-        foreach (var control in new Control[] { taskTitle, category, taskType, description, requirements, amount, paymentMethod, budgetType, deadline, startTime, duration, barangay, scheduleNotes })
+        foreach (var control in new Control[] { taskTitle, category, taskType, description, requirements, amount, paymentMethod, deadline, startTime, duration, barangay, scheduleNotes })
         {
             control.TextChanged += (_, _) => UpdatePreview();
             if (control is ComboBox combo)
@@ -261,19 +260,11 @@ public sealed class PostTaskPage : AppPage
         AddFieldLabel(panel, "Payment method *", 18, 268);
         paymentMethod.Name = "postTaskPaymentMethod";
         paymentMethod.DropDownStyle = ComboBoxStyle.DropDownList;
-        paymentMethod.Items.AddRange(["Select a method", "Cash", "GCash", "Bank transfer", "Other agreed method"]);
+        paymentMethod.Items.AddRange(TaskFormHelpers.PaymentMethods);
         paymentMethod.SelectedIndex = 0;
         paymentMethod.Location = new Point(18, 291);
         paymentMethod.Size = new Size(310, 32);
         panel.Controls.Add(paymentMethod);
-        AddFieldLabel(panel, "Budget type", 352, 268);
-        budgetType.Name = "postTaskBudgetType";
-        budgetType.DropDownStyle = ComboBoxStyle.DropDownList;
-        budgetType.Items.AddRange(["Fixed total", "Hourly rate"]);
-        budgetType.SelectedIndex = 0;
-        budgetType.Location = new Point(352, 291);
-        budgetType.Size = new Size(310, 32);
-        panel.Controls.Add(budgetType);
         AddTip(panel, "TaskTap does not process payments. Members arrange payment directly.", 18, 348, true);
     }
 
@@ -289,10 +280,9 @@ public sealed class PostTaskPage : AppPage
         deadline.Location = new Point(18, 122);
         deadline.Size = new Size(310, 32);
         panel.Controls.Add(deadline);
-        AddFieldLabel(panel, "Preferred start time", 352, 99);
+        AddFieldLabel(panel, "Preferred start time (optional)", 352, 99);
         startTime.Name = "postTaskStartTime";
-        startTime.Format = DateTimePickerFormat.Time;
-        startTime.ShowUpDown = true;
+        TaskFormHelpers.ConfigureStartTime(startTime, null);
         startTime.Location = new Point(352, 122);
         startTime.Size = new Size(310, 32);
         panel.Controls.Add(startTime);
@@ -304,12 +294,13 @@ public sealed class PostTaskPage : AppPage
         duration.Location = new Point(18, 194);
         duration.Size = new Size(310, 32);
         panel.Controls.Add(duration);
-        AddFieldLabel(panel, "Barangay / task area *", 352, 171);
+        AddFieldLabel(panel, string.IsNullOrWhiteSpace(AppSession.CurrentUser.Barangay) ? "Barangay / task area *" : "Barangay (from your profile)", 352, 171);
         barangay.Name = "postTaskBarangay";
         barangay.DropDownStyle = ComboBoxStyle.DropDownList;
         barangay.Items.Add("Select barangay");
         barangay.Items.AddRange(DemoDataStore.ActiveBarangayNames());
         barangay.SelectedIndex = 0;
+        TaskFormHelpers.LockBarangay(barangay, AppSession.CurrentUser.Barangay);
         barangay.Location = new Point(352, 194);
         barangay.Size = new Size(310, 32);
         panel.Controls.Add(barangay);
@@ -440,10 +431,10 @@ public sealed class PostTaskPage : AppPage
         var text = MakeLabel("Use a specific title, explain the expected result, set a clear budget, and choose the broad task area.", 7.5F, Muted);
         text.Name = "postTaskTipsText";
         text.Location = new Point(40, 31);
-        text.MaximumSize = new Size(190, 43);
+        text.MaximumSize = new Size(190, 62);
         tipCard.Controls.Add(text);
         var link = MakeTextButton("View posting tips →", "PostTaskTipsButton");
-        link.Location = new Point(40, 75);
+        link.Location = new Point(40, 96);
         link.Click += (_, _) => Nav.Navigate(Route.HelpFaq);
         tipCard.Controls.Add(link);
         canvas.Controls.Add(tipCard);
@@ -525,10 +516,10 @@ public sealed class PostTaskPage : AppPage
             stepPanels[index].Bounds = new Rectangle(0, 0, mainWidth, 380);
             LayoutStepControls(stepPanels[index], mainWidth);
         }
-        previewCard.Bounds = new Rectangle(left + mainWidth + gap, bodyTop, previewWidth, 285);
+        previewCard.Bounds = new Rectangle(left + mainWidth + gap, bodyTop, previewWidth, 345);
         LayoutPreview(previewWidth);
-        tipCard.Bounds = new Rectangle(left + mainWidth + gap, bodyTop + 299, previewWidth, 105);
-        checklistCard.Bounds = new Rectangle(left + mainWidth + gap, bodyTop + 418, previewWidth, 152);
+        tipCard.Bounds = new Rectangle(left + mainWidth + gap, bodyTop + 359, previewWidth, 128);
+        checklistCard.Bounds = new Rectangle(left + mainWidth + gap, bodyTop + 501, previewWidth, 152);
         var controlsBottom = bodyTop + 425;
         var back = Find<Button>("postTaskBackButton");
         var save = Find<Button>("PostTaskSaveDraftButton");
@@ -540,7 +531,7 @@ public sealed class PostTaskPage : AppPage
         if (publish is not null) publish.Location = new Point(left + mainWidth - 88, controlsBottom);
         errorLabel.Location = new Point(left + 100, controlsBottom + 9);
         errorLabel.Size = new Size(Math.Max(100, mainWidth - 410), 26);
-        canvas.Height = bodyTop + 485;
+        canvas.Height = bodyTop + 680;
         ShowStep(currentStep);
     }
 
@@ -554,9 +545,9 @@ public sealed class PostTaskPage : AppPage
                 textBox2.Width = width - 36;
             if (control is TextBox textBox3 && textBox3.Name == "postTaskDescription")
                 textBox3.Width = width - 36;
-            if (control is ComboBox combo && combo.Name is "postTaskCategory" or "postTaskType" or "postTaskPaymentMethod" or "postTaskBudgetType" or "postTaskDuration" or "postTaskBarangay")
+            if (control is ComboBox combo && combo.Name is "postTaskCategory" or "postTaskType" or "postTaskPaymentMethod" or "postTaskDuration" or "postTaskBarangay")
                 combo.Width = (width - 54) / 2;
-            if (control is ComboBox combo2 && combo2.Name is "postTaskType" or "postTaskBudgetType" or "postTaskBarangay")
+            if (control is ComboBox combo2 && combo2.Name is "postTaskType" or "postTaskBarangay")
                 combo2.Left = (width - 54) / 2 + 18;
         }
         if (panel.Controls.Find("postTaskDescription", false).FirstOrDefault() is TextBox descriptionInput)
@@ -721,7 +712,7 @@ public sealed class PostTaskPage : AppPage
             Requirements = requirements.Text.Trim(),
             TaskType = taskType.SelectedItem?.ToString() ?? "",
             PaymentMethod = paymentMethod.SelectedItem?.ToString() ?? "",
-            BudgetType = budgetType.SelectedItem?.ToString() ?? "",
+            StartTime = TaskFormHelpers.StartTimeText(startTime),
             Duration = duration.SelectedItem?.ToString() ?? "",
             ScheduleNotes = scheduleNotes.Text.Trim(),
             Latitude = pinLat,

@@ -25,6 +25,7 @@ public sealed record DemoTask(
     public string BudgetType { get; set; } = "";
     public string Duration { get; set; } = "";
     public string ScheduleNotes { get; set; } = "";
+    public string StartTime { get; set; } = "";
 
     /// <summary>Exact pin chosen by the poster (null = barangay area only). Never shown to other members.</summary>
     public double? Latitude { get; set; }
@@ -59,7 +60,8 @@ public sealed class DemoRequest
     public DateTime Date { get; init; }
     public string RequestDate { get; init; } = "";
     public string Description { get; init; } = "";
-    public string RequestMessage { get; init; } = "";
+    public string AttachmentName { get; init; } = "";
+    public int AttachmentSize { get; init; }
     public string Icon { get; init; } = "";
     public Color IconBack { get; init; }
     public bool Withdrawn { get; set; }
@@ -78,7 +80,8 @@ public sealed class DemoApplicant
     public int Reviews { get; init; }
     public int Completed { get; init; }
     public string RequestedAt { get; init; } = "";
-    public string Message { get; init; } = "";
+    public string AttachmentName { get; init; } = "";
+    public int AttachmentSize { get; init; }
     public string[] Skills { get; init; } = [];
     public string Barangay { get; init; } = "";
     public string MemberSince { get; init; } = "";
@@ -111,22 +114,13 @@ public static partial class DemoDataStore
     /// <summary>Recorded payments (Payment History reads this; Record Payment appends to it).</summary>
     public static List<PaymentRecordDetails> Payments { get; } = [];
 
-    private static int _unreadMessages;
     private static int _unreadNotifications;
 
     /// <summary>Unread badge counts shown in the shared sidebar (kept live by the pages).</summary>
-    public static int UnreadMessages => _unreadMessages;
     public static int UnreadNotifications => _unreadNotifications;
 
     /// <summary>Raised when unread counts change so the shell can refresh its badges.</summary>
     public static event Action? BadgesChanged;
-
-    public static void SetUnreadMessages(int count)
-    {
-        if (_unreadMessages == count) return;
-        _unreadMessages = Math.Max(0, count);
-        BadgesChanged?.Invoke();
-    }
 
     public static void SetUnreadNotifications(int count)
     {
@@ -263,6 +257,14 @@ public static partial class DemoDataStore
             Backend.SetTaskStatus(task, status, reason);
             Backend.NotifyAcceptedDoers(task.Id, status == "Completed" ? "Task completed" : "Task cancelled",
                 status == "Completed" ? $"“{task.Title}” was marked complete by the poster." : $"“{task.Title}” was cancelled. {reason}".Trim());
+            if (status == "Completed")
+            {
+                // The payment record is created for you, so payment history always matches real completed work.
+                Backend.EnsureCompletionPayment(task, CurrentUserId);
+                var refreshed = Backend.LoadPayments(CurrentUserId, AppSession.CurrentUser.FullName, false);
+                Payments.Clear();
+                Payments.AddRange(refreshed);
+            }
         });
 
         PostedTasks.Remove(task);
@@ -292,7 +294,7 @@ public static partial class DemoDataStore
     }
 
     /// <summary>Records a new sent request (newest first). Returns false when it could not be sent.</summary>
-    public static bool SendRequest(DemoRequest request)
+    public static bool SendRequest(DemoRequest request, string cvFileName, byte[] cvBytes)
     {
         var taskId = request.TaskId > 0
             ? request.TaskId
@@ -304,7 +306,7 @@ public static partial class DemoDataStore
         }
 
         var requestId = 0;
-        if (!Db.Try(() => requestId = Backend.SendRequest(taskId, CurrentUserId, request.RequestMessage)))
+        if (!Db.Try(() => requestId = Backend.SendRequest(taskId, CurrentUserId, cvFileName, cvBytes)))
             return false;
         if (requestId == 0)
         {
@@ -320,11 +322,13 @@ public static partial class DemoDataStore
     }
 
     /// <summary>Marks a sent request as withdrawn.</summary>
-    public static void WithdrawRequest(DemoRequest request)
+    public static bool WithdrawRequest(DemoRequest request)
     {
-        Persist(() => Backend.SetRequestStatus(request.Id, "withdrawn"));
+        if (!Db.Try(() => Backend.SetRequestStatus(request.Id, "withdrawn")))
+            return false;
         request.Withdrawn = true;
         request.Status = "withdrawn";
+        return true;
     }
 
     /// <summary>Marks a received applicant as accepted and declines the rest of that task's applicants.</summary>

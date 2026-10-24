@@ -328,7 +328,7 @@ namespace TaskTap
             var titleLabel = MakeLabel("Keep interactions on TaskTap", 8, NavyColor, true);
             titleLabel.Name = "safetyTitle";
             safetyCard.Controls.Add(titleLabel);
-            var safetyText = MakeLabel("Use TaskTap messages and task records to keep requests, agreements, and status changes organized.", 7, MutedColor);
+            var safetyText = MakeLabel("Use TaskTap task records to keep requests, agreements, and status changes organized.", 7, MutedColor);
             safetyText.Name = "safetyDescription";
             safetyText.AutoSize = false;
             safetyCard.Controls.Add(safetyText);

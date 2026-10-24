@@ -120,15 +120,15 @@ public sealed class MyRequestsPage : AppPage
         if (request.Status == "pending")
         {
             var message = new Panel { Name = "MyRequestMessage", BackColor = Color.FromArgb(247, 249, 252) };
-            message.Controls.Add(MakeLabel("Your request", 7.5F, Navy, true).At(10, 8));
-            var copy = MakeLabel($"“{request.RequestMessage}”", 7.5F, Muted); copy.Name = "MyRequestMessageCopy"; copy.MaximumSize = new Size(480, 38); copy.Location = new Point(10, 25); message.Controls.Add(copy); card.Controls.Add(message);
+            message.Controls.Add(MakeLabel("Your CV was sent with this request", 7.5F, Navy, true).At(10, 8));
+            var copy = MakeLabel(CvTools.Describe(request.AttachmentName, request.AttachmentSize), 7.5F, Muted); copy.Name = "MyRequestMessageCopy"; copy.MaximumSize = new Size(480, 38); copy.Location = new Point(10, 25); message.Controls.Add(copy); card.Controls.Add(message);
         }
         else if (request.Status == "accepted")
         {
             var accepted = new Panel { Name = "MyRequestAcceptedNote", BackColor = Color.FromArgb(237, 249, 244) };
             accepted.Controls.Add(MakeLabel("✓", 10, Color.FromArgb(13, 155, 107), true).At(10, 12));
             accepted.Controls.Add(MakeLabel("You’re selected for this task", 8, Navy, true).At(30, 8));
-            accepted.Controls.Add(MakeLabel("Message the poster to confirm the schedule and task details.", 7.5F, Muted).At(30, 25)); card.Controls.Add(accepted);
+            accepted.Controls.Add(MakeLabel("Use the contact details to confirm the schedule and task details.", 7.5F, Muted).At(30, 25)); card.Controls.Add(accepted);
         }
         else
         {
@@ -143,7 +143,7 @@ public sealed class MyRequestsPage : AppPage
             var withdraw = MakeTextButton("Withdraw request", "MyRequestWithdrawButton"); withdraw.Name = "MyRequestWithdrawButton"; withdraw.Tag = request; withdraw.Click += (_, _) => BeginWithdraw(request); actions.Controls.Add(withdraw);
         }
         else if (request.Status == "accepted")
-            actions.Controls.Add(MakeButton("Message poster", "MyRequestMessagePosterButton", true, 108).Also(button => button.Click += (_, _) => Nav.Navigate(Route.Messages)));
+            actions.Controls.Add(MakeButton("Contact poster", "MyRequestContactPosterButton", true, 108).Also(button => button.Click += (_, _) => CvTools.ShowContact(this, request.Id, "Poster")));
         else
             actions.Controls.Add(MakeTextButton("Find similar tasks", "MyRequestSimilarTasksButton").Also(button => button.Click += (_, _) => Nav.Navigate(Route.FindTasks)));
         card.Controls.Add(actions);
@@ -156,7 +156,7 @@ public sealed class MyRequestsPage : AppPage
         var query = search.Text.Trim();
         var filtered = requests.Where(request => !request.Withdrawn)
             .Where(request => activeStatus == "all" || request.Status == activeStatus)
-            .Where(request => string.IsNullOrEmpty(query) || $"{request.Title} {request.Category} Brgy. {request.Barangay} {request.Description} {request.RequestMessage}".Contains(query, StringComparison.OrdinalIgnoreCase));
+            .Where(request => string.IsNullOrEmpty(query) || $"{request.Title} {request.Category} Brgy. {request.Barangay} {request.Description} {request.AttachmentName}".Contains(query, StringComparison.OrdinalIgnoreCase));
         filtered = sort.SelectedItem?.ToString() switch
         {
             "Deadline soonest" => filtered.OrderBy(request => request.Status == "declined" ? DateTime.MaxValue : DateTime.TryParse(request.Deadline, out var date) ? date : DateTime.MaxValue),
@@ -221,7 +221,12 @@ public sealed class MyRequestsPage : AppPage
         {
             if (withdrawDialog.DialogResult == DialogResult.OK && withdrawTarget is not null)
             {
-                withdrawTarget.Withdrawn = true;
+                var target = withdrawTarget;
+                if (!DemoDataStore.WithdrawRequest(target))
+                {
+                    withdrawDialog.DialogResult = DialogResult.Cancel;
+                    return;
+                }
                 withdrawTarget = null;
                 ApplyRequests();
                 ShowToast("Request withdrawn.");

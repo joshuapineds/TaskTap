@@ -267,79 +267,115 @@ public sealed class AdminBarangayDialog : Form
     }
 }
 
-/// <summary>Modal "reset password" dialog used by an admin to set a member's new password.</summary>
-public sealed class AdminResetPasswordDialog : Form
+/// <summary>Lets an admin correct a task listing (title, description, category, budget, deadline) and say why.</summary>
+public sealed class AdminTaskEditDialog : Form
 {
-    private readonly TextBox next = new() { UseSystemPasswordChar = true };
-    private readonly TextBox confirm = new() { UseSystemPasswordChar = true };
+    private readonly TextBox titleBox = new();
+    private readonly TextBox descriptionBox = new();
+    private readonly ComboBox categoryBox = new();
+    private readonly TextBox priceBox = new();
+    private readonly DateTimePicker deadlineBox = new();
+    private readonly TextBox reasonBox = new();
     private readonly Label message = new() { AutoSize = false, ForeColor = Color.FromArgb(190, 60, 60) };
 
-    public string NewPassword { get; private set; } = "";
+    public DemoTask? Result { get; private set; }
+    public string Reason => reasonBox.Text.Trim();
 
-    private AdminResetPasswordDialog(string memberName)
+    private readonly DemoTask original;
+
+    public AdminTaskEditDialog(DemoTask task)
     {
-        Text = "Reset password";
+        original = task;
+        Text = "Edit task";
         StartPosition = FormStartPosition.CenterParent;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         MinimizeBox = false;
         ShowInTaskbar = false;
-        ClientSize = new Size(380, 254);
+        ClientSize = new Size(500, 520);
         BackColor = Color.White;
         Font = new Font("Segoe UI", 9F);
 
-        Controls.Add(new Label
-        {
-            Text = $"New password for {memberName}",
-            Location = new Point(20, 16),
-            AutoSize = true,
-            ForeColor = AdminUi.Navy,
-            Font = new Font("Segoe UI", 9F, FontStyle.Bold)
-        });
+        AddRow("Title", titleBox, 16, 460, 28);
+        titleBox.MaxLength = 160;
+        titleBox.Text = task.Title;
 
-        AddRow("New password (min. 8 characters)", next, 56);
-        AddRow("Confirm new password", confirm, 116);
-        message.Bounds = new Rectangle(20, 176, 340, 30);
+        AddRow("Description", descriptionBox, 70, 460, 110);
+        descriptionBox.Multiline = true;
+        descriptionBox.ScrollBars = ScrollBars.Vertical;
+        descriptionBox.Text = task.Description;
+
+        AddRow("Category", categoryBox, 204, 220, 28);
+        categoryBox.DropDownStyle = ComboBoxStyle.DropDownList;
+        foreach (var category in DemoDataStore.Categories.Where(item => item.Active))
+            categoryBox.Items.Add(category.Name);
+        if (!categoryBox.Items.Contains(task.Category))
+            categoryBox.Items.Add(task.Category);
+        categoryBox.SelectedItem = task.Category;
+
+        AddRow("Budget (₱)", priceBox, 204, 220, 28, left: 260);
+        priceBox.Text = task.Price.ToString();
+
+        AddRow("Deadline", deadlineBox, 268, 220, 28);
+        deadlineBox.Format = DateTimePickerFormat.Short;
+        deadlineBox.Value = DateTime.TryParseExact(task.Deadline, "MMM d, yyyy", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var due) ? due : DateTime.Today;
+
+        AddRow("Reason for the edit (shown to the poster) *", reasonBox, 332, 460, 60);
+        reasonBox.Multiline = true;
+        reasonBox.MaxLength = 300;
+
+        message.Bounds = new Rectangle(20, 410, 460, 36);
         Controls.Add(message);
 
-        var cancel = new Button { Text = "Cancel", Bounds = new Rectangle(160, 212, 90, 34), DialogResult = DialogResult.Cancel };
-        var save = new Button { Text = "Reset", Bounds = new Rectangle(262, 212, 98, 34), BackColor = Color.FromArgb(8, 117, 232), ForeColor = Color.White, FlatStyle = FlatStyle.Flat };
+        var cancel = new Button { Text = "Cancel", Bounds = new Rectangle(280, 466, 96, 36), DialogResult = DialogResult.Cancel };
+        var save = new Button { Text = "Save changes", Bounds = new Rectangle(388, 466, 100, 36), BackColor = AdminUi.Blue, ForeColor = Color.White, FlatStyle = FlatStyle.Flat };
         save.FlatAppearance.BorderSize = 0;
         save.Click += (_, _) => Save();
         Controls.Add(cancel);
         Controls.Add(save);
-        AcceptButton = save;
         CancelButton = cancel;
     }
 
-    private void AddRow(string label, TextBox box, int top)
+    private void AddRow(string label, Control input, int top, int width, int height, int left = 20)
     {
-        Controls.Add(new Label { Text = label, Location = new Point(20, top), AutoSize = true, ForeColor = Color.FromArgb(8, 38, 87), Font = new Font("Segoe UI", 8.5F, FontStyle.Bold) });
-        box.Bounds = new Rectangle(20, top + 22, 340, 28);
-        Controls.Add(box);
+        Controls.Add(new Label { Text = label, Location = new Point(left, top - 2), AutoSize = true, ForeColor = AdminUi.Navy, Font = new Font("Segoe UI", 8.5F, FontStyle.Bold) });
+        input.Bounds = new Rectangle(left, top + 20, width, height);
+        Controls.Add(input);
     }
 
     private void Save()
     {
-        if (next.Text.Length < 8)
+        if (titleBox.Text.Trim().Length < 5)
         {
-            message.Text = "The new password must be at least 8 characters.";
+            message.Text = "The title needs at least 5 characters.";
             return;
         }
-        if (next.Text != confirm.Text)
+        if (descriptionBox.Text.Trim().Length < 10)
         {
-            message.Text = "The new passwords do not match.";
+            message.Text = "The description needs at least 10 characters.";
             return;
         }
-        NewPassword = next.Text;
+        if (!int.TryParse(priceBox.Text.Trim(), out var price) || price < 1 || price > 999_999)
+        {
+            message.Text = "Enter a budget from 1 to 999,999.";
+            return;
+        }
+        if (Reason.Length < 5)
+        {
+            message.Text = "Please explain the edit so the poster understands.";
+            return;
+        }
+
+        Result = original with
+        {
+            Title = titleBox.Text.Trim(),
+            Description = descriptionBox.Text.Trim(),
+            Category = categoryBox.SelectedItem?.ToString() ?? original.Category,
+            Price = price,
+            Deadline = deadlineBox.Value.ToString("MMM d, yyyy", System.Globalization.CultureInfo.InvariantCulture),
+            Days = Math.Max(0, (deadlineBox.Value.Date - DateTime.Today).Days)
+        };
         DialogResult = DialogResult.OK;
         Close();
-    }
-
-    /// <summary>Shows the dialog; returns the new password, or null when cancelled.</summary>
-    public static string? ShowFor(IWin32Window owner, string memberName)
-    {
-        using var dialog = new AdminResetPasswordDialog(memberName);
-        return dialog.ShowDialog(owner) == DialogResult.OK ? dialog.NewPassword : null;
     }
 }

@@ -10,6 +10,8 @@ public static partial class DemoDataStore
 {
     private static int _activitySequence = 2002;
 
+    private static string AdminActor => AppSession.CurrentAdmin?.FullName ?? "System";
+
     /// <summary>Administrator sub-roles available in the demo.</summary>
     public static readonly string[] AdminRoles = ["Super Admin", "Moderator", "Finance", "Support"];
 
@@ -17,18 +19,25 @@ public static partial class DemoDataStore
     public static readonly string[] AdminPermissionKeys =
     [
         "Users", "Verification", "Tasks", "Categories", "Barangays",
-        "Reports", "Disputes", "Payments", "Archives", "Activity", "Settings", "Roles"
+        "Reports", "Disputes", "Payments", "Archives", "Activity", "Settings", "Roles", "Support"
     ];
 
     /// <summary>Role to granted permission keys.</summary>
     public static Dictionary<string, HashSet<string>> AdminPermissions { get; } = [];
+
+    public static bool HasAdminPermission(string permission)
+    {
+        if (AppSession.CurrentAdmin?.AdminRole is not { Length: > 0 } role)
+            return false;
+        return role == "Super Admin" || (AdminPermissions.TryGetValue(role, out var granted) && granted.Contains(permission));
+    }
 
     internal static Dictionary<string, HashSet<string>> CreateSeedPermissions() => new()
     {
         ["Super Admin"] = [.. AdminPermissionKeys],
         ["Moderator"] = ["Users", "Verification", "Tasks", "Reports", "Disputes", "Archives", "Activity"],
         ["Finance"] = ["Payments", "Disputes", "Archives", "Activity"],
-        ["Support"] = ["Users", "Reports", "Activity"]
+        ["Support"] = ["Users", "Reports", "Activity", "Support"]
     };
 
     /// <summary>Community members managed by the admin portal.</summary>
@@ -90,26 +99,30 @@ public static partial class DemoDataStore
     {
         user.Status = "Suspended";
         SaveUser(user);
-        LogActivity("TaskTap Admin", "Suspended user", user.FullName, "User", "Account suspended from the admin portal.");
+        LogActivity(AdminActor, "Suspended user", user.FullName, "User", "Account suspended from the admin portal.");
     }
 
     public static void ActivateUser(DemoUser user)
     {
         user.Status = "Active";
         SaveUser(user);
-        LogActivity("TaskTap Admin", "Activated user", user.FullName, "User", "Account reactivated from the admin portal.");
+        LogActivity(AdminActor, "Activated user", user.FullName, "User", "Account reactivated from the admin portal.");
     }
 
-    public static void VerifyUser(DemoUser user)
+    /// <summary>Approves a verification request. Returns false (and shows the database error) when it could not be saved.</summary>
+    public static bool VerifyUser(DemoUser user)
     {
+        var id = Backend.ParseUserKey(user.Id);
+        if (id == 0 || !Db.Try(() => Backend.MarkVerified(id)))
+            return false;
         user.Verified = true;
         user.VerificationRequested = false;
         user.RequestedAt = "";
         user.VerificationNote = "";
         if (user.Status == "Unverified")
             user.Status = "Active";
-        SaveUser(user);
-        LogActivity("TaskTap Admin", "Verified user", user.FullName, "User", "Identity and contact details approved.");
+        LogActivity(AdminActor, "Verified user", user.FullName, "User", "Identity and contact details approved.");
+        return true;
     }
 
     /// <summary>Records a member's request for identity verification.</summary>
@@ -135,14 +148,14 @@ public static partial class DemoDataStore
         user.VerificationNote = "";
         user.Status = "Unverified";
         SaveUser(user);
-        LogActivity("TaskTap Admin", "Rejected verification", user.FullName, "User", reason ?? "Verification request declined.");
+        LogActivity(AdminActor, "Rejected verification", user.FullName, "User", reason ?? "Verification request declined.");
     }
 
     public static void DeleteUser(DemoUser user)
     {
         Users.Remove(user);
         Persist(() => Backend.DeleteUser(user));
-        LogActivity("TaskTap Admin", "Deleted user", user.FullName, "User", "Account permanently removed.");
+        LogActivity(AdminActor, "Deleted user", user.FullName, "User", "Account permanently removed.");
     }
 
     /// <summary>Soft-deletes a member into the archives.</summary>
@@ -150,7 +163,7 @@ public static partial class DemoDataStore
     {
         user.Status = "Deactivated";
         SaveUser(user);
-        LogActivity("TaskTap Admin", "Archived user", user.FullName, "User", "Account moved to archives.");
+        LogActivity(AdminActor, "Archived user", user.FullName, "User", "Account moved to archives.");
     }
 
     /// <summary>Restores an archived member to active status.</summary>
@@ -158,23 +171,7 @@ public static partial class DemoDataStore
     {
         user.Status = "Active";
         SaveUser(user);
-        LogActivity("TaskTap Admin", "Restored user", user.FullName, "User", "Account restored from archives.");
-    }
-
-    /// <summary>An administrator resets a member's password without knowing the current one.</summary>
-    public static bool ResetUserPassword(DemoUser user, string newPassword)
-    {
-        var id = Backend.ParseUserKey(user.Id);
-        if (id == 0)
-            return false;
-        var (success, error) = Backend.AdminResetPassword(id, newPassword);
-        if (!success)
-        {
-            MessageBox.Show(error, "Reset password", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            return false;
-        }
-        LogActivity("TaskTap Admin", "Reset password", user.FullName, "User", "Member password reset by an administrator.");
-        return true;
+        LogActivity(AdminActor, "Restored user", user.FullName, "User", "Account restored from archives.");
     }
 
     /// <summary>Removes a report from the resolved archive.</summary>
@@ -182,7 +179,7 @@ public static partial class DemoDataStore
     {
         Reports.Remove(report);
         Persist(() => Backend.DeleteReport(report));
-        LogActivity("TaskTap Admin", "Deleted report", report.Id, "Report", "Report removed from the archive.");
+        LogActivity(AdminActor, "Deleted report", report.Id, "Report", "Report removed from the archive.");
     }
 
     // ----- Administrator roles ----------------------------------------------
@@ -194,7 +191,7 @@ public static partial class DemoDataStore
         if (user.Status == "Unverified")
             user.Status = "Active";
         SaveUser(user);
-        LogActivity("TaskTap Admin", "Promoted administrator", user.FullName, "Roles", $"{adminRole} access granted.");
+        LogActivity(AdminActor, "Promoted administrator", user.FullName, "Roles", $"{adminRole} access granted.");
     }
 
     public static void DemoteAdmin(DemoUser user)
@@ -204,14 +201,14 @@ public static partial class DemoDataStore
         user.Role = "Standard User";
         user.AdminRole = "";
         SaveUser(user);
-        LogActivity("TaskTap Admin", "Removed administrator", user.FullName, "Roles", "Administrator access removed.");
+        LogActivity(AdminActor, "Removed administrator", user.FullName, "Roles", "Administrator access removed.");
     }
 
     public static void SetAdminRole(DemoUser user, string adminRole)
     {
         user.AdminRole = adminRole;
         SaveUser(user);
-        LogActivity("TaskTap Admin", "Changed administrator role", user.FullName, "Roles", $"Role set to {adminRole}.");
+        LogActivity(AdminActor, "Changed administrator role", user.FullName, "Roles", $"Role set to {adminRole}.");
     }
 
     public static void SetRolePermission(string role, string permission, bool allowed)
@@ -222,7 +219,7 @@ public static partial class DemoDataStore
         if (changed)
         {
             Persist(() => Backend.SetPermission(role, permission, allowed));
-            LogActivity("TaskTap Admin", "Updated permissions", role, "Roles", $"{permission} {(allowed ? "granted" : "revoked")}.");
+            LogActivity(AdminActor, "Updated permissions", role, "Roles", $"{permission} {(allowed ? "granted" : "revoked")}.");
         }
     }
 
@@ -241,27 +238,27 @@ public static partial class DemoDataStore
         category.SortOrder = Categories.Count == 0 ? 1 : Categories.Max(c => c.SortOrder) + 1;
         Categories.Add(category);
         Persist(() => Backend.SaveCategory(category));
-        LogActivity("TaskTap Admin", "Added category", category.Name, "Category", "New category available to the user app.");
+        LogActivity(AdminActor, "Added category", category.Name, "Category", "New category available to the user app.");
     }
 
     public static void UpdateCategory(DemoCategory category)
     {
         Persist(() => Backend.SaveCategory(category));
-        LogActivity("TaskTap Admin", "Updated category", category.Name, "Category", "Category details changed.");
+        LogActivity(AdminActor, "Updated category", category.Name, "Category", "Category details changed.");
     }
 
     public static void DeleteCategory(DemoCategory category)
     {
         Categories.Remove(category);
         Persist(() => Backend.DeleteCategory(category));
-        LogActivity("TaskTap Admin", "Deleted category", category.Name, "Category", "Category removed from the user app.");
+        LogActivity(AdminActor, "Deleted category", category.Name, "Category", "Category removed from the user app.");
     }
 
     public static void ToggleCategory(DemoCategory category)
     {
         category.Active = !category.Active;
         Persist(() => Backend.SaveCategory(category));
-        LogActivity("TaskTap Admin", category.Active ? "Activated category" : "Paused category", category.Name, "Category", "Category visibility changed.");
+        LogActivity(AdminActor, category.Active ? "Activated category" : "Paused category", category.Name, "Category", "Category visibility changed.");
     }
 
     /// <summary>Moves a category one slot up (-1) or down (+1) in display order.</summary>
@@ -276,7 +273,7 @@ public static partial class DemoDataStore
         for (var i = 0; i < ordered.Count; i++)
             ordered[i].SortOrder = i + 1;
         Persist(() => { foreach (var item in ordered) Backend.SaveCategory(item); });
-        LogActivity("TaskTap Admin", "Reordered categories", category.Name, "Category", "Category display order changed.");
+        LogActivity(AdminActor, "Reordered categories", category.Name, "Category", "Category display order changed.");
     }
 
     // ----- Barangays ---------------------------------------------------------
@@ -285,27 +282,27 @@ public static partial class DemoDataStore
     {
         Barangays.Add(barangay);
         Persist(() => Backend.SaveBarangay(barangay));
-        LogActivity("TaskTap Admin", "Added barangay", barangay.Name, "Barangay", "New service area available to the user app.");
+        LogActivity(AdminActor, "Added barangay", barangay.Name, "Barangay", "New service area available to the user app.");
     }
 
     public static void UpdateBarangay(DemoBarangay barangay)
     {
         Persist(() => Backend.SaveBarangay(barangay));
-        LogActivity("TaskTap Admin", "Updated barangay", barangay.Name, "Barangay", "Barangay details changed.");
+        LogActivity(AdminActor, "Updated barangay", barangay.Name, "Barangay", "Barangay details changed.");
     }
 
     public static void DeactivateBarangay(DemoBarangay barangay)
     {
         barangay.Active = false;
         Persist(() => Backend.SaveBarangay(barangay));
-        LogActivity("TaskTap Admin", "Deactivated barangay", barangay.Name, "Barangay", "Service area paused.");
+        LogActivity(AdminActor, "Deactivated barangay", barangay.Name, "Barangay", "Service area paused.");
     }
 
     public static void ActivateBarangay(DemoBarangay barangay)
     {
         barangay.Active = true;
         Persist(() => Backend.SaveBarangay(barangay));
-        LogActivity("TaskTap Admin", "Activated barangay", barangay.Name, "Barangay", "Service area re-opened.");
+        LogActivity(AdminActor, "Activated barangay", barangay.Name, "Barangay", "Service area re-opened.");
     }
 
     // ----- Reports -----------------------------------------------------------
@@ -315,7 +312,7 @@ public static partial class DemoDataStore
         report.Status = "Resolved";
         report.Resolution = resolution;
         Persist(() => Backend.SaveReport(report));
-        LogActivity("TaskTap Admin", "Resolved report", report.Id, "Report", resolution);
+        LogActivity(AdminActor, "Resolved report", report.Id, "Report", resolution);
     }
 
     public static void DismissReport(DemoReport report)
@@ -323,14 +320,14 @@ public static partial class DemoDataStore
         report.Status = "Dismissed";
         report.Resolution = "No action needed.";
         Persist(() => Backend.SaveReport(report));
-        LogActivity("TaskTap Admin", "Dismissed report", report.Id, "Report", "Report reviewed and dismissed.");
+        LogActivity(AdminActor, "Dismissed report", report.Id, "Report", "Report reviewed and dismissed.");
     }
 
     public static void EscalateReport(DemoReport report)
     {
         report.Status = "Investigating";
         Persist(() => Backend.SaveReport(report));
-        LogActivity("TaskTap Admin", "Escalated report", report.Id, "Report", "Report moved to investigating.");
+        LogActivity(AdminActor, "Escalated report", report.Id, "Report", "Report moved to investigating.");
     }
 
     /// <summary>Files a report from a member (task, user, message or review) for the admin team.</summary>
@@ -361,7 +358,7 @@ public static partial class DemoDataStore
         dispute.Status = "Resolved";
         dispute.Resolution = resolution;
         Persist(() => Backend.SaveDispute(dispute));
-        LogActivity("TaskTap Admin", "Resolved dispute", dispute.Id, "Dispute", resolution);
+        LogActivity(AdminActor, "Resolved dispute", dispute.Id, "Dispute", resolution);
     }
 
     public static void RefundDispute(DemoDispute dispute)
@@ -369,7 +366,7 @@ public static partial class DemoDataStore
         dispute.Status = "Resolved";
         dispute.Resolution = "Refund approved.";
         Persist(() => Backend.SaveDispute(dispute));
-        LogActivity("TaskTap Admin", "Refunded dispute", dispute.Id, "Dispute", "Refund approved for the poster.");
+        LogActivity(AdminActor, "Refunded dispute", dispute.Id, "Dispute", "Refund approved for the poster.");
     }
 
     public static void DismissDispute(DemoDispute dispute)
@@ -377,7 +374,7 @@ public static partial class DemoDataStore
         dispute.Status = "Dismissed";
         dispute.Resolution = "No action needed.";
         Persist(() => Backend.SaveDispute(dispute));
-        LogActivity("TaskTap Admin", "Dismissed dispute", dispute.Id, "Dispute", "Dispute reviewed and dismissed.");
+        LogActivity(AdminActor, "Dismissed dispute", dispute.Id, "Dispute", "Dispute reviewed and dismissed.");
     }
 
     /// <summary>Next dispute identifier for a user-opened dispute.</summary>
@@ -428,21 +425,21 @@ public static partial class DemoDataStore
         ticket.Reply = reply;
         ticket.Status = "Answered";
         Persist(() => Backend.SaveTicket(ticket));
-        LogActivity("TaskTap Admin", "Replied to ticket", ticket.Id, "Support", reply);
+        LogActivity(AdminActor, "Replied to ticket", ticket.Id, "Support", reply);
     }
 
     public static void ResolveTicket(DemoSupportTicket ticket)
     {
         ticket.Status = "Resolved";
         Persist(() => Backend.SaveTicket(ticket));
-        LogActivity("TaskTap Admin", "Resolved ticket", ticket.Id, "Support", "Ticket closed as resolved.");
+        LogActivity(AdminActor, "Resolved ticket", ticket.Id, "Support", "Ticket closed as resolved.");
     }
 
     public static void CloseTicket(DemoSupportTicket ticket)
     {
         ticket.Status = "Closed";
         Persist(() => Backend.SaveTicket(ticket));
-        LogActivity("TaskTap Admin", "Closed ticket", ticket.Id, "Support", "Ticket closed without a reply.");
+        LogActivity(AdminActor, "Closed ticket", ticket.Id, "Support", "Ticket closed without a reply.");
     }
 
     // ----- Announcements -----------------------------------------------------
@@ -465,7 +462,7 @@ public static partial class DemoDataStore
     {
         Announcements.Insert(0, announcement);
         Persist(() => Backend.SaveAnnouncement(announcement));
-        LogActivity("TaskTap Admin", "Published announcement", announcement.Id, "Announcement", announcement.Title);
+        LogActivity(AdminActor, "Published announcement", announcement.Id, "Announcement", announcement.Title);
     }
 
     public static void ToggleAnnouncement(DemoAnnouncement announcement)
@@ -473,7 +470,7 @@ public static partial class DemoDataStore
         announcement.Active = !announcement.Active;
         Persist(() => Backend.SaveAnnouncement(announcement));
         LogActivity(
-            "TaskTap Admin",
+            AdminActor,
             announcement.Active ? "Resumed announcement" : "Paused announcement",
             announcement.Id,
             "Announcement",
@@ -484,7 +481,7 @@ public static partial class DemoDataStore
     {
         Announcements.Remove(announcement);
         Persist(() => Backend.DeleteAnnouncement(announcement));
-        LogActivity("TaskTap Admin", "Deleted announcement", announcement.Id, "Announcement", announcement.Title);
+        LogActivity(AdminActor, "Deleted announcement", announcement.Id, "Announcement", announcement.Title);
     }
 
     // ----- Payments ----------------------------------------------------------
@@ -496,7 +493,7 @@ public static partial class DemoDataStore
             return;
         Payments[index] = payment with { Status = "Paid" };
         Persist(() => Backend.SetPaymentStatus(payment.Reference, "Paid"));
-        LogActivity("TaskTap Admin", "Marked payment paid", payment.Reference, "Payment", $"{payment.Amount:N0} recorded as paid.");
+        LogActivity(AdminActor, "Marked payment paid", payment.Reference, "Payment", $"{payment.Amount:N0} recorded as paid.");
     }
 
     public static void VoidPayment(PaymentRecordDetails payment)
@@ -506,7 +503,7 @@ public static partial class DemoDataStore
             return;
         Payments[index] = payment with { Status = "Void" };
         Persist(() => Backend.SetPaymentStatus(payment.Reference, "Void"));
-        LogActivity("TaskTap Admin", "Voided payment", payment.Reference, "Payment", "Payment record voided.");
+        LogActivity(AdminActor, "Voided payment", payment.Reference, "Payment", "Payment record voided.");
     }
 
     public static void RefundPayment(PaymentRecordDetails payment)
@@ -516,18 +513,18 @@ public static partial class DemoDataStore
             return;
         Payments[index] = payment with { Status = "Refunded" };
         Persist(() => Backend.SetPaymentStatus(payment.Reference, "Refunded"));
-        LogActivity("TaskTap Admin", "Refunded payment", payment.Reference, "Payment", "Payment refunded to the poster.");
+        LogActivity(AdminActor, "Refunded payment", payment.Reference, "Payment", "Payment refunded to the poster.");
     }
 
     // ----- Tasks -------------------------------------------------------------
 
     /// <summary>Admin-only highlight flags for the task table.</summary>
-    public static HashSet<DemoTask> FeaturedTasks { get; } = new(ReferenceEqualityComparer.Instance);
+    public static HashSet<DemoTask> FeaturedTasks { get; } = [];
 
     /// <summary>Admin-only pause flags for the task table.</summary>
-    public static HashSet<DemoTask> PausedTasks { get; } = new(ReferenceEqualityComparer.Instance);
+    public static HashSet<DemoTask> PausedTasks { get; } = [];
 
-    private static readonly Dictionary<DemoTask, string> ArchivedFrom = new(ReferenceEqualityComparer.Instance);
+    private static readonly Dictionary<DemoTask, string> ArchivedFrom = new();
 
     /// <summary>Archives a task from either the marketplace or the posted list.</summary>
     public static void ArchiveAdminTask(DemoTask task)
@@ -541,7 +538,7 @@ public static partial class DemoDataStore
             ArchivedTasks.Add(task);
         Persist(() => Backend.SetTaskStatus(task, "Archived"));
 
-        LogActivity("TaskTap Admin", "Archived task", task.Title, "Task", "Listing moved to archives.");
+        LogActivity(AdminActor, "Archived task", task.Title, "Task", "Listing moved to archives.");
     }
 
     /// <summary>Restores an archived task to the list it came from.</summary>
@@ -561,7 +558,7 @@ public static partial class DemoDataStore
                 PostedTasks.Add(task);
         }
 
-        LogActivity("TaskTap Admin", "Restored task", task.Title, "Task", "Listing restored to the marketplace.");
+        LogActivity(AdminActor, "Restored task", task.Title, "Task", "Listing restored to the marketplace.");
     }
 
     public static void ToggleFeatured(DemoTask task)
@@ -570,7 +567,7 @@ public static partial class DemoDataStore
         if (featured)
             FeaturedTasks.Add(task);
         Persist(() => Backend.SetFeatured(task, featured));
-        LogActivity("TaskTap Admin", featured ? "Featured task" : "Unfeatured task", task.Title, "Task", "Marketplace highlight changed.");
+        LogActivity(AdminActor, featured ? "Featured task" : "Unfeatured task", task.Title, "Task", "Marketplace highlight changed.");
     }
 
     public static void TogglePaused(DemoTask task)
@@ -579,7 +576,41 @@ public static partial class DemoDataStore
         if (paused)
             PausedTasks.Add(task);
         Persist(() => Backend.SetTaskStatus(task, paused ? "Paused" : "Active"));
-        LogActivity("TaskTap Admin", paused ? "Paused task" : "Resumed task", task.Title, "Task", "Listing visibility changed.");
+        LogActivity(AdminActor, paused ? "Paused task" : "Resumed task", task.Title, "Task", "Listing visibility changed.");
+    }
+
+    /// <summary>Admin correction of a listing. The poster is told what changed and why.</summary>
+    public static void AdminUpdateTask(DemoTask original, DemoTask updated, string reason)
+    {
+        updated.Id = original.Id;
+        updated.PosterId = original.PosterId;
+        updated.PosterName = original.PosterName;
+        Persist(() =>
+        {
+            Backend.UpdateTask(updated);
+            Backend.Notify(original.PosterId, "An admin edited your task", $"“{updated.Title}” was updated by the TaskTap team. Reason: {reason}", "tasks", "Open task");
+        });
+
+        var wasFeatured = FeaturedTasks.Remove(original);
+        var wasPaused = PausedTasks.Remove(original);
+        foreach (var list in new[] { AvailableTasks, PostedTasks, ArchivedTasks })
+        {
+            var index = list.IndexOf(original);
+            if (index >= 0)
+                list[index] = updated;
+        }
+        if (wasFeatured)
+            FeaturedTasks.Add(updated);
+        if (wasPaused)
+            PausedTasks.Add(updated);
+        LogActivity(AdminActor, "Edited task", updated.Title, "Task", reason);
+    }
+
+    /// <summary>Removes a listing for a policy reason (for example explicit content). The poster is told why.</summary>
+    public static void DeleteTaskForReason(DemoTask task, string reason)
+    {
+        Persist(() => Backend.Notify(task.PosterId, "Your task was removed", $"“{task.Title}” was removed by the TaskTap team. Reason: {reason}", "tasks", "Read guidelines"));
+        DeleteTask(task);
     }
 
     public static void DeleteTask(DemoTask task)
@@ -588,7 +619,7 @@ public static partial class DemoDataStore
         PostedTasks.Remove(task);
         ArchivedTasks.Remove(task);
         Persist(() => Backend.DeleteTask(task));
-        LogActivity("TaskTap Admin", "Deleted task", task.Title, "Task", "Task removed from the marketplace.");
+        LogActivity(AdminActor, "Deleted task", task.Title, "Task", "Task removed from the marketplace.");
     }
 
     // ----- Settings and demo reset ------------------------------------------
@@ -597,7 +628,7 @@ public static partial class DemoDataStore
     {
         Settings = settings;
         Persist(() => Backend.SaveSettings(settings));
-        LogActivity("TaskTap Admin", "Updated settings", settings.PlatformName, "Settings", "Platform settings saved.");
+        LogActivity(AdminActor, "Updated settings", settings.PlatformName, "Settings", "Platform settings saved.");
     }
 
     // ----- Seeds -------------------------------------------------------------

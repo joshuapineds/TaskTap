@@ -174,7 +174,6 @@ public sealed class DashboardPage : AppPage
     {
         var count = 0;
         if (DemoDataStore.RequestsReceived.Any(applicant => !applicant.Declined)) count++;
-        if (DemoDataStore.UnreadMessages > 0) count++;
         if (DemoDataStore.PostedTasks.Any(task => task.Days <= 2)) count++;
         if (DemoDataStore.Disputes.Any(dispute => IsMine(dispute) && dispute.Status == "Open")) count++;
         return count;
@@ -191,10 +190,14 @@ public sealed class DashboardPage : AppPage
         var chips = new List<Control>();
         var requests = DemoDataStore.RequestsReceived.Count(applicant => !applicant.Declined);
         if (requests > 0)
-            chips.Add(MakeChip($"✓  {requests} request{(requests == 1 ? "" : "s")} to review", "DashboardChipRequests", Color.FromArgb(232, 248, 241), Green, () => Nav.Navigate(new ManageRequestsPage())));
+            chips.Add(MakeChip($"✓  {requests} request{(requests == 1 ? "" : "s")} to review", "DashboardChipRequests", Color.FromArgb(232, 248, 241), Green, () =>
+            {
+                DemoDataStore.ManagedTask = DemoDataStore.PostedTasks.FirstOrDefault(task => DemoDataStore.RequestsReceived.Any(request => request.TaskId == task.Id));
+                Nav.Navigate(new ManageRequestsPage());
+            }));
 
-        if (DemoDataStore.UnreadMessages > 0)
-            chips.Add(MakeChip($"▱  {DemoDataStore.UnreadMessages} unread message{(DemoDataStore.UnreadMessages == 1 ? "" : "s")}", "DashboardChipMessages", Color.FromArgb(238, 245, 252), Navy, () => Nav.Navigate(Route.Messages)));
+        if (DemoDataStore.UnreadNotifications > 0)
+            chips.Add(MakeChip($"◔  {DemoDataStore.UnreadNotifications} unread notification{(DemoDataStore.UnreadNotifications == 1 ? "" : "s")}", "DashboardChipNotifications", Color.FromArgb(238, 245, 252), Navy, () => Nav.Navigate(Route.Notifications)));
 
         var dueSoon = DemoDataStore.PostedTasks.Count(task => task.Days <= 2);
         if (dueSoon > 0)
@@ -227,7 +230,7 @@ public sealed class DashboardPage : AppPage
         {
             cards.Add(MakeStatCard("▤", DemoDataStore.PostedTasks.Count.ToString(), "Open posts", Color.FromArgb(232, 243, 255), Blue, () => Nav.Navigate(Route.MyTasks)));
             cards.Add(MakeStatCard("✓", DemoDataStore.RequestsReceived.Count(applicant => !applicant.Declined).ToString(), "Requests to review", Color.FromArgb(230, 248, 241), Green, () => Nav.Navigate(new ManageRequestsPage())));
-            cards.Add(MakeStatCard("★", $"{(MeRecord?.Rating ?? 4.9):0.0}", "Your rating", Color.FromArgb(255, 241, 231), Orange, () => Nav.Navigate(Route.Reviews)));
+            cards.Add(MakeStatCard("★", $"{(MeRecord?.Rating ?? 0):0.0}", "Your rating", Color.FromArgb(255, 241, 231), Orange, () => Nav.Navigate(Route.Reviews)));
         }
         else
         {

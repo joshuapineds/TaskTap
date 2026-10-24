@@ -77,7 +77,7 @@ public sealed class ReportManagementPage : AdminPage
 
         ConfigureFilter(statusFilter, "reportsStatusFilter", ["All statuses", "Open", "Investigating", "Resolved", "Dismissed"]);
         ConfigureFilter(severityFilter, "reportsSeverityFilter", ["All severities", "High", "Medium", "Low"]);
-        ConfigureFilter(targetFilter, "reportsTargetFilter", ["All targets", "Task", "User", "Message", "Review"]);
+        ConfigureFilter(targetFilter, "reportsTargetFilter", ["All targets", "Task", "User", "Review"]);
 
         var reset = AdminUi.MakeLinkButton("Reset filters", "reportsResetButton");
         reset.Click += (_, _) =>

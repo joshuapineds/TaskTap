@@ -136,10 +136,10 @@ public sealed class AccountSettingsPage : AppPage
         var avatar = new Label { Text = AppSession.CurrentUser.Initials, Location = new Point(14, 12), Size = new Size(70, 70), BackColor = Color.FromArgb(220, 236, 255), ForeColor = Blue, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Segoe UI", 21F, FontStyle.Bold) };
         avatarArea.Controls.Add(avatar);
         AddLabel(avatarArea, "Profile photo", 9, Navy, true, new Point(100, 12), new Size(220, 20));
-        AddLabel(avatarArea, "Profile photos aren't available in this build, so your initials are shown instead.", 8, Muted, false, new Point(100, 35), new Size(440, 20));
-        var photo = MakeButton("Unavailable", "SettingsPhotoButton", false, 112);
+        AddLabel(avatarArea, "Use a clear photo so neighbors can recognize you. Photo upload is coming soon.", 8, Muted, false, new Point(100, 35), new Size(440, 20));
+        var photo = MakeButton("Change photo", "SettingsPhotoButton", false, 112);
         photo.Location = new Point(100, 59);
-        photo.Enabled = false;
+        photo.Click += (_, _) => ShowToast("Profile photos are not available yet.");
         avatarArea.Controls.Add(photo);
 
         var verify = MakeButton("Request verification", "SettingsRequestVerificationButton", false, 170);
@@ -185,7 +185,7 @@ public sealed class AccountSettingsPage : AppPage
         barangay.SelectedIndex = 0;
         AddFieldLabel(panel, "Barangay", barangay, 24, 210, 286, 54);
         contactMethod.DropDownStyle = ComboBoxStyle.DropDownList;
-        contactMethod.Items.AddRange(["TaskTap messages", "Mobile phone", "Email"]);
+        contactMethod.Items.AddRange(["Mobile phone", "Email"]);
         contactMethod.SelectedIndex = 0;
         AddFieldLabel(panel, "Preferred contact method", contactMethod, 338, 210, 286, 54);
         AddInfoBox(panel, "⌖", "Approximate location only", "TaskTap does not expose a precise home address or continuous GPS location. Share an exact meeting point only when necessary and appropriate for a task.", 302);
@@ -208,6 +208,10 @@ public sealed class AccountSettingsPage : AppPage
         AddLabel(security, "⌁", 12, Blue, true, new Point(326, 18), new Size(28, 24));
         AddLabel(security, "Active sessions", 9, Navy, true, new Point(362, 18), new Size(195, 20));
         AddLabel(security, "Signed in on this device", 8, Muted, false, new Point(362, 41), new Size(220, 20));
+        var signOut = MakeLink("Sign out other sessions");
+        signOut.Location = new Point(362, 67);
+        signOut.Click += (_, _) => ShowToast("You are only signed in on this device.");
+        security.Controls.Add(signOut);
         var danger = MakeCard();
         danger.BackColor = Color.FromArgb(255, 248, 248);
         danger.Bounds = new Rectangle(24, 445, 600, 112);
@@ -226,51 +230,24 @@ public sealed class AccountSettingsPage : AppPage
     {
         var panel = CreateSection("notifications");
         AddSectionTitle(panel, "NOTIFICATIONS", "Choose what reaches you", "Control updates without missing important task activity.");
-        var entries = new[]
-        {
-            ("Task requests", "New requests, accepted requests, and declines.", true),
-            ("Messages", "New messages and conversation activity.", true),
-            ("Payments", "Payment records, confirmations, and reminders.", true),
-            ("Reviews", "New reviews and rating activity.", true),
-            ("Task reminders", "Upcoming deadlines and scheduled tasks.", true),
-            ("Community tips", "Occasional product and safety guidance.", false)
-        };
-        for (var i = 0; i < entries.Length; i++)
-        {
-            var (title, subtitle, isChecked) = entries[i];
-            AddPreferenceRow(panel, title, subtitle, isChecked, 108 + i * 58);
-        }
-        var delivery = MakeCard();
-        delivery.Bounds = new Rectangle(24, 475, 600, 112);
-        panel.Controls.Add(delivery);
-        AddLabel(delivery, "Delivery", 10, Navy, true, new Point(16, 12), new Size(210, 22));
-        AddLabel(delivery, "In-app", 8, Navy, true, new Point(16, 44), new Size(100, 20));
-        AddLabel(delivery, "Always on for important account activity", 8, Muted, false, new Point(105, 44), new Size(360, 20));
-        AddLabel(delivery, "Email", 8, Navy, true, new Point(16, 76), new Size(100, 20));
-        emailDelivery.DropDownStyle = ComboBoxStyle.DropDownList;
-        emailDelivery.Items.AddRange(["Important only", "All activity", "Never"]);
-        emailDelivery.SelectedIndex = 0;
-        emailDelivery.Bounds = new Rectangle(430, 70, 150, 28);
-        emailDelivery.SelectedIndexChanged += (_, _) => MarkDirty();
-        delivery.Controls.Add(emailDelivery);
+        var card = MakeCard();
+        card.Bounds = new Rectangle(24, 112, 600, 120);
+        panel.Controls.Add(card);
+        AddLabel(card, "Manage notifications", 10, Navy, true, new Point(16, 12), new Size(300, 22));
+        AddLabel(card, "Choose which kinds of updates you want (requests, payments, reviews, reminders) on the Notifications page. Your choices are saved to your account.", 8, Muted, false, new Point(16, 40), new Size(560, 38));
+        var open = MakeLink("Open notification preferences →");
+        open.Location = new Point(16, 88);
+        open.Click += (_, _) => Nav.Navigate(Route.Notifications);
+        card.Controls.Add(open);
     }
 
     private void BuildPrivacySection()
     {
         var panel = CreateSection("privacy");
         AddSectionTitle(panel, "PRIVACY & ACCOUNT", "Control your visibility", "Choose what other TaskTap members can discover about your account.");
-        var entries = new[]
-        {
-            ("Public profile", "Allow other users to view your profile, rating, skills, and reviews.", true),
-            ("Show approximate barangay", "Show your selected barangay rather than an exact location.", true),
-            ("Show completed task count", "Display your completed-task total on your public profile.", true)
-        };
-        for (var i = 0; i < entries.Length; i++)
-        {
-            var (title, subtitle, isChecked) = entries[i];
-            AddPreferenceRow(panel, title, subtitle, isChecked, 112 + i * 66);
-        }
-        AddInfoBox(panel, "✓", "What you should never share", "Passwords, OTPs, bank login credentials, full card numbers, or sensitive identity documents in public profile fields or task messages.", 338);
+        AddInfoBox(panel, "◉", "What other members see", "Your name, barangay, rating, reviews and completed tasks. Your phone and email are shared only with the person whose request you accept (or who accepts yours).", 112);
+        AddInfoBox(panel, "◎", "Your location", "Tasks show an approximate area on the map, never an exact pin or address.", 225);
+        AddInfoBox(panel, "✓", "What you should never share", "Passwords, OTPs, bank login credentials, full card numbers, or sensitive identity documents in profile fields, tasks, or your CV.", 338);
     }
 
     private Panel CreateSection(string key)
@@ -312,10 +289,7 @@ public sealed class AccountSettingsPage : AppPage
         input.Bounds = new Rectangle(x, y + 24, width, 34);
         input.TextChanged += (_, _) => MarkDirty();
         parent.Controls.Add(input);
-        var toggle = MakeLink("Show");
-        toggle.Location = new Point(x + width - 52, y + 32);
-        toggle.Click += (_, _) => { input.UseSystemPasswordChar = !input.UseSystemPasswordChar; toggle.Text = input.UseSystemPasswordChar ? "Show" : "Hide"; };
-        parent.Controls.Add(toggle);
+        PasswordReveal.Attach(input);
     }
 
     private void AddInfoBox(Panel parent, string icon, string title, string message, int y)

@@ -176,6 +176,7 @@ public sealed class AdminLoginForm : Form
         passwordBox.BorderStyle = BorderStyle.FixedSingle;
         passwordBox.UseSystemPasswordChar = true;
         card.Controls.Add(passwordBox);
+        PasswordReveal.Attach(passwordBox);
 
         rememberBox.Name = "adminRememberCheckBox";
         rememberBox.Text = "Remember me";

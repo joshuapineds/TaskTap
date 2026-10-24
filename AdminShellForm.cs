@@ -113,6 +113,9 @@ public sealed class AdminShellForm : Form
         signOut.Click += (_, _) => ExitToAdminLogin();
         sidebar.Controls.Add(signOut);
 
+        for (var index = 0; index < navButtons.Length; index++)
+            navButtons[index].Visible = navigation.CanAccess(NavItems[index].Route);
+
         sidebar.Resize += (_, _) =>
         {
             returnLink.Location = new Point(12, Math.Max(560, sidebar.Height - 96));

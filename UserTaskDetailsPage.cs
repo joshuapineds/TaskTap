@@ -19,6 +19,7 @@ public sealed class UserTaskDetailsPage : AppPage
     private readonly string description;
     private readonly Color iconBack;
     private readonly DemoTask? postedTask;
+    private readonly DemoTask? taskRecord;
     private readonly int taskId;
     private MapView? areaMap;
     private readonly Panel scrollHost = new();
@@ -55,7 +56,9 @@ public sealed class UserTaskDetailsPage : AppPage
         this.icon = icon;
         this.description = description;
         this.iconBack = iconBack;
-        postedTask = DemoDataStore.PostedTasks.FirstOrDefault(posted => posted.Title == taskTitle);
+        taskRecord = DemoDataStore.AvailableTasks.Concat(DemoDataStore.PostedTasks).Concat(DemoDataStore.ArchivedTasks)
+            .FirstOrDefault(task => task.Id == this.taskId || task.Title == taskTitle);
+        postedTask = taskRecord;
         BuildPage();
     }
 
@@ -202,10 +205,13 @@ public sealed class UserTaskDetailsPage : AppPage
     {
         factsCard.Name = "userDetailsFactsCard";
         AddCardHeading(factsCard, "Task details");
-        var schedule = $"{deadline} · 9:00 AM";
-        AddFact(factsCard, "SCHEDULE", schedule, 14, 42);
-        AddFact(factsCard, "ESTIMATED TIME", category == "Repairs" ? "1–2 hours" : "2–3 hours", 50, 42);
-        AddFact(factsCard, "COMPENSATION", $"₱{price:N0} fixed", 14, 92);
+        var known = DemoDataStore.AvailableTasks.Concat(DemoDataStore.PostedTasks).Concat(DemoDataStore.ArchivedTasks)
+            .FirstOrDefault(task => task.Id == taskId && taskId > 0);
+        var start = string.IsNullOrWhiteSpace(known?.StartTime) ? "Flexible start" : known!.StartTime;
+        AddFact(factsCard, "SCHEDULE", $"{deadline} · {start}", 14, 42);
+        AddFact(factsCard, "ESTIMATED TIME", string.IsNullOrWhiteSpace(known?.Duration) ? "Not specified" : known!.Duration, 50, 42);
+        var method = string.IsNullOrWhiteSpace(known?.PaymentMethod) || known!.PaymentMethod.StartsWith("Select", StringComparison.Ordinal) ? "" : $" · {known.PaymentMethod}";
+        AddFact(factsCard, "COMPENSATION", $"₱{price:N0}{method}", 14, 92);
         AddFact(factsCard, "TASK AREA", $"Brgy. {barangay}, Caloocan", 50, 92);
         primary.Controls.Add(factsCard);
     }
@@ -290,29 +296,31 @@ public sealed class UserTaskDetailsPage : AppPage
         AddCardHeading(posterCard, "Posted by");
         var profile = MakeTextButton("View profile", "UserDetailsViewProfileButton");
         profile.Location = new Point(0, 10);
-        profile.Click += (_, _) => Nav.Navigate(ProfileLinks.For("Maria Santos"));
+        profile.Click += (_, _) => Nav.Navigate(ProfileLinks.For(taskRecord?.PosterName));
         posterCard.Controls.Add(profile);
-        var avatar = MakeLabel("MS", 11, Color.FromArgb(199, 106, 61), true);
+        var posterName = string.IsNullOrWhiteSpace(taskRecord?.PosterName) ? "Task poster" : taskRecord.PosterName;
+        var poster = DemoDataStore.Users.FirstOrDefault(user => user.FullName.Equals(posterName, StringComparison.OrdinalIgnoreCase));
+        var avatar = MakeLabel(poster?.Initials ?? "TP", 11, Color.FromArgb(199, 106, 61), true);
         avatar.TextAlign = ContentAlignment.MiddleCenter;
         avatar.BackColor = Color.FromArgb(255, 237, 225);
         avatar.Location = new Point(14, 43);
         avatar.Size = new Size(38, 38);
         posterCard.Controls.Add(avatar);
-        var name = MakeLabel("Maria Santos", 9, Navy, true);
+        var name = MakeLabel(posterName, 9, Navy, true);
         name.Location = new Point(62, 41);
         name.Cursor = Cursors.Hand;
-        name.Click += (_, _) => Nav.Navigate(ProfileLinks.For("Maria Santos"));
+        name.Click += (_, _) => Nav.Navigate(ProfileLinks.For(posterName));
         posterCard.Controls.Add(name);
-        var posted = MakeLabel("12 completed tasks posted", 7.5F, Muted);
+        var posted = MakeLabel($"{poster?.PostedTasks ?? 0} completed tasks posted", 7.5F, Muted);
         posted.Location = new Point(62, 58);
         posterCard.Controls.Add(posted);
-        var rating = MakeLabel("★★★★★  4.9 (16 reviews)", 8, Color.FromArgb(231, 144, 55), true);
+        var rating = MakeLabel($"★★★★★  {(poster?.Rating ?? 0):0.0} ({poster?.Reviews ?? 0} reviews)", 8, Color.FromArgb(231, 144, 55), true);
         rating.Location = new Point(62, 73);
         posterCard.Controls.Add(rating);
         AddDivider(posterCard, 104);
-        AddPosterStat(posterCard, "4.9", "Rating", 20);
-        AddPosterStat(posterCard, "12", "Tasks posted", 113);
-        AddPosterStat(posterCard, "16", "Reviews", 208);
+        AddPosterStat(posterCard, $"{poster?.Rating ?? 0:0.0}", "Rating", 20);
+        AddPosterStat(posterCard, (poster?.PostedTasks ?? 0).ToString(), "Tasks posted", 113);
+        AddPosterStat(posterCard, (poster?.Reviews ?? 0).ToString(), "Reviews", 208);
         var quote = MakeLabel("“Very reliable and did a great job!”\nRecent community review", 7, Muted);
         quote.AutoSize = false;
         quote.Location = new Point(14, 148);
@@ -344,7 +352,7 @@ public sealed class UserTaskDetailsPage : AppPage
         report.Location = new Point(14, 145);
         report.Click += (_, _) => ShowReportDialog();
         requestCard.Controls.Add(report);
-        var note = MakeLabel("Your request will be sent to the task poster with your short message. Never share passwords, OTPs, or sensitive financial information.", 7, Muted);
+        var note = MakeLabel("Your request is sent to the task poster with a PDF of your CV or achievements. Never include passwords, OTPs, or banking details in it.", 7, Muted);
         note.Location = new Point(14, 194);
         note.MaximumSize = new Size(265, 46);
         requestCard.Controls.Add(note);
@@ -365,11 +373,26 @@ public sealed class UserTaskDetailsPage : AppPage
             BackColor = Color.White,
             Font = new Font("Segoe UI", 9F)
         };
-        dialog.Controls.Add(new Label { Text = "Send a request for this task", Location = new Point(24, 24), Size = new Size(420, 30), Font = new Font("Segoe UI", 15F, FontStyle.Bold), ForeColor = Navy });
-        dialog.Controls.Add(new Label { Text = $"Tell the poster briefly why you're a good fit and when you can complete “{taskTitle}”.", Location = new Point(24, 62), Size = new Size(428, 42), ForeColor = Muted });
-        dialog.Controls.Add(new Label { Text = "Message to poster", Location = new Point(24, 116), Size = new Size(200, 22), Font = new Font("Segoe UI", 9F, FontStyle.Bold), ForeColor = Navy });
-        var message = new TextBox { Name = "requestMessage", Location = new Point(24, 142), Size = new Size(428, 112), Multiline = true, MaxLength = 500, ScrollBars = ScrollBars.Vertical, PlaceholderText = "Hi, I can help with this task...", Font = new Font("Segoe UI", 9F) };
-        dialog.Controls.Add(message);
+        dialog.Controls.Add(new Label { Text = "Apply for this task", Location = new Point(24, 24), Size = new Size(420, 30), Font = new Font("Segoe UI", 15F, FontStyle.Bold), ForeColor = Navy });
+        dialog.Controls.Add(new Label { Text = $"Upload a PDF resume, CV, certificates or past work that shows you can do “{taskTitle}”. The poster reads it before choosing.", Location = new Point(24, 62), Size = new Size(428, 42), ForeColor = Muted });
+        dialog.Controls.Add(new Label { Text = "Your CV or achievements (PDF)", Location = new Point(24, 116), Size = new Size(300, 22), Font = new Font("Segoe UI", 9F, FontStyle.Bold), ForeColor = Navy });
+        string? cvName = null;
+        byte[]? cvBytes = null;
+        var cvLabel = new Label { Name = "requestCvLabel", Text = "No file chosen yet", Location = new Point(24, 184), Size = new Size(428, 40), ForeColor = Muted };
+        var choose = MakeAction("Choose PDF…", "RequestDialogChoosePdf", false, 140);
+        choose.Location = new Point(24, 146);
+        choose.Click += (_, _) =>
+        {
+            if (CvTools.Pick(dialog) is { } picked)
+            {
+                cvName = picked.Name;
+                cvBytes = picked.Bytes;
+                cvLabel.Text = CvTools.Describe(picked.Name, picked.Bytes.Length);
+                cvLabel.ForeColor = Navy;
+            }
+        };
+        dialog.Controls.Add(choose);
+        dialog.Controls.Add(cvLabel);
         dialog.Controls.Add(new Label { Text = $"Task: {taskTitle}\r\nAgreed compensation: ₱{price:N0}", Location = new Point(24, 264), Size = new Size(428, 44), ForeColor = Muted });
         var cancel = MakeAction("Cancel", "RequestDialogCancel", false, 100);
         cancel.Location = new Point(228, 330);
@@ -379,10 +402,9 @@ public sealed class UserTaskDetailsPage : AppPage
         send.Location = new Point(338, 330);
         send.Click += (_, _) =>
         {
-            if (string.IsNullOrWhiteSpace(message.Text))
+            if (cvBytes is null || cvName is null)
             {
-                MessageBox.Show(dialog, "Enter a short message for the task poster.", "Message required", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                message.Focus();
+                MessageBox.Show(dialog, "Attach a PDF of your CV or achievements so the poster can see how you fit this task.", "CV required", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             dialog.DialogResult = DialogResult.OK;
@@ -405,10 +427,11 @@ public sealed class UserTaskDetailsPage : AppPage
                 Date = DateTime.Today,
                 RequestDate = DateTime.Today.ToString("yyyy-MM-dd"),
                 Description = description,
-                RequestMessage = message.Text.Trim(),
+                AttachmentName = cvName ?? "",
+                AttachmentSize = cvBytes?.Length ?? 0,
                 Icon = icon,
                 IconBack = iconBack
-            });
+            }, cvName ?? "", cvBytes ?? []);
             if (sent)
                 Nav.Navigate(Route.MyRequests);
         }
@@ -472,7 +495,7 @@ public sealed class UserTaskDetailsPage : AppPage
         var heading = MakeLabel("Community safety", 8, Navy, true);
         heading.Location = new Point(54, 12);
         safetyCard.Controls.Add(heading);
-        var body = MakeLabel("Keep agreements, messages, and task updates on TaskTap. Meet safely and confirm task details before starting.", 7, Muted);
+        var body = MakeLabel("Keep agreements and task updates on TaskTap. Meet safely and confirm task details before starting.", 7, Muted);
         body.Location = new Point(54, 29);
         body.MaximumSize = new Size(250, 45);
         safetyCard.Controls.Add(body);

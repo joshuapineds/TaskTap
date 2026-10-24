@@ -210,7 +210,7 @@ public sealed class ManageRequestsPage : AppPage
         var eyebrow = MakeLabel("SELECTION", 7, Blue, true); eyebrow.Location = new Point(12, 12); decisionPanel.Controls.Add(eyebrow);
         var title = MakeLabel("Choose a performer", 11, Navy, true); title.Location = new Point(12, 29); decisionPanel.Controls.Add(title);
         var count = new Label { Name = "ManageRequestsSelectedCount", Text = "1", Size = new Size(24, 24), Location = new Point(0, 10), BackColor = Color.FromArgb(234, 244, 255), ForeColor = Blue, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Segoe UI", 8F, FontStyle.Bold) }; decisionPanel.Controls.Add(count);
-        var body = MakeLabel("Review profiles and messages before accepting a request. Once accepted, no other applicant can be selected for this task.", 7, Muted); body.Name = "ManageRequestsPanelCopy"; body.Location = new Point(12, 52); body.MaximumSize = new Size(245, 55); decisionPanel.Controls.Add(body);
+        var body = MakeLabel("Review profiles and CVs before accepting a request. Once accepted, no other applicant can be selected for this task.", 7, Muted); body.Name = "ManageRequestsPanelCopy"; body.Location = new Point(12, 52); body.MaximumSize = new Size(245, 55); decisionPanel.Controls.Add(body);
         var selectedBox = new Panel { Name = "ManageRequestsSelectedBox", BackColor = Color.FromArgb(251, 253, 255), BorderStyle = BorderStyle.FixedSingle };
         var emptyIcon = new Label { Text = "◎", Size = new Size(34, 34), BackColor = Color.FromArgb(237, 244, 251), ForeColor = Muted, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Segoe UI", 13F, FontStyle.Bold) }; emptyIcon.Name = "ManageRequestsSelectionIcon"; selectedBox.Controls.Add(emptyIcon);
         var emptyTitle = MakeLabel("No one selected yet", 8, Navy, true); emptyTitle.Name = "ManageRequestsSelectionTitle"; selectedBox.Controls.Add(emptyTitle);
@@ -285,7 +285,7 @@ public sealed class ManageRequestsPage : AppPage
         var name = MakeLabel(request.Name, 11, Navy, true); name.Name = "RequestApplicantName"; name.Location = new Point(74, 23); name.Click += (_, _) => SetSelected(request); card.Controls.Add(name);
         var rating = MakeLabel($"{request.Rating:F1}  ★   {request.Reviews} reviews · {request.Completed} completed", 7, Muted); rating.Location = new Point(74, 43); rating.Click += (_, _) => SetSelected(request); card.Controls.Add(rating);
         var when = MakeLabel(request.RequestedAt, 6.5F, Muted); when.Name = "RequestReceivedAt"; when.Anchor = AnchorStyles.Top | AnchorStyles.Right; card.Controls.Add(when);
-        var message = MakeLabel($"“{request.Message}”", 7.5F, Muted); message.Name = "RequestMessage"; message.Location = new Point(74, 63); message.MaximumSize = new Size(700, 34); message.Click += (_, _) => SetSelected(request); card.Controls.Add(message);
+        var message = MakeLabel(CvTools.Describe(request.AttachmentName, request.AttachmentSize), 7.5F, Blue); message.Name = "RequestMessage"; message.Location = new Point(74, 63); message.MaximumSize = new Size(700, 34); message.Click += (_, _) => SetSelected(request); card.Controls.Add(message);
         var skillY = 101;
         var skillX = 74;
         foreach (var skill in request.Skills)
@@ -300,7 +300,9 @@ public sealed class ManageRequestsPage : AppPage
         shortlist.Height = 27;
         shortlist.Click += (_, _) => ToggleShortlist(request);
         actions.Controls.Add(shortlist);
-        AddRequestAction(actions, "Message", () => Nav.Navigate(Route.Messages));
+        AddRequestAction(actions, "View CV", () => CvTools.Open(this, request.Id));
+        if (request.Accepted)
+            AddRequestAction(actions, "Contact", () => CvTools.ShowContact(this, request.Id, "Performer"));
         AddRequestAction(actions, "View profile", () => Nav.Navigate(ProfileLinks.For(request.Name)));
         AddRequestAction(actions, "Decline", () => Decline(request));
         card.Controls.Add(actions);
@@ -312,7 +314,7 @@ public sealed class ManageRequestsPage : AppPage
         var strip = new Panel { Name = "ManageRequestsSafetyStrip", BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle };
         var icon = new Label { Text = "✓", Size = new Size(24, 24), Location = new Point(12, 10), BackColor = Color.FromArgb(232, 248, 241), ForeColor = Color.FromArgb(10, 141, 102), TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Segoe UI", 9F, FontStyle.Bold) }; strip.Controls.Add(icon);
         strip.Controls.Add(MakeLabel("Community safety", 7, Navy, true).At(44, 8));
-        strip.Controls.Add(MakeLabel("Review ratings, task history, and each applicant’s message before choosing. Your decision is saved and the applicants are notified.", 6.5F, Muted).At(44, 23));
+        strip.Controls.Add(MakeLabel("Review ratings, task history, and each applicant’s CV before choosing. Your decision is saved and the applicants are notified.", 6.5F, Muted).At(44, 23));
         var safety = MakeTextButton("Safety guidelines →", "ManageRequestsSafetyButton"); safety.Click += (_, _) => ShowToast("Review ratings and keep task conversations on TaskTap."); strip.Controls.Add(safety);
         page.Controls.Add(strip);
     }
@@ -387,7 +389,7 @@ public sealed class ManageRequestsPage : AppPage
         requestCount.Location = new Point(left + 2, 326);
         var requestHeight = Math.Max(210, requests.Count(request => !request.Declined &&
             (currentFilter == "all" || currentFilter == "new" && !request.Shortlisted || currentFilter == "shortlisted" && request.Shortlisted) &&
-            (string.IsNullOrEmpty(requestSearch.Text.Trim()) || $"{request.Name} {request.Message} {string.Join(" ", request.Skills)} {request.Barangay} {request.Rating}".Contains(requestSearch.Text.Trim(), StringComparison.OrdinalIgnoreCase))) * 195);
+            (string.IsNullOrEmpty(requestSearch.Text.Trim()) || $"{request.Name} {request.AttachmentName} {string.Join(" ", request.Skills)} {request.Barangay} {request.Rating}".Contains(requestSearch.Text.Trim(), StringComparison.OrdinalIgnoreCase))) * 195);
         requestList.Bounds = new Rectangle(left, 348, requestsWidth, requestHeight);
         foreach (Control card in requestList.Controls)
             LayoutRequestCard(card, requestsWidth);
@@ -455,7 +457,7 @@ public sealed class ManageRequestsPage : AppPage
         var query = requestSearch.Text.Trim();
         IEnumerable<RequestRecord> filtered = requests.Where(request => !request.Declined)
             .Where(request => currentFilter == "all" || currentFilter == "new" && !request.Shortlisted || currentFilter == "shortlisted" && request.Shortlisted)
-            .Where(request => string.IsNullOrEmpty(query) || $"{request.Name} {request.Message} {string.Join(" ", request.Skills)} {request.Barangay} {request.Rating}".Contains(query, StringComparison.OrdinalIgnoreCase));
+            .Where(request => string.IsNullOrEmpty(query) || $"{request.Name} {request.AttachmentName} {string.Join(" ", request.Skills)} {request.Barangay} {request.Rating}".Contains(query, StringComparison.OrdinalIgnoreCase));
         filtered = requestSort.SelectedItem?.ToString() switch
         {
             "Highest rating" => filtered.OrderByDescending(request => request.Rating),
@@ -524,7 +526,7 @@ public sealed class ManageRequestsPage : AppPage
         }
         selectedContent.Visible = selected is not null;
         clearSelectionButton.Visible = selected is not null;
-        selectedContent.Text = selected is null ? string.Empty : $"{selected.Initials}   {selected.Name}\r\n{selected.Rating:F1} ★ · ready to start\r\n\r\nYou can still message them before confirming.";
+        selectedContent.Text = selected is null ? string.Empty : $"{selected.Initials}   {selected.Name}\r\n{selected.Rating:F1} ★ · ready to start\r\n\r\nOpen their CV before confirming.";
         selectedContent.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
         selectedContent.ForeColor = Navy;
         selectedContent.MaximumSize = new Size(selectedBox.Width - 24, 76);

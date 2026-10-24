@@ -106,7 +106,7 @@ public sealed class UserDetailPage : AdminPage
         metaLabel.Location = new Point(100, 100);
         headerCard.Controls.Add(metaLabel);
 
-        AddAction("Suspend / Activate", "userDetailToggle", user.Status == "Suspended" ? AdminUi.Good : AdminUi.Warn, () =>
+        AddAction("Restrict / Restore", "userDetailToggle", user.Status == "Suspended" ? AdminUi.Good : AdminUi.Warn, () =>
         {
             if (user.Status == "Suspended")
                 DemoDataStore.ActivateUser(user);
@@ -121,9 +121,6 @@ public sealed class UserDetailPage : AdminPage
             ClosePage("User verified.");
         });
 
-        AddAction("Reset password", "userDetailReset", AdminUi.Navy, ResetPassword);
-        AddAction("Message", "userDetailMessage", AdminUi.Navy, () => Toast("Admins cannot message members directly. Use a support ticket reply instead."));
-        AddAction("Delete", "userDetailDelete", AdminUi.Bad, DeleteUser);
 
         headerCard.Controls.Add(actions);
     }
@@ -296,11 +293,8 @@ public sealed class UserDetailPage : AdminPage
 
     private void BuildTasks(int width)
     {
-        var tasks = user.Id == "USR-001"
-            ? DemoDataStore.PostedTasks.ToList()
-            : DemoDataStore.AvailableTasks.Where(task => task.Barangay == user.Barangay).ToList();
-        if (tasks.Count == 0)
-            tasks = DemoDataStore.AvailableTasks.Take(3).ToList();
+        var userId = Backend.ParseUserKey(user.Id);
+        var tasks = DemoDataStore.PostedTasks.Where(task => task.PosterId == userId).ToList();
 
         var note = AdminUi.MakeLabel("Task activity shown from the TaskTap marketplace.", 8, AdminUi.Muted);
         note.Location = new Point(0, 0);
@@ -541,37 +535,6 @@ public sealed class UserDetailPage : AdminPage
     private void ClosePage(string message)
     {
         Toast(message);
-        if (!Nav.Back())
-            Nav.Navigate(AdminRoute.Users);
-    }
-
-    private void ResetPassword()
-    {
-        var id = Backend.ParseUserKey(user.Id);
-        if (id == 0)
-        {
-            Toast("This account has no record to reset.");
-            return;
-        }
-        var newPassword = AdminResetPasswordDialog.ShowFor(this, user.FullName);
-        if (newPassword is null)
-            return;
-        if (DemoDataStore.ResetUserPassword(user, newPassword))
-            Toast($"{user.FullName}'s password was reset.");
-    }
-
-    private void DeleteUser()
-    {
-        var answer = MessageBox.Show(
-            this,
-            $"Delete {user.FullName}?\n\nThis permanently removes the account and everything it posted.",
-            "Delete user",
-            MessageBoxButtons.YesNo,
-            MessageBoxIcon.Warning);
-        if (answer != DialogResult.Yes)
-            return;
-
-        DemoDataStore.DeleteUser(user);
         if (!Nav.Back())
             Nav.Navigate(AdminRoute.Users);
     }

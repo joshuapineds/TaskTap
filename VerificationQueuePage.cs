@@ -313,7 +313,11 @@ public sealed class VerificationQueuePage : AdminPage
 
     private void Approve(DemoUser user)
     {
-        DemoDataStore.VerifyUser(user);
+        if (!DemoDataStore.VerifyUser(user))
+        {
+            Toast("Could not approve. See the database message.");
+            return;
+        }
         selectedUser = null;
         RefreshQueue();
         Toast($"{user.FullName} verified.");

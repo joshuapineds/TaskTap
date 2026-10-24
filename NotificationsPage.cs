@@ -26,6 +26,7 @@ public sealed class NotificationsPage : AppPage
     private readonly Dictionary<NotificationItem, Button> readButtons = [];
     private string activeFilter = "all";
     private bool pageBuilt;
+    private Dictionary<string, bool> preferenceValues = new(StringComparer.OrdinalIgnoreCase);
 
     private sealed class NotificationItem(string title, string time, string description, string action, string type, string period, string icon, Color iconColor, bool unread)
     {
@@ -63,6 +64,7 @@ public sealed class NotificationsPage : AppPage
     {
         if (AppSession.IsSignedIn)
         {
+            Db.Try(() => preferenceValues = Backend.LoadNotificationPreferences(AppSession.CurrentUser.Id));
             List<Backend.NotificationRow> rows = [];
             Db.Try(() => rows = Backend.LoadNotifications(AppSession.CurrentUser.Id));
             foreach (var row in rows)
@@ -128,7 +130,7 @@ public sealed class NotificationsPage : AppPage
         page.Controls.Add(crumb);
         AddPageLabel("notificationsEyebrow", "ACTIVITY CENTER", 8, Blue, true);
         AddPageLabel("notificationsHeading", "Notifications", 25, Navy, true);
-        AddPageLabel("notificationsSubtitle", "Stay on top of requests, messages, payments, and task updates.", 9, Muted, false);
+        AddPageLabel("notificationsSubtitle", "Stay on top of requests, payments, and task updates.", 9, Muted, false);
         var markAll = MakeButton("✓  Mark all as read", "NotificationsMarkAllButton", false, 150);
         markAll.Click += (_, _) => MarkAllRead();
         page.Controls.Add(markAll);
@@ -140,7 +142,7 @@ public sealed class NotificationsPage : AppPage
         var toolbar = new Panel { Name = "notificationsToolbar", Height = 65, Dock = DockStyle.Top, BackColor = Color.White };
         toolbar.Paint += (_, e) => { using var pen = new Pen(Line); e.Graphics.DrawLine(pen, 0, toolbar.Height - 1, toolbar.Width, toolbar.Height - 1); };
         listCard.Controls.Add(toolbar);
-        var filters = new[] { ("all", "All"), ("unread", "Unread"), ("tasks", "Tasks"), ("messages", "Messages"), ("payments", "Payments"), ("announcements", "Announcements") };
+        var filters = new[] { ("all", "All"), ("unread", "Unread"), ("tasks", "Tasks"), ("payments", "Payments"), ("announcements", "Announcements") };
         var x = 14;
         foreach (var (key, text) in filters)
         {
@@ -190,11 +192,10 @@ public sealed class NotificationsPage : AppPage
     private void BuildPreferences()
     {
         AddCardLabel(preferenceCard, "Notification preferences", 13, Navy, true, new Point(18, 18), new Size(250, 24));
-        AddCardLabel(preferenceCard, "Updates that appear in your TaskTap activity center.", 8, Muted, false, new Point(18, 48), new Size(275, 43));
+        AddCardLabel(preferenceCard, "Choose which updates you want to see in your TaskTap activity center.", 8, Muted, false, new Point(18, 48), new Size(275, 43));
         var preferences = new[]
         {
             ("Task requests", "New requests and decisions"),
-            ("Messages", "New task conversations"),
             ("Payments", "Payment records and reminders"),
             ("Deadlines", "Upcoming task reminders")
         };
@@ -206,6 +207,13 @@ public sealed class NotificationsPage : AppPage
             preferenceCard.Controls.Add(divider);
             AddCardLabel(preferenceCard, title, 9, Navy, true, new Point(18, y + 11), new Size(190, 20));
             AddCardLabel(preferenceCard, subtitle, 7.5F, Muted, false, new Point(18, y + 31), new Size(200, 18));
+            var preferenceKey = title.ToLowerInvariant().Replace(" ", "_");
+            var toggle = new CheckBox { Name = $"NotificationPreference_{preferenceKey}", Checked = !preferenceValues.TryGetValue(preferenceKey, out var enabled) || enabled, Appearance = Appearance.Button, Text = "ON", TextAlign = ContentAlignment.MiddleCenter, FlatStyle = FlatStyle.Flat, BackColor = Blue, ForeColor = Color.White, Font = new Font("Segoe UI", 7F, FontStyle.Bold), Size = new Size(46, 24), Location = new Point(244, y + 17), Cursor = Cursors.Hand };
+            toggle.FlatAppearance.BorderSize = 0;
+            toggle.CheckedChanged += (_, _) => { toggle.Text = toggle.Checked ? "ON" : "OFF"; toggle.BackColor = toggle.Checked ? Blue : Color.FromArgb(170, 184, 200);
+                if (AppSession.IsSignedIn) Db.Try(() => Backend.SetNotificationPreference(AppSession.CurrentUser.Id, preferenceKey, toggle.Checked));
+                ShowToast($"{title} notifications {(toggle.Checked ? "enabled" : "disabled")}."); };
+            preferenceCard.Controls.Add(toggle);
         }
     }
 
@@ -335,8 +343,7 @@ public sealed class NotificationsPage : AppPage
             UpdateCounts();
             ApplyFilters();
         }
-        var destination = notice.Type == "messages" ? "Messages" : notice.Type == "payments" ? "Payments" : "My Tasks";
-        if (destination == "Messages") { Nav.Navigate(Route.Messages); return; }
+        var destination = notice.Type == "payments" ? "Payments" : "My Tasks";
         if (destination == "Payments") { Nav.Navigate(Route.PaymentHistory); return; }
         switch (notice.Action)
         {

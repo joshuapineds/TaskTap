@@ -45,6 +45,7 @@ public sealed class PasswordDialog : Form
         Controls.Add(new Label { Text = label, Location = new Point(20, top), AutoSize = true, ForeColor = Color.FromArgb(8, 38, 87), Font = new Font("Segoe UI", 8.5F, FontStyle.Bold) });
         box.Bounds = new Rectangle(20, top + 22, 340, 28);
         Controls.Add(box);
+        PasswordReveal.Attach(box);
     }
 
     private void Save()

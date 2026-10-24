@@ -42,6 +42,9 @@ public static partial class DemoDataStore
         var guestSaves = SavedTasks.ToList();
         var isAdminView = false;
 
+        // Start from empty lists so a failed query can never leave another account's data on screen.
+        ClearUserLists();
+
         Db.Try(() =>
         {
             LoadPublicData();
@@ -65,7 +68,6 @@ public static partial class DemoDataStore
                 PausedTasks.Add(task);
             FeaturedTasks.Clear();
 
-            SetUnreadMessages(Backend.UnreadConversationCount(user.Id));
             SetUnreadNotifications(Backend.UnreadNotificationCount(user.Id));
             _lastLoad = DateTime.Now;
         });
@@ -114,9 +116,6 @@ public static partial class DemoDataStore
             AdminPermissions.Clear();
             foreach (var (role, permissions) in Backend.LoadPermissions())
                 AdminPermissions[role] = permissions;
-            foreach (var role in AdminRoles)
-                if (!AdminPermissions.ContainsKey(role))
-                    AdminPermissions[role] = [];
 
             _activitySequence = Math.Max(2002, Backend.MaxIdNumber("activity_log", "ACT-"));
             _lastLoad = DateTime.Now;
@@ -132,6 +131,20 @@ public static partial class DemoDataStore
             LoadForAdmin(admin);
         else if (AppSession.IsSignedIn)
             LoadForUser(AppSession.CurrentUser);
+    }
+
+    private static void ClearUserLists()
+    {
+        PostedTasks.Clear();
+        ArchivedTasks.Clear();
+        TaskOutcomes.Clear();
+        SavedTasks.Clear();
+        RequestsSent.Clear();
+        RequestsReceived.Clear();
+        Payments.Clear();
+        SupportTickets.Clear();
+        PausedTasks.Clear();
+        FeaturedTasks.Clear();
     }
 
     /// <summary>Drops all user-specific data (used on sign-out).</summary>
@@ -151,7 +164,6 @@ public static partial class DemoDataStore
         ActivityLog.Clear();
         PausedTasks.Clear();
         FeaturedTasks.Clear();
-        SetUnreadMessages(0);
         SetUnreadNotifications(0);
         LoadPublicData();
     }

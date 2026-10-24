@@ -105,17 +105,24 @@ public sealed class ReviewsPage : AppPage
 
     private void BuildSummary()
     {
+        var totalReceived = receivedReviews.Count;
+        var averageRating = totalReceived == 0 ? 0 : receivedReviews.Average(review => review.Rating);
         var average = new Panel { BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle };
-        average.Controls.Add(MakeLabel("4.9", 30, Navy, true, new Point(18, 37)));
+        average.Controls.Add(MakeLabel($"{averageRating:0.0}", 30, Navy, true, new Point(18, 37)));
         average.Controls.Add(MakeLabel("★★★★★", 15, Orange, true, new Point(116, 28)));
         average.Controls.Add(MakeLabel("Average rating", 9, Navy, true, new Point(116, 56)));
-        average.Controls.Add(MakeLabel("16 reviews received", 8, Muted, false, new Point(116, 78)));
+        average.Controls.Add(MakeLabel($"{totalReceived} reviews received", 8, Muted, false, new Point(116, 78)));
         summaryGrid.Controls.Add(average);
 
         var breakdown = new Panel { BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle };
         breakdown.Controls.Add(MakeLabel("Rating breakdown", 9, Navy, true, new Point(14, 12)));
-        breakdown.Controls.Add(MakeLabel("16 total", 8, Muted, false, new Point(205, 12)));
-        var values = new[] { (5, 14, 88), (4, 2, 13), (3, 0, 0), (2, 0, 0), (1, 0, 0) };
+        breakdown.Controls.Add(MakeLabel($"{totalReceived} total", 8, Muted, false, new Point(205, 12)));
+        var values = Enumerable.Range(1, 5).Reverse().Select(rating =>
+        {
+            var count = receivedReviews.Count(review => review.Rating == rating);
+            var percent = totalReceived == 0 ? 0 : (int)Math.Round(count * 100m / totalReceived);
+            return (rating, count, percent);
+        }).ToArray();
         for (var i = 0; i < values.Length; i++)
         {
             var y = 41 + i * 20;
@@ -126,8 +133,8 @@ public sealed class ReviewsPage : AppPage
             breakdown.Controls.Add(MakeLabel(values[i].Item2.ToString(), 7, Muted, false, new Point(193, y)));
         }
         summaryGrid.Controls.Add(breakdown);
-        summaryGrid.Controls.Add(BuildStatCard("✓", "16", "Reviews received", "All from completed tasks", Green));
-        summaryGrid.Controls.Add(BuildStatCard("↗", "12", "Reviews given", "Helpful feedback shared", Blue));
+        summaryGrid.Controls.Add(BuildStatCard("✓", totalReceived.ToString(), "Reviews received", "All from completed tasks", Green));
+        summaryGrid.Controls.Add(BuildStatCard("↗", givenReviews.Count.ToString(), "Reviews given", "Helpful feedback shared", Blue));
         page.Controls.Add(summaryGrid);
     }
 
@@ -273,7 +280,7 @@ public sealed class ReviewsPage : AppPage
         link.Name = "reviewAction";
         link.Click += (_, _) =>
         {
-            if (review.Type == "received") Nav.Navigate(new PublicProfilePage());
+            if (review.Type == "received") Nav.Navigate(ProfileLinks.For(review.Name));
             else Nav.Navigate(Route.FindTasks);
         };
         card.Controls.Add(link);

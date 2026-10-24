@@ -299,7 +299,7 @@ public sealed class RolesPermissionsPage : AdminPage
             for (var index = 0; index < roles.Length; index++)
             {
                 var role = roles[index];
-                var granted = DemoDataStore.AdminPermissions.TryGetValue(role, out var grantedPermissions) && grantedPermissions.Contains(permission);
+                var granted = DemoDataStore.AdminPermissions[role].Contains(permission);
                 var check = new CheckBox
                 {
                     Checked = granted,

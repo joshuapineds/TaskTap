@@ -600,11 +600,11 @@ public sealed class FindTasksPage : AppPage
         else if (sortTasks.SelectedIndex == 3) filtered = filtered.OrderBy(task => task.Days).ToList();
         foreach (var task in tasks)
         {
-            taskRows[task].Visible = filtered.Contains(task);
-            mapPins[task].Visible = filtered.Contains(task);
+            if (taskRows.TryGetValue(task, out var row)) row.Visible = filtered.Contains(task);
+            if (mapPins.TryGetValue(task, out var pin)) pin.Visible = filtered.Contains(task);
         }
         foreach (var task in filtered)
-            taskList.Controls.SetChildIndex(taskRows[task], filtered.IndexOf(task));
+            if (taskRows.TryGetValue(task, out var row)) taskList.Controls.SetChildIndex(row, filtered.IndexOf(task));
         resultCount.Text = filtered.Count.ToString();
         leaflet?.ShowTasks(filtered.Select(MapTask.From).ToList());
         var caption = resultsPanel.Controls.Find("findResultsCaption", false).FirstOrDefault();
