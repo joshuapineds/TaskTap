@@ -44,10 +44,22 @@ public sealed class RecordPaymentPage : AppPage
         BuildPage();
     }
 
-    /// <summary>Starts a blank payment record for the most recently completed task.</summary>
+    /// <summary>
+    /// Opens the payment record for a completed task. Completing a task already creates a Pending record, so this
+    /// edits that one (same reference) instead of creating a second one for the same work.
+    /// </summary>
     private static PaymentRecordDetails NewPaymentFromLatestTask()
     {
-        var outcome = DemoDataStore.TaskOutcomes.FirstOrDefault(item => item.Status == "Completed");
+        var completed = DemoDataStore.TaskOutcomes.Where(item => item.Status == "Completed").ToList();
+        PaymentRecordDetails? ExistingFor(DemoTaskOutcome item) =>
+            DemoDataStore.Payments.FirstOrDefault(existing => existing.Task == item.Title);
+
+        // Prefer a completed task whose payment is still pending (or missing); otherwise the latest completed task.
+        var outcome = completed.FirstOrDefault(item => ExistingFor(item) is null || ExistingFor(item)!.Status == "Pending")
+                      ?? completed.FirstOrDefault();
+        if (outcome is not null && ExistingFor(outcome) is { } existingPayment)
+            return existingPayment;
+
         var person = outcome is null
             ? ""
             : DemoDataStore.RequestsReceived.FirstOrDefault(applicant => applicant.TaskTitle == outcome.Title && applicant.Accepted)?.Name ?? "";
@@ -322,6 +334,7 @@ public sealed class RecordPaymentPage : AppPage
             payment.Person,
             string.IsNullOrWhiteSpace(note.Text) ? "Completed task" : note.Text.Trim()));
         MessageBox.Show(this, $"Your payment record for {payment.Task} was saved. TaskTap does not move money; it only keeps the record.", "Payment record saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        Nav.Navigate(Route.PaymentHistory); // leaving the form means a second click can no longer re-save the same record
     }
 
     private void LayoutPage()

@@ -389,10 +389,14 @@ public static partial class DemoDataStore
     /// <summary>Appends a newly recorded payment to the shared history.</summary>
     public static void AddPayment(PaymentRecordDetails payment)
     {
+        var previous = Payments.FirstOrDefault(existing => existing.Reference == payment.Reference);
         Persist(() => Backend.InsertPayment(payment, CurrentUserId));
         Payments.RemoveAll(existing => existing.Reference == payment.Reference);
         Payments.Add(payment);
-        LogActivity(AppSession.CurrentUser.FullName, "Payment recorded", payment.Reference, "Payment", $"₱{payment.Amount:N0} {payment.Method} payment for {payment.Task}.");
+        if (previous is null)
+            LogActivity(AppSession.CurrentUser.FullName, "Payment recorded", payment.Reference, "Payment", $"₱{payment.Amount:N0} {payment.Method} payment for {payment.Task}.");
+        else if (previous != payment)
+            LogActivity(AppSession.CurrentUser.FullName, "Payment updated", payment.Reference, "Payment", $"{payment.Status}: ₱{payment.Amount:N0} {payment.Method} for {payment.Task}.");
     }
 
     /// <summary>Runs a database write; failures are reported once and never crash the page.</summary>

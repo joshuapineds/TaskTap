@@ -69,6 +69,33 @@ public sealed class AdminShellForm : Form
         sidebar.BackColor = AdminUi.SidebarNavy;
         Controls.Add(sidebar);
 
+        // Header (logo + badge) on top, sign-out links pinned at the bottom, and the nav list scrolls in between,
+        // so nothing is ever clipped on a short window.
+        var navHost = new Panel
+        {
+            Name = "adminNavHost",
+            Dock = DockStyle.Fill,
+            AutoScroll = true,
+            BackColor = AdminUi.SidebarNavy
+        };
+        var footer = new Panel
+        {
+            Name = "adminSidebarFooter",
+            Dock = DockStyle.Bottom,
+            Height = 54,
+            BackColor = AdminUi.SidebarNavy
+        };
+        var header = new Panel
+        {
+            Name = "adminSidebarHeader",
+            Dock = DockStyle.Top,
+            Height = 100,
+            BackColor = AdminUi.SidebarNavy
+        };
+        sidebar.Controls.Add(navHost);
+        sidebar.Controls.Add(footer);
+        sidebar.Controls.Add(header);
+
         var brand = new TaskTapLogo
         {
             Name = "adminShellBrand",
@@ -77,7 +104,7 @@ public sealed class AdminShellForm : Form
             Location = new Point(22, 20),
             Size = new Size(170, 36)
         };
-        sidebar.Controls.Add(brand);
+        header.Controls.Add(brand);
 
         var adminBadge = new Label
         {
@@ -90,37 +117,27 @@ public sealed class AdminShellForm : Form
             Padding = new Padding(8, 3, 8, 3),
             Location = new Point(22, 64)
         };
-        sidebar.Controls.Add(adminBadge);
+        header.Controls.Add(adminBadge);
 
         for (var index = 0; index < NavItems.Length; index++)
         {
             var item = NavItems[index];
             var button = MakeSidebarButton($"{item.Glyph}   {item.Label}");
-            button.Location = new Point(12, 106 + index * 43);
+            button.Location = new Point(6, 6 + index * 43);
             var captured = item.Route;
             button.Click += (_, _) => navigation.Navigate(captured);
             navButtons[index] = button;
-            sidebar.Controls.Add(button);
+            navHost.Controls.Add(button);
         }
-
-        var returnLink = MakeSidebarButton("↩   Return to TaskTap");
-        returnLink.Name = "adminReturnLink";
-        returnLink.Click += (_, _) => ReturnToTaskTap();
-        sidebar.Controls.Add(returnLink);
 
         var signOut = MakeSidebarButton("↪   Sign out");
         signOut.Name = "adminSignOut";
+        signOut.Location = new Point(12, 8);
         signOut.Click += (_, _) => ExitToAdminLogin();
-        sidebar.Controls.Add(signOut);
+        footer.Controls.Add(signOut);
 
         for (var index = 0; index < navButtons.Length; index++)
             navButtons[index].Visible = navigation.CanAccess(NavItems[index].Route);
-
-        sidebar.Resize += (_, _) =>
-        {
-            returnLink.Location = new Point(12, Math.Max(560, sidebar.Height - 96));
-            signOut.Location = new Point(12, Math.Max(600, sidebar.Height - 56));
-        };
     }
 
     private void BuildTopbar()
@@ -275,27 +292,6 @@ public sealed class AdminShellForm : Form
         navigation.Reset();
         AppSession.SignOutAdmin();
         Close();
-    }
-
-    /// <summary>Ends the admin session and returns to the TaskTap landing page.</summary>
-    public void ReturnToTaskTap()
-    {
-        if (_exitHandled)
-            return;
-        _exitHandled = true;
-        navigation.Reset();
-        AppSession.SignOutAdmin();
-
-        var landing = Application.OpenForms.OfType<Form1>().FirstOrDefault() ?? new Form1();
-        foreach (var form in Application.OpenForms.Cast<Form>().ToList())
-        {
-            if (form is not Form1)
-                form.Close();
-        }
-
-        landing.Show();
-        landing.Activate();
-        landing.BringToFront();
     }
 
     public void ShowToast(string message)

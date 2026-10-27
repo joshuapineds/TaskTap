@@ -69,6 +69,11 @@ public static partial class DemoDataStore
     /// <summary>Appends an audit entry and refreshes subscribers.</summary>
     public static void LogActivity(string actor, string action, string target, string category, string detail)
     {
+        // The same action on the same target a moment ago is one event, not a new row each time a button is pressed twice.
+        if (ActivityLog.FirstOrDefault() is { } last && last.Actor == actor && last.Action == action && last.Target == target
+            && last.Detail == detail && (DateTime.Now - last.Timestamp).TotalMinutes < 5)
+            return;
+
         var entry = new DemoActivity
         {
             Id = $"ACT-{NextActivityNumber()}",
@@ -577,33 +582,6 @@ public static partial class DemoDataStore
             PausedTasks.Add(task);
         Persist(() => Backend.SetTaskStatus(task, paused ? "Paused" : "Active"));
         LogActivity(AdminActor, paused ? "Paused task" : "Resumed task", task.Title, "Task", "Listing visibility changed.");
-    }
-
-    /// <summary>Admin correction of a listing. The poster is told what changed and why.</summary>
-    public static void AdminUpdateTask(DemoTask original, DemoTask updated, string reason)
-    {
-        updated.Id = original.Id;
-        updated.PosterId = original.PosterId;
-        updated.PosterName = original.PosterName;
-        Persist(() =>
-        {
-            Backend.UpdateTask(updated);
-            Backend.Notify(original.PosterId, "An admin edited your task", $"“{updated.Title}” was updated by the TaskTap team. Reason: {reason}", "tasks", "Open task");
-        });
-
-        var wasFeatured = FeaturedTasks.Remove(original);
-        var wasPaused = PausedTasks.Remove(original);
-        foreach (var list in new[] { AvailableTasks, PostedTasks, ArchivedTasks })
-        {
-            var index = list.IndexOf(original);
-            if (index >= 0)
-                list[index] = updated;
-        }
-        if (wasFeatured)
-            FeaturedTasks.Add(updated);
-        if (wasPaused)
-            PausedTasks.Add(updated);
-        LogActivity(AdminActor, "Edited task", updated.Title, "Task", reason);
     }
 
     /// <summary>Removes a listing for a policy reason (for example explicit content). The poster is told why.</summary>

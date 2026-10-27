@@ -516,13 +516,8 @@ public sealed class TaskManagementPage : AdminPage
         delete.Click += (_, _) => DeleteTask(task);
         detailBody.Controls.Add(delete);
 
-        var edit = AdminUi.MakeSecondaryButton("Edit task", "taskDetailEdit", 160);
-        edit.Location = new Point(0, 296);
-        edit.Click += (_, _) => EditTask(task);
-        detailBody.Controls.Add(edit);
-
         var open = AdminUi.MakeLinkButton("View in user app →", "taskDetailOpenApp");
-        open.Location = new Point(0, 348);
+        open.Location = new Point(0, 296);
         open.Click += (_, _) => Toast("Members open this task from Find Tasks in the TaskTap app.");
         detailBody.Controls.Add(open);
 
@@ -537,18 +532,6 @@ public sealed class TaskManagementPage : AdminPage
         "Illegal or unsafe request",
         "Other policy violation"
     ];
-
-    private void EditTask(DemoTask task)
-    {
-        using var dialog = new AdminTaskEditDialog(task);
-        if (dialog.ShowDialog(this) != DialogResult.OK || dialog.Result is null)
-            return;
-        DemoDataStore.AdminUpdateTask(task, dialog.Result, dialog.Reason);
-        selected.Remove(task);
-        selectedEntry = null;
-        RefreshList();
-        Toast("Task updated and the poster was notified.");
-    }
 
     private void DeleteTask(DemoTask task)
     {
