@@ -1,0 +1,18 @@
+html, body { height: 100%; margin: 0; background: #e9f2e7; font-family: "Segoe UI", Arial, sans-serif; }
+#map { position: absolute; inset: 0; }
+#message { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px;
+  text-align: center; color: #5b6f86; background: #eef3f8; font-size: 13px; z-index: 1000; }
+#message[hidden] { display: none; }
+
+.tt-pin-wrap { background: none; border: 0; }
+.tt-pin { width: 22px; height: 22px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
+  background: #0875e8; border: 2px solid #fff; box-shadow: 0 1px 5px rgba(0,0,0,.45); box-sizing: border-box; }
+.tt-pin::after { content: ""; position: absolute; left: 6px; top: 6px; width: 6px; height: 6px; border-radius: 50%; background: #fff; }
+.tt-pin.selected { background: #f2752f; z-index: 1000; }
+.tt-pick { background: #e5536e; }
+
+.tt-popup { min-width: 150px; }
+.tt-popup strong { display: block; color: #082657; font-size: 13px; margin-bottom: 2px; }
+.tt-popup span { display: block; color: #5b6f86; font-size: 12px; margin-bottom: 6px; }
+.tt-popup button { background: #0875e8; color: #fff; border: 0; border-radius: 4px; padding: 5px 10px; font-size: 12px; cursor: pointer; }
+.tt-popup button:hover { background: #0663c6; }
