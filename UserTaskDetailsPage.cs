@@ -1,4 +1,5 @@
 using System.Drawing.Drawing2D;
+using TaskTap.Data;
 
 namespace TaskTap;
 
@@ -150,7 +151,8 @@ public sealed class UserTaskDetailsPage : AppPage
         };
         hero.Controls.Add(saveButton);
 
-        if (postedTask is not null)
+        var isCurrentUserPoster = postedTask is not null && postedTask.PosterId == AppSession.CurrentUser.Id;
+        if (isCurrentUserPoster && Backend.CanCloseTask(postedTask!.Id, AppSession.CurrentUser.Id))
         {
             var complete = MakeAction("Mark complete", "UserDetailsCompleteButton", true, 130);
             complete.Click += (_, _) => CompletePostedTask(postedTask);
@@ -160,6 +162,14 @@ public sealed class UserTaskDetailsPage : AppPage
             cancelTaskButton.ForeColor = Color.FromArgb(185, 55, 67);
             cancelTaskButton.Click += (_, _) => CancelPostedTask(postedTask);
             hero.Controls.Add(cancelTaskButton);
+        }
+        else if (isCurrentUserPoster)
+        {
+            var notice = MakeLabel("Accept a task-doer before completing or cancelling this task.", 7.5F, Muted);
+            notice.Name = "UserDetailsCloseTaskNotice";
+            notice.Location = new Point(0, 18);
+            notice.MaximumSize = new Size(260, 30);
+            hero.Controls.Add(notice);
         }
         primary.Controls.Add(hero);
     }
@@ -603,9 +613,13 @@ public sealed class UserTaskDetailsPage : AppPage
         if (MessageBox.Show(this, $"Mark \"{task.Title}\" complete?", "Complete task", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
             return;
 
-        DemoDataStore.CompleteTask(task);
-        ShowToast("Task marked complete. It now appears in Archived Tasks.");
-        Nav.Navigate(Route.ArchivedTasks);
+        if (!DemoDataStore.CompleteTask(task))
+            return;
+        var payment = DemoDataStore.Payments.FirstOrDefault(item => item.Task == task.Title);
+        if (payment is not null)
+            Nav.Navigate(new RateReviewPage(payment));
+        else
+            Nav.Navigate(Route.ArchivedTasks);
     }
 
     private void CancelPostedTask(DemoTask task)
@@ -614,7 +628,8 @@ public sealed class UserTaskDetailsPage : AppPage
         if (dialog.ShowDialog(FindForm()) != DialogResult.OK)
             return;
 
-        DemoDataStore.CancelTask(task, dialog.SelectedReason ?? "Cancelled.");
+        if (!DemoDataStore.CancelTask(task, dialog.SelectedReason ?? "Cancelled."))
+            return;
         ShowToast("Task cancelled. It now appears in Archived Tasks.");
         Nav.Navigate(Route.ArchivedTasks);
     }

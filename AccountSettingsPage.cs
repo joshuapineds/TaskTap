@@ -392,6 +392,12 @@ public sealed class AccountSettingsPage : AppPage
         }
         try { _ = new System.Net.Mail.MailAddress(email.Text.Trim()); }
         catch (FormatException) { SelectSection("contact"); ShowToast("Please enter a valid email address."); return; }
+        if (!string.IsNullOrWhiteSpace(phone.Text) && !TaskFormHelpers.IsValidPhoneNumber(phone.Text))
+        {
+            SelectSection("contact");
+            ShowToast("Please enter a valid Philippine phone number, such as 0917 123 4567 or +63 917 123 4567.");
+            return;
+        }
         if (!string.IsNullOrEmpty(newPassword.Text) && newPassword.Text != confirmPassword.Text)
         {
             SelectSection("security");

@@ -644,7 +644,7 @@ public sealed class EditTaskPage : AppPage
     private readonly Button pinButton = new();
     private readonly Label pinLabel = new();
 
-    private void BuildPinControls(Panel panel, int top)
+    private void BuildPinControls(Control panel, int top)
     {
         pinButton.Name = "taskPinButton";
         pinButton.Text = "📍 Pin the spot on the map (optional)";

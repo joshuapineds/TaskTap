@@ -173,7 +173,7 @@ public sealed class DashboardPage : AppPage
     private int CountAttention()
     {
         var count = 0;
-        if (DemoDataStore.RequestsReceived.Any(applicant => !applicant.Declined)) count++;
+        if (DemoDataStore.RequestsReceived.Any(IsPendingRequest)) count++;
         if (DemoDataStore.PostedTasks.Any(task => task.Days <= 2)) count++;
         if (DemoDataStore.Disputes.Any(dispute => IsMine(dispute) && dispute.Status == "Open")) count++;
         return count;
@@ -182,17 +182,20 @@ public sealed class DashboardPage : AppPage
     private bool IsMine(DemoDispute dispute) =>
         dispute.PosterName == Me || dispute.DoerName == Me;
 
+    private static bool IsPendingRequest(DemoApplicant applicant) =>
+        !applicant.Declined && !applicant.Accepted;
+
     private void RefreshActionStrip()
     {
         actionStrip.SuspendLayout();
         actionStrip.Controls.Clear();
 
         var chips = new List<Control>();
-        var requests = DemoDataStore.RequestsReceived.Count(applicant => !applicant.Declined);
+        var requests = DemoDataStore.RequestsReceived.Count(IsPendingRequest);
         if (requests > 0)
             chips.Add(MakeChip($"✓  {requests} request{(requests == 1 ? "" : "s")} to review", "DashboardChipRequests", Color.FromArgb(232, 248, 241), Green, () =>
             {
-                DemoDataStore.ManagedTask = DemoDataStore.PostedTasks.FirstOrDefault(task => DemoDataStore.RequestsReceived.Any(request => request.TaskId == task.Id));
+                DemoDataStore.ManagedTask = DemoDataStore.PostedTasks.FirstOrDefault(task => DemoDataStore.RequestsReceived.Any(request => request.TaskId == task.Id && IsPendingRequest(request)));
                 Nav.Navigate(new ManageRequestsPage());
             }));
 
@@ -229,7 +232,7 @@ public sealed class DashboardPage : AppPage
         if (mode == "hiring")
         {
             cards.Add(MakeStatCard("▤", DemoDataStore.PostedTasks.Count.ToString(), "Open posts", Color.FromArgb(232, 243, 255), Blue, () => Nav.Navigate(Route.MyTasks)));
-            cards.Add(MakeStatCard("✓", DemoDataStore.RequestsReceived.Count(applicant => !applicant.Declined).ToString(), "Requests to review", Color.FromArgb(230, 248, 241), Green, () => Nav.Navigate(new ManageRequestsPage())));
+            cards.Add(MakeStatCard("✓", DemoDataStore.RequestsReceived.Count(IsPendingRequest).ToString(), "Requests to review", Color.FromArgb(230, 248, 241), Green, () => Nav.Navigate(new ManageRequestsPage())));
             cards.Add(MakeStatCard("★", $"{(MeRecord?.Rating ?? 0):0.0}", "Your rating", Color.FromArgb(255, 241, 231), Orange, () => Nav.Navigate(Route.Reviews)));
         }
         else
@@ -370,7 +373,7 @@ public sealed class DashboardPage : AppPage
 
         var events = new List<(DateTime When, string Icon, string Title, string Detail, Color IconBack, Color IconColor, Action Open)>();
 
-        foreach (var applicant in DemoDataStore.RequestsReceived.Where(applicant => !applicant.Declined).OrderByDescending(applicant => applicant.Date).Take(2))
+        foreach (var applicant in DemoDataStore.RequestsReceived.Where(IsPendingRequest).OrderByDescending(applicant => applicant.Date).Take(2))
             events.Add((applicant.Date, "✓", "New task request", $"{applicant.Name} · {applicant.TaskTitle}", Color.FromArgb(230, 248, 241), Green, () => Nav.Navigate(new ManageRequestsPage())));
 
         foreach (var payment in DemoDataStore.Payments.Where(payment => payment.Person == Me).OrderByDescending(payment => payment.Date).Take(2))

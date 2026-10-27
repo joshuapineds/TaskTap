@@ -234,10 +234,28 @@ public static partial class DemoDataStore
     public static List<DemoTaskOutcome> TaskOutcomes { get; } = [];
 
     /// <summary>Marks a posted task complete and moves it into history.</summary>
-    public static void CompleteTask(DemoTask task) => CloseTask(task, "Completed", "");
+    public static bool CompleteTask(DemoTask task)
+    {
+        if (!Backend.CanCloseTask(task.Id, CurrentUserId))
+        {
+            MessageBox.Show("You can only close your own task after accepting a task-doer.", "Task cannot be completed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return false;
+        }
+        CloseTask(task, "Completed", "");
+        return true;
+    }
 
     /// <summary>Cancels a posted task with a reason and moves it into history.</summary>
-    public static void CancelTask(DemoTask task, string reason) => CloseTask(task, "Cancelled", reason);
+    public static bool CancelTask(DemoTask task, string reason)
+    {
+        if (!Backend.CanCloseTask(task.Id, CurrentUserId))
+        {
+            MessageBox.Show("You can only cancel your own task after accepting a task-doer.", "Task cannot be cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return false;
+        }
+        CloseTask(task, "Cancelled", reason);
+        return true;
+    }
 
     /// <summary>Returns a closed task to the active posted list.</summary>
     public static void ReopenTask(DemoTask task)
@@ -291,6 +309,7 @@ public static partial class DemoDataStore
             task.Title,
             "Task",
             reason.Length == 0 ? "Task closed by the poster." : reason);
+        DataChanged?.Invoke();
     }
 
     /// <summary>Records a new sent request (newest first). Returns false when it could not be sent.</summary>
@@ -334,13 +353,16 @@ public static partial class DemoDataStore
     /// <summary>Marks a received applicant as accepted and declines the rest of that task's applicants.</summary>
     public static void AcceptApplicant(DemoApplicant accepted)
     {
-        Persist(() => Backend.AcceptRequest(accepted.TaskId, accepted.Id));
+        if (!Db.Try(() => Backend.AcceptRequest(accepted.TaskId, accepted.Id)))
+            return;
         foreach (var applicant in RequestsReceived.Where(applicant => applicant.TaskId == accepted.TaskId))
         {
             applicant.Accepted = ReferenceEquals(applicant, accepted);
             applicant.Declined = !applicant.Accepted;
         }
+        AvailableTasks.RemoveAll(task => task.Id == accepted.TaskId);
         LogActivity(AppSession.CurrentUser.FullName, "Selected performer", accepted.TaskTitle, "Task", $"{accepted.Name} was selected.");
+        DataChanged?.Invoke();
     }
 
     /// <summary>Shortlists or un-shortlists an applicant.</summary>
@@ -362,7 +384,7 @@ public static partial class DemoDataStore
     }
 
     /// <summary>Number of open applications for a posted task.</summary>
-    public static int RequestsForTask(string title) => RequestsReceived.Count(a => a.TaskTitle == title && !a.Declined);
+    public static int RequestsForTask(string title) => RequestsReceived.Count(a => a.TaskTitle == title && !a.Declined && !a.Accepted);
 
     /// <summary>Appends a newly recorded payment to the shared history.</summary>
     public static void AddPayment(PaymentRecordDetails payment)

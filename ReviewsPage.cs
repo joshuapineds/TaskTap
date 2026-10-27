@@ -157,8 +157,8 @@ public sealed class ReviewsPage : AppPage
     {
         tabsPanel.BackColor = Color.White;
         tabsPanel.BorderStyle = BorderStyle.FixedSingle;
-        receivedTab.Text = "Received   16";
-        givenTab.Text = "Given   12";
+        receivedTab.Text = $"Received   {receivedReviews.Count}";
+        givenTab.Text = $"Given   {givenReviews.Count}";
         foreach (var button in new[] { receivedTab, givenTab })
         {
             button.Size = new Size(150, 40);

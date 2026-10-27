@@ -197,7 +197,8 @@ public sealed class NotificationsPage : AppPage
         {
             ("Task requests", "New requests and decisions"),
             ("Payments", "Payment records and reminders"),
-            ("Deadlines", "Upcoming task reminders")
+            ("Deadlines", "Upcoming task reminders"),
+            ("Community tips", "Occasional TaskTap tips")
         };
         for (var i = 0; i < preferences.Length; i++)
         {
@@ -352,6 +353,7 @@ public sealed class NotificationsPage : AppPage
             case "View reviews": Nav.Navigate(new ReviewsPage()); return;
             case "Continue editing": Nav.Navigate(Route.PostTask); return;
             case "View announcements": return;
+            case "Open guidelines": Nav.Navigate(Route.CommunityGuidelines); return;
             default: Nav.Navigate(Route.MyTasks); return;
         }
     }

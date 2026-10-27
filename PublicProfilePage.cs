@@ -39,6 +39,7 @@ public sealed class PublicProfilePage : AppPage
         int ReviewCount,
         int CompletedTasks,
         bool Verified,
+        string LastActive,
         Color AvatarColor);
 
     public override Route RouteName => Route.PublicProfile;
@@ -61,6 +62,7 @@ public sealed class PublicProfilePage : AppPage
                 0,
                 0,
                 ProfileLinks.Find(AppSession.CurrentUser.FullName)?.Verified ?? false,
+                "Today",
                 Blue)
             : new ProfileSubject(
                 user.FullName,
@@ -73,6 +75,7 @@ public sealed class PublicProfilePage : AppPage
                 user.Reviews,
                 user.CompletedTasks,
                 user.Verified,
+                string.IsNullOrWhiteSpace(user.LastActive) ? "Recently" : user.LastActive,
                 user.AvatarColor == Color.Empty ? Blue : user.AvatarColor);
         BuildPage();
     }

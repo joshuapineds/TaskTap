@@ -31,6 +31,21 @@ public sealed class TaskTapLogo : Control
         e.Graphics.FillEllipse(orange, 10, 13, 18, 18);
         e.Graphics.FillEllipse(white, 6, 6, 6, 6);
         e.Graphics.FillEllipse(white, 16, 19, 6, 6);
-        TextRenderer.DrawText(e.Graphics, "TaskTap", new Font("Segoe UI", FontSize, FontStyle.Bold), new Point(34, 3), TextColor);
+        var availableWidth = Math.Max(1, ClientSize.Width - 34);
+        var fontSize = FontSize;
+        using var font = new Font("Segoe UI", fontSize, FontStyle.Bold);
+        var measured = TextRenderer.MeasureText("TaskTap", font);
+        if (measured.Width > availableWidth)
+        {
+            fontSize = Math.Max(8F, FontSize * availableWidth / measured.Width);
+            using var fittedFont = new Font("Segoe UI", fontSize, FontStyle.Bold);
+            TextRenderer.DrawText(e.Graphics, "TaskTap", fittedFont, new Point(34, 3), TextColor,
+                TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix);
+        }
+        else
+        {
+            TextRenderer.DrawText(e.Graphics, "TaskTap", font, new Point(34, 3), TextColor,
+                TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix);
+        }
     }
 }

@@ -70,21 +70,21 @@ public sealed class MyRequestsPage : AppPage
         AddPageLabel("myRequestsSubtitle", "Track the tasks you’ve asked to perform and what happens next.", 10, Muted);
         var find = MakeButton("⌕  Find more tasks", "MyRequestsFindTasksButton", true, 145); find.Click += (_, _) => Nav.Navigate(Route.FindTasks); page.Controls.Add(find);
 
-        var stats = new[] { ("↗", "4", "Total requests", Color.FromArgb(234, 243, 255), Blue), ("◷", "2", "Pending", Color.FromArgb(255, 241, 232), Color.FromArgb(221, 117, 32)), ("✓", "1", "Accepted", Color.FromArgb(233, 248, 242), Color.FromArgb(13, 155, 107)), ("★", "18", "Tasks completed", Color.FromArgb(237, 240, 247), Navy) };
+        var stats = new[] { ("↗", "Total requests", Color.FromArgb(234, 243, 255), Blue), ("◷", "Pending", Color.FromArgb(255, 241, 232), Color.FromArgb(221, 117, 32)), ("✓", "Accepted", Color.FromArgb(233, 248, 242), Color.FromArgb(13, 155, 107)), ("★", "Tasks completed", Color.FromArgb(237, 240, 247), Navy) };
         for (var index = 0; index < stats.Length; index++)
         {
             var stat = stats[index]; var card = new Panel { Name = $"myRequestsStat{index}", BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle };
-            var icon = new Label { Text = stat.Item1, Size = new Size(40, 40), Location = new Point(14, 15), BackColor = stat.Item4, ForeColor = stat.Item5, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Segoe UI", 14F, FontStyle.Bold) }; card.Controls.Add(icon);
-            var value = MakeLabel(stat.Item2, 19, Navy, true); value.Location = new Point(64, 12); card.Controls.Add(value);
-            var caption = MakeLabel(stat.Item3, 8, Muted); caption.Location = new Point(64, 38); card.Controls.Add(caption);
+            var icon = new Label { Text = stat.Item1, Size = new Size(40, 40), Location = new Point(14, 15), BackColor = stat.Item3, ForeColor = stat.Item4, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Segoe UI", 14F, FontStyle.Bold) }; card.Controls.Add(icon);
+            var value = MakeLabel("0", 19, Navy, true); value.Name = $"myRequestsStatValue{index}"; value.Location = new Point(64, 12); card.Controls.Add(value);
+            var caption = MakeLabel(stat.Item2, 8, Muted); caption.Name = $"myRequestsStatCaption{index}"; caption.Location = new Point(64, 38); card.Controls.Add(caption);
             page.Controls.Add(card);
         }
 
         var toolbar = new Panel { Name = "myRequestsToolbar", BackColor = Color.White, BorderStyle = BorderStyle.FixedSingle }; page.Controls.Add(toolbar);
-        var tabLabels = new[] { ("all", "All", 4), ("pending", "Pending", 2), ("accepted", "Accepted", 1), ("declined", "Declined", 1) };
-        foreach (var (key, text, count) in tabLabels)
+        var tabLabels = new[] { ("all", "All"), ("pending", "Pending"), ("accepted", "Accepted"), ("declined", "Declined") };
+        foreach (var (key, text) in tabLabels)
         {
-            var tab = new Button { Name = $"MyRequestsTab{key}", Text = $"{text}  {count}", Size = new Size(104, 36), FlatStyle = FlatStyle.Flat, BackColor = key == "all" ? Color.FromArgb(234, 243, 255) : Color.White, ForeColor = key == "all" ? Blue : Muted, Font = new Font("Segoe UI", 8F, FontStyle.Bold), Cursor = Cursors.Hand, UseVisualStyleBackColor = false };
+            var tab = new Button { Name = $"MyRequestsTab{key}", Text = $"{text}  0", Size = new Size(104, 36), FlatStyle = FlatStyle.Flat, BackColor = key == "all" ? Color.FromArgb(234, 243, 255) : Color.White, ForeColor = key == "all" ? Blue : Muted, Font = new Font("Segoe UI", 8F, FontStyle.Bold), Cursor = Cursors.Hand, UseVisualStyleBackColor = false };
             tab.FlatAppearance.BorderSize = 0; tab.Click += (_, _) => SelectTab(key); tabs.Add(key, tab); toolbar.Controls.Add(tab);
         }
         search.Name = "myRequestsSearch"; search.PlaceholderText = "⌕  Search your requests..."; search.TextChanged += (_, _) => ApplyRequests(); toolbar.Controls.Add(search);
@@ -112,10 +112,10 @@ public sealed class MyRequestsPage : AppPage
         var stateBack = request.Status switch { "pending" => Color.FromArgb(255, 244, 223), "accepted" => Color.FromArgb(232, 248, 241), _ => Color.FromArgb(241, 243, 246) };
         var badge = new Label { Name = "MyRequestStatus", Text = stateText, AutoSize = true, Padding = new Padding(7, 4, 7, 4), BackColor = stateBack, ForeColor = stateColor, Font = new Font("Segoe UI", 6.5F, FontStyle.Bold), Location = new Point(70, 10) }; card.Controls.Add(badge);
         var title = MakeLabel(request.Title, 11, Navy, true); title.Name = "MyRequestTitle"; title.Location = new Point(70, 31); card.Controls.Add(title);
-        var category = MakeLabel($"{request.Category} · Brgy. {request.Barangay}", 7.5F, Muted); category.Location = new Point(70, 52); card.Controls.Add(category);
+        var category = MakeLabel($"{request.Category} · Brgy. {request.Barangay}", 7.5F, Muted); category.Name = "MyRequestCategory"; category.Location = new Point(70, 52); card.Controls.Add(category);
         var amount = MakeLabel($"₱{request.Amount:N0}", 14, Navy, true); amount.Name = "MyRequestAmount"; card.Controls.Add(amount);
-        card.Controls.Add(MakeLabel(request.Description, 8, Muted).At(14, 76));
-        var metaText = request.Status == "pending" ? $"◷ Due {request.Deadline}   ·   ↗ Requested {DateTime.Parse(request.RequestDate):MMM d}" : request.Status == "accepted" ? $"◷ Due {request.Deadline}   ·   ✓ Accepted {DateTime.Parse(request.RequestDate):MMM d}" : $"◷ {request.Deadline}   ·   × Declined Oct 1";
+        var description = MakeLabel(request.Description, 8, Muted); description.Name = "MyRequestDescription"; description.Location = new Point(14, 76); card.Controls.Add(description);
+        var metaText = request.Status == "pending" ? $"◷ Due {request.Deadline}   ·   ↗ Requested {request.Date:MMM d}" : request.Status == "accepted" ? $"◷ Due {request.Deadline}   ·   ✓ Accepted {request.Date:MMM d}" : $"◷ {request.Deadline}   ·   × Declined {request.Date:MMM d}";
         card.Controls.Add(MakeLabel(metaText, 7.5F, Muted).At(14, 101));
         if (request.Status == "pending")
         {
@@ -179,11 +179,22 @@ public sealed class MyRequestsPage : AppPage
         statTotal.Text = active.Count.ToString();
         statPending.Text = active.Count(request => request.Status == "pending").ToString();
         statAccepted.Text = active.Count(request => request.Status == "accepted").ToString();
+        statCompleted.Text = active.Count(request => request.Status == "accepted" && request.TaskStatus == "Completed").ToString();
+        SetStatValue(0, statTotal.Text);
+        SetStatValue(1, statPending.Text);
+        SetStatValue(2, statAccepted.Text);
+        SetStatValue(3, statCompleted.Text);
         foreach (var (key, tab) in tabs)
         {
             var count = key == "all" ? active.Count : active.Count(request => request.Status == key);
             tab.Text = $"{(key == "all" ? "All" : char.ToUpperInvariant(key[0]) + key[1..])}  {count}";
         }
+    }
+
+    private void SetStatValue(int index, string value)
+    {
+        if (page.Controls.Find($"myRequestsStatValue{index}", false).FirstOrDefault() is Label label)
+            label.Text = value;
     }
 
     private void SelectTab(string status)
@@ -252,7 +263,16 @@ public sealed class MyRequestsPage : AppPage
         for (var index = 0; index < 4; index++)
         {
             var card = page.Controls.Find($"myRequestsStat{index}", false).FirstOrDefault();
-            if (card is not null) card.Bounds = new Rectangle(left + index * (statWidth + gap), 127, statWidth, 75);
+            if (card is not null)
+            {
+                card.Bounds = new Rectangle(left + index * (statWidth + gap), 127, statWidth, 75);
+                if (card.Controls.Find($"myRequestsStatCaption{index}", false).FirstOrDefault() is Label caption)
+                {
+                    caption.AutoSize = false;
+                    caption.Bounds = new Rectangle(64, 39, Math.Max(80, statWidth - 76), 22);
+                    caption.AutoEllipsis = true;
+                }
+            }
         }
         var toolbar = page.Controls.Find("myRequestsToolbar", false).FirstOrDefault();
         if (toolbar is not null)
@@ -292,6 +312,18 @@ public sealed class MyRequestsPage : AppPage
         var width = card.Width;
         var amount = card.Controls.Find("MyRequestAmount", false).FirstOrDefault();
         if (amount is not null) amount.Location = new Point(width - amount.Width - 14, 33);
+        var title = card.Controls.Find("MyRequestTitle", false).FirstOrDefault();
+        if (title is Label titleLabel)
+        {
+            titleLabel.MaximumSize = new Size(Math.Max(120, width - 190), 22);
+            titleLabel.AutoEllipsis = true;
+        }
+        var category = card.Controls.Find("MyRequestCategory", false).FirstOrDefault();
+        if (category is Label categoryLabel)
+        {
+            categoryLabel.MaximumSize = new Size(Math.Max(120, width - 92), 18);
+            categoryLabel.AutoEllipsis = true;
+        }
         foreach (var panel in card.Controls.OfType<Panel>())
         {
             if (panel.Name == "MyRequestMessage") panel.Bounds = new Rectangle(14, 127, width - 28, 66);
@@ -299,8 +331,12 @@ public sealed class MyRequestsPage : AppPage
         }
         var actions = card.Controls.Find("MyRequestActions", false).FirstOrDefault();
         if (actions is not null) actions.Location = new Point(12, card.Controls.OfType<Panel>().Any(panel => panel.Name == "MyRequestMessage" || panel.Name is "MyRequestAcceptedNote" or "MyRequestDeclinedNote") ? 202 : 132);
-        var desc = card.Controls.OfType<Label>().FirstOrDefault(label => label.Location == new Point(14, 76));
-        if (desc is not null) desc.MaximumSize = new Size(width - 28, 30);
+        var desc = card.Controls.Find("MyRequestDescription", false).FirstOrDefault();
+        if (desc is Label descriptionLabel)
+        {
+            descriptionLabel.MaximumSize = new Size(width - 28, 30);
+            descriptionLabel.AutoEllipsis = true;
+        }
     }
 
     private void ClearFilters()

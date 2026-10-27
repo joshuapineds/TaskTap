@@ -87,8 +87,9 @@ public sealed class MainShellForm : Form
             Name = "shellBrand",
             TextColor = Color.White,
             BackColor = SidebarNavy,
-            Location = new Point(22, 20),
-            Size = new Size(170, 36),
+            Location = new Point(12, 16),
+            Size = new Size(196, 42),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
             Cursor = Cursors.Hand
         };
         brand.Click += (_, _) => navigation.GoHome();
@@ -135,7 +136,27 @@ public sealed class MainShellForm : Form
         logout.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
         logout.Click += (_, _) => navigation.Logout();
         sidebar.Controls.Add(logout);
-        sidebar.Resize += (_, _) => logout.Location = new Point(12, sidebar.ClientSize.Height - logout.Height - 18);
+        sidebar.Resize += (_, _) => LayoutSidebarControls(brand, postTask, logout);
+        LayoutSidebarControls(brand, postTask, logout);
+    }
+
+    private void LayoutSidebarControls(Control brand, Button postTask, Button logout)
+    {
+        var width = Math.Max(120, sidebar.ClientSize.Width - 24);
+        brand.Bounds = new Rectangle(12, 16, width, 42);
+        postTask.Width = width;
+        postTask.Location = new Point(12, 66);
+        for (var index = 0; index < navButtons.Length; index++)
+        {
+            if (navButtons[index] is null)
+                continue;
+            navButtons[index].Width = width;
+            navButtons[index].Location = new Point(12, 120 + index * 43);
+        }
+        if (_messagesBadge is not null)
+            _messagesBadge.Left = Math.Max(12, sidebar.ClientSize.Width - _messagesBadge.Width - 22);
+        logout.Width = width;
+        logout.Location = new Point(12, Math.Max(0, sidebar.ClientSize.Height - logout.Height - 18));
     }
 
     private void BuildTopbar()
@@ -318,6 +339,7 @@ public sealed class MainShellForm : Form
             Font = new Font("Segoe UI", 9F, FontStyle.Bold),
             TextAlign = ContentAlignment.MiddleLeft,
             Padding = new Padding(10, 0, 0, 0),
+            AutoEllipsis = false,
             Cursor = Cursors.Hand,
             UseVisualStyleBackColor = false
         };

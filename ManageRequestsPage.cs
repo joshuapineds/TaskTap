@@ -1,4 +1,5 @@
 using RequestRecord = TaskTap.DemoApplicant;
+using TaskTap.Data;
 
 namespace TaskTap;
 
@@ -131,10 +132,12 @@ public sealed class ManageRequestsPage : AppPage
     private void BuildTaskControls()
     {
         completeButton = MakeButton("Mark complete", "ManageRequestsCompleteButton", true, 118);
+        completeButton.Enabled = managedTask is not null && Backend.CanCloseTask(managedTask.Id, AppSession.CurrentUser.Id);
         completeButton.Click += (_, _) => CompletePostedTask();
         page.Controls.Add(completeButton);
 
         cancelButton = MakeButton("Cancel task", "ManageRequestsCancelButton", false, 108);
+        cancelButton.Enabled = completeButton.Enabled;
         cancelButton.ForeColor = Color.FromArgb(185, 55, 67);
         cancelButton.Click += (_, _) => CancelPostedTask();
         page.Controls.Add(cancelButton);
@@ -152,9 +155,13 @@ public sealed class ManageRequestsPage : AppPage
         if (MessageBox.Show(this, $"Mark \"{task.Title}\" complete?", "Complete task", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
             return;
 
-        DemoDataStore.CompleteTask(task);
-        ShowToast("Task marked complete. It now appears in Archived Tasks.");
-        Nav.Navigate(Route.MyTasks);
+        if (!DemoDataStore.CompleteTask(task))
+            return;
+        var payment = DemoDataStore.Payments.FirstOrDefault(item => item.Task == task.Title);
+        if (payment is not null)
+            Nav.Navigate(new RateReviewPage(payment));
+        else
+            Nav.Navigate(Route.MyTasks);
     }
 
     private void CancelPostedTask()
@@ -170,7 +177,8 @@ public sealed class ManageRequestsPage : AppPage
         if (dialog.ShowDialog(FindForm()) != DialogResult.OK)
             return;
 
-        DemoDataStore.CancelTask(task, dialog.SelectedReason ?? "Cancelled.");
+        if (!DemoDataStore.CancelTask(task, dialog.SelectedReason ?? "Cancelled."))
+            return;
         ShowToast("Task cancelled. It now appears in Archived Tasks.");
         Nav.Navigate(Route.MyTasks);
     }

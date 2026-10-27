@@ -143,7 +143,7 @@ public sealed class PaymentRecordPage : AppPage
         person.Cursor = Cursors.Hand;
         person.Click += (_, _) => Nav.Navigate(ProfileLinks.For(payment.Person));
         taskCard.Controls.Add(person);
-        taskCard.Controls.Add(MakeLabel("Task poster · ★ 4.8", 8, Muted, false, new Point(74, 101)));
+        taskCard.Controls.Add(MakeLabel("Completed task participant", 8, Muted, false, new Point(74, 101)));
         taskCard.Controls.Add(MakeLabel($"⌖ Brgy. {payment.Barangay}     ✓ Completed {payment.Date:MMM d, yyyy}", 8, Muted, false, new Point(20, 139)));
         taskCard.Controls.Add(MakeLabel(payment.Description, 8, Muted, false, new Point(20, 166), new Size(680, 58)));
         page.Controls.Add(taskCard);

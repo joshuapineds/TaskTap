@@ -135,7 +135,7 @@ public sealed class PaymentHistoryPage : AppPage
         search.TextChanged += (_, _) => ApplyFilters();
         filters.Controls.Add(search);
         ConfigureFilter(statusFilter, ["All statuses", "Paid", "Pending", "Partially paid"]);
-        ConfigureFilter(methodFilter, ["All methods", "Cash", "GCash", "Maya", "Bank transfer"]);
+        ConfigureFilter(methodFilter, ["All methods", "Cash"]);
         ConfigureFilter(sortFilter, ["Most recent", "Highest amount", "Lowest amount", "Oldest"]);
         statusFilter.SelectedIndexChanged += (_, _) => ApplyFilters();
         methodFilter.SelectedIndexChanged += (_, _) => ApplyFilters();
@@ -169,7 +169,7 @@ public sealed class PaymentHistoryPage : AppPage
         breakdown.BorderStyle = BorderStyle.FixedSingle;
         breakdown.Controls.Add(MakeLabel("Payment breakdown", 12, Navy, true, new Point(16, 16)));
         var total = DemoDataStore.Payments.Sum(payment => payment.Amount);
-        var methods = new[] { "Cash", "GCash", "Maya", "Bank transfer" };
+        var methods = new[] { "Cash" };
         for (var index = 0; index < methods.Length; index++)
         {
             var amount = DemoDataStore.Payments.Where(payment => payment.Method == methods[index]).Sum(payment => payment.Amount);
@@ -217,13 +217,7 @@ public sealed class PaymentHistoryPage : AppPage
     {
         var panel = MakeCard();
         panel.Height = 96;
-        var iconBack = payment.Method switch
-        {
-            "GCash" => Color.FromArgb(232, 248, 246),
-            "Maya" => Color.FromArgb(237, 248, 233),
-            "Bank transfer" => Color.FromArgb(241, 239, 255),
-            _ => Color.FromArgb(255, 242, 233)
-        };
+        var iconBack = Color.FromArgb(255, 242, 233);
         var icon = MakeLabel("₱", 14, Blue, true, new Point(14, 22));
         icon.AutoSize = false;
         icon.Size = new Size(46, 46);

@@ -133,7 +133,7 @@ public sealed class RecordPaymentPage : AppPage
         formCard.Controls.Add(amountError);
 
         AddFieldLabel(formCard, "Payment method *", 276);
-        ConfigureCombo(method, ["Cash", "GCash", "Maya", "Bank transfer", "Other"], payment.Method);
+        ConfigureCombo(method, ["Cash"], "Cash");
         method.SetBounds(24, 298, 300, 34);
         method.SelectedIndexChanged += (_, _) => UpdatePreview();
         formCard.Controls.Add(method);

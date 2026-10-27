@@ -324,7 +324,7 @@ namespace TaskTap
             feedbackLabel = MakeLabel(string.Empty, 8, Color.FromArgb(185, 55, 67));
             feedbackLabel.Name = "authenticationFeedback";
             feedbackLabel.Location = new Point(0, 472);
-            feedbackLabel.MaximumSize = new Size(370, 18);
+            feedbackLabel.MaximumSize = new Size(370, 34);
             authBox.Controls.Add(feedbackLabel);
 
             var securityNote = MakeLabel("🔒  Your account information is used to manage your TaskTap profile and tasks.", 7.5F, Color.FromArgb(139, 155, 174));
@@ -369,21 +369,11 @@ namespace TaskTap
             loginSubmitButton.Click += (_, _) => SubmitLogin();
             loginView.Controls.Add(loginSubmitButton);
 
-            AddDivider(loginView, 213);
-            var googleButton = MakeSocialButton("G", "Continue with Google", "GoogleSignInButton");
-            googleButton.Location = new Point(0, 236);
-            googleButton.Click += (_, _) => BeginSupportedSignIn("Google");
-            loginView.Controls.Add(googleButton);
-            var facebookButton = MakeSocialButton("f", "Continue with Facebook", "FacebookSignInButton");
-            facebookButton.Location = new Point(0, 278);
-            facebookButton.Click += (_, _) => BeginSupportedSignIn("Facebook");
-            loginView.Controls.Add(facebookButton);
-
             var noAccount = MakeLabel("Don't have an account?", 8, MutedColor);
-            noAccount.Location = new Point(56, 326);
+            noAccount.Location = new Point(56, 236);
             loginView.Controls.Add(noAccount);
             loginSwitchButton = MakeLinkButton("Sign up", "SwitchToRegisterButton");
-            loginSwitchButton.Location = new Point(184, 321);
+            loginSwitchButton.Location = new Point(184, 231);
             loginSwitchButton.Click += (_, _) => SetMode(true);
             loginView.Controls.Add(loginSwitchButton);
         }
@@ -445,6 +435,7 @@ namespace TaskTap
                 });
             }
             registerView.Controls.Add(strengthTrack);
+            registerPasswordTextBox.TextChanged += (_, _) => UpdatePasswordStrength();
 
             termsCheckBox = new CheckBox
             {
@@ -510,7 +501,7 @@ namespace TaskTap
                     benefit.Location = new Point(70, y + 1);
             }
 
-            authBox.Size = new Size(Math.Min(370, formPanel.Width - 70), registerMode ? 640 : 552);
+            authBox.Size = new Size(Math.Min(370, formPanel.Width - 70), registerMode ? 664 : 552);
             authBox.Location = new Point((formPanel.Width - authBox.Width) / 2, Math.Max(18, (shellHeight - authBox.Height) / 2));
             var innerWidth = authBox.Width;
             loginTabButton.Bounds = new Rectangle(0, 0, innerWidth / 2, 34);
@@ -520,8 +511,8 @@ namespace TaskTap
             tabUnderline.Bounds = new Rectangle(registerMode ? innerWidth / 2 : 0, 33, innerWidth / 2, 2);
             authModeTitle.Location = new Point(0, 56);
             pageSubtitle.Location = new Point(0, 92);
-            loginView.Bounds = new Rectangle(0, 119, innerWidth, 365);
-            registerView.Bounds = new Rectangle(0, 119, innerWidth, 460);
+            loginView.Bounds = new Rectangle(0, 119, innerWidth, 350);
+            registerView.Bounds = new Rectangle(0, 119, innerWidth, 452);
             foreach (var input in new[] { loginIdentityTextBox, loginPasswordTextBox, registerFirstNameTextBox, registerLastNameTextBox, registerEmailTextBox, registerPhoneTextBox, registerPasswordTextBox, registerConfirmPasswordTextBox })
                 input.Width = innerWidth;
 
@@ -546,23 +537,22 @@ namespace TaskTap
 
             foreach (var button in new[] { loginSubmitButton, registerSubmitButton })
                 button.Width = innerWidth;
-            foreach (var button in FindControls<Button>(loginView).Where(control => control.Name is "GoogleSignInButton" or "FacebookSignInButton"))
-                button.Width = innerWidth;
             if (registerBarangayComboBox is not null)
                 registerBarangayComboBox.Width = innerWidth;
             var securityNote = authBox.Controls.Find("authenticationSecurityNote", false).FirstOrDefault();
             if (securityNote is not null)
             {
-                securityNote.Location = new Point(0, registerMode ? 592 : 494);
+                securityNote.Location = new Point(0, registerMode ? 614 : 494);
                 securityNote.Size = new Size(innerWidth, 18);
             }
             var adminPrompt = authBox.Controls.Find("adminSignInPrompt", false).FirstOrDefault();
             var adminButton = authBox.Controls.Find("AdminSignInButton", false).FirstOrDefault();
             if (adminPrompt is not null)
-                adminPrompt.Location = new Point(0, registerMode ? 620 : 523);
+                adminPrompt.Location = new Point(0, registerMode ? 640 : 523);
             if (adminButton is not null)
-                adminButton.Location = new Point(adminPrompt?.Width + 5 ?? 150, registerMode ? 615 : 518);
-            feedbackLabel.Location = new Point(0, registerMode ? 570 : 472);
+                adminButton.Location = new Point(adminPrompt?.Width + 5 ?? 150, registerMode ? 635 : 518);
+            feedbackLabel.Location = new Point(0, registerMode ? 574 : 472);
+            feedbackLabel.BringToFront();
             toastLabel.Location = new Point((ClientSize.Width - toastLabel.Width) / 2, ClientSize.Height - toastLabel.Height - 22);
         }
 
@@ -579,13 +569,6 @@ namespace TaskTap
             feedbackLabel.Text = string.Empty;
             AcceptButton = showRegister ? registerSubmitButton : loginSubmitButton;
             LayoutPage();
-        }
-
-        private void BeginSupportedSignIn(string provider)
-        {
-            SetMode(false);
-            loginIdentityTextBox.Focus();
-            feedbackLabel.Text = $"{provider} sign-in is not connected. Use your TaskTap email or phone number below.";
         }
 
         private void SubmitLogin()
@@ -708,9 +691,9 @@ namespace TaskTap
                 feedbackLabel.Text = "First and last names must be 60 characters or fewer.";
                 return;
             }
-            if (!System.Text.RegularExpressions.Regex.IsMatch(phone, @"^\+?[0-9 ()-]{7,20}$"))
+            if (!TaskFormHelpers.IsValidPhoneNumber(phone))
             {
-                feedbackLabel.Text = "Enter a valid phone number using digits, spaces, +, or hyphens.";
+                feedbackLabel.Text = "Enter a valid Philippine phone number, such as 0917 123 4567 or +63 917 123 4567.";
                 return;
             }
 
@@ -733,18 +716,62 @@ namespace TaskTap
             var result = Backend.Register(
                 registerFirstNameTextBox.Text, registerLastNameTextBox.Text, email,
                 registerPhoneTextBox.Text, barangayRaw, password);
-            SetBusy(registerSubmitButton, false, "Create Account");
+            SetBusy(registerSubmitButton, false, "Create My Account");
             if (!result.Success || result.User is null)
             {
                 feedbackLabel.Text = result.Error;
                 return;
             }
 
+            // The "occasional updates and tips" box is a real preference, and a welcome tip is sent right away if it is ticked.
+            var wantsTips = updatesCheckBox.Checked;
+            Db.Try(() =>
+            {
+                Backend.SetNotificationPreference(result.User.Id, "community_tips", wantsTips);
+                if (wantsTips)
+                    Backend.Notify(result.User.Id, "Welcome to TaskTap", "Tips: post clear tasks, read each applicant's CV before accepting, and keep payment records in TaskTap. You will see occasional community tips here.", "tips", "Open guidelines");
+            });
+
             feedbackLabel.Text = string.Empty;
             registerPasswordTextBox.Clear();
             registerConfirmPasswordTextBox.Clear();
             AppSession.SignInAs(result.User);
             OpenDashboard();
+        }
+
+        /// <summary>Colours the three bars under the password box: 1 = too weak, 2 = acceptable, 3 = strong.</summary>
+        private void UpdatePasswordStrength()
+        {
+            var password = registerPasswordTextBox.Text;
+            var hasNumberOrSymbol = password.Any(char.IsDigit) || password.Any(ch => !char.IsLetterOrDigit(ch));
+            var level = password.Length == 0 ? 0
+                : password.Length < 8 || !hasNumberOrSymbol ? 1
+                : password.Length >= 12 && password.Any(char.IsUpper) && password.Any(char.IsLower) ? 3
+                : 2;
+
+            var color = level switch
+            {
+                1 => Color.FromArgb(214, 69, 65),
+                2 => Color.FromArgb(240, 160, 40),
+                3 => Color.FromArgb(19, 166, 115),
+                _ => Color.FromArgb(226, 233, 241)
+            };
+            for (var segment = 1; segment <= 3; segment++)
+            {
+                if (registerView.Controls.Find($"passwordStrengthSegment{segment}", true).FirstOrDefault() is { } bar)
+                    bar.BackColor = segment <= level ? color : Color.FromArgb(226, 233, 241);
+            }
+
+            if (registerView.Controls.Find("registrationPasswordHint", false).FirstOrDefault() is Label hint)
+            {
+                hint.Text = level switch
+                {
+                    1 => "Too weak. Use 8+ characters with a number or special character.",
+                    2 => "Good. Use 12+ characters with upper and lower case for a strong password.",
+                    3 => "Strong password.",
+                    _ => "Use 8+ characters with a number or special character."
+                };
+            }
         }
 
         private static string DeriveInitials(string firstName, string lastName)
@@ -787,17 +814,6 @@ namespace TaskTap
             textBox.Width = width;
         }
 
-        private void AddDivider(Control parent, int top)
-        {
-            var left = new Panel { Name = "socialDividerLeft", BackColor = Color.FromArgb(226, 233, 241), Location = new Point(0, top + 8), Size = new Size(150, 1) };
-            var right = new Panel { Name = "socialDividerRight", BackColor = Color.FromArgb(226, 233, 241), Location = new Point(210, top + 8), Size = new Size(150, 1) };
-            var or = MakeLabel("or", 8, MutedColor);
-            or.Location = new Point(174, top);
-            parent.Controls.Add(left);
-            parent.Controls.Add(right);
-            parent.Controls.Add(or);
-        }
-
         private Button MakeTab(string text, string name)
         {
             var button = new Button
@@ -830,25 +846,6 @@ namespace TaskTap
                 UseVisualStyleBackColor = false
             };
             button.FlatAppearance.BorderSize = 0;
-            return button;
-        }
-
-        private Button MakeSocialButton(string icon, string text, string name)
-        {
-            var button = new Button
-            {
-                Name = name,
-                Text = $"{icon}     {text}",
-                Size = new Size(360, 36),
-                BackColor = Color.White,
-                ForeColor = NavyColor,
-                Font = new Font("Segoe UI", 8F, FontStyle.Bold),
-                FlatStyle = FlatStyle.Flat,
-                Cursor = Cursors.Hand,
-                UseVisualStyleBackColor = false
-            };
-            button.FlatAppearance.BorderColor = Color.FromArgb(215, 227, 239);
-            button.FlatAppearance.BorderSize = 1;
             return button;
         }
 

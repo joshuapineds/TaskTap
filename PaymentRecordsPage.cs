@@ -123,7 +123,7 @@ public sealed class PaymentRecordsPage : AdminPage
         toolbar.Controls.Add(searchBox);
 
         ConfigureFilter(statusFilter, "paymentsStatusFilter", ["All statuses", "Paid", "Pending", "Void", "Refunded"]);
-        ConfigureFilter(methodFilter, "paymentsMethodFilter", ["All methods", "Cash", "GCash", "Maya", "Bank transfer"]);
+        ConfigureFilter(methodFilter, "paymentsMethodFilter", ["All methods", "Cash"]);
         ConfigureFilter(sortFilter, "paymentsSortFilter", ["Newest first", "Oldest first", "Highest amount", "Lowest amount"]);
 
         var reset = AdminUi.MakeLinkButton("Reset filters", "paymentsResetButton");
